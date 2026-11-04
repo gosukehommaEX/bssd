@@ -118,8 +118,9 @@ add("D_TX_07D", "Section 4.2.2",
 
 # Figure 1: expected mean and variance of event counts and incidence counts
 # for N = 100 subjects followed for 52 weeks, with rates from 0.001 to 0.018
-# per patient-week under a constant hazard
-lambda <- seq(0.001, 0.018, by = 0.001)
+# per patient-week under a constant hazard (Section 2.2); the rate 0 is added
+# because the curves in Figure 1 start at the origin
+lambda <- c(0, seq(0.001, 0.018, by = 0.001))
 ip <- 1 - exp(-lambda * 52)
 fig1 <- data.frame(lambda = lambda, incidence_proportion = ip,
                    event_mean = 100 * 52 * lambda,

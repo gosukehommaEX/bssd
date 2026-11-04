@@ -1,2 +1,3 @@
 ^.*\.Rproj$
 ^\.Rproj\.user$
+^inst/reproduce/results/Duncan2026_simulation\.rds$

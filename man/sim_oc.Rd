@@ -59,8 +59,11 @@ A list with elements
     (proportion of trials with a signal), \code{se} (its Monte Carlo
     standard error), \code{mean_prob} (mean posterior probability),
     \code{mean_ip_difference} (mean of the posterior means of the
-    difference in cumulative incidence at \code{t_star}), \code{mean_n}
-    and \code{mean_events}.}
+    difference in cumulative incidence at \code{t_star}),
+    \code{mean_observed_difference} (mean of the difference between the
+    proportions of subjects with the event in the study drug and placebo
+    groups at the analysis, computed from the true group assignment),
+    \code{mean_n} and \code{mean_events}.}
   \item{\code{truth}}{True cumulative incidences at \code{t_star} for
     placebo and study drug and their difference.}
   \item{\code{results}}{Data frame of the results of each trial (only when

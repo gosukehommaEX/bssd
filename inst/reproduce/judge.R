@@ -7,10 +7,12 @@
 #        tolerance and note
 #   explained: data frame with columns id, script and reason
 # PASS if |reproduced - published| <= tolerance; EXPLAINED if the item is
-# registered in explained.csv; FAIL otherwise; INFO if nothing is published.
+# registered in explained.csv; FAIL otherwise; INFO if nothing is published
+# or no tolerance is given (values shown for comparison only).
 judge <- function(tab, explained) {
   tab$abs_diff <- abs(tab$reproduced - tab$published)
-  tab$judgement <- ifelse(is.na(tab$published), "INFO",
+  no_ref <- is.na(tab$published) | is.na(tab$tolerance)
+  tab$judgement <- ifelse(no_ref, "INFO",
                           ifelse(tab$abs_diff <= tab$tolerance, "PASS",
                                  "FAIL"))
   hit <- tab$judgement == "FAIL" & tab$id %in% explained$id

@@ -6,6 +6,7 @@ this folder.
 | Results file | PASS | EXPLAINED | FAIL | INFO |
 |---|---|---|---|---|
 | reproduce_Duncan2026.csv | 15 | 6 | 0 | 7 |
+| reproduce_Duncan2026_simulation.csv | 14 | 0 | 4 | 113 |
 | reproduce_Mukhopadhyay2018.csv | 82 | 4 | 0 | 1 |
 
 ## Items that are not PASS or INFO
@@ -16,6 +17,10 @@ this folder.
 - D_TX_04D (reproduce_Duncan2026.csv, EXPLAINED): published 0.12, reproduced 0.2014. Section 4.2.1 describes scenario 4 as up to 12% for study drug at week 104, which agrees with neither the Table 1 label (15.1%) nor the week 104 value of the stated parameters (20.1%).
 - D_TX_06P (reproduce_Duncan2026.csv, EXPLAINED): published 0.05, reproduced 0.03491. Section 4.2.2 describes scenario 6 as 5% for placebo at week 104, but Table 1 gives 3.5%, which the stated parameters (mu = 7.3, sigma = 0.8) reproduce (item D_T1_06P).
 - D_TX_06D (reproduce_Duncan2026.csv, EXPLAINED): published 0.15, reproduced 0.1814. Section 4.2.2 describes scenario 6 as up to 15% for study drug at week 104, but Table 1 gives 18.1%, which the stated parameters (mu = 5.85, sigma = 0.8) reproduce (item D_T1_06D).
+- D_Q_F5a (reproduce_Duncan2026_simulation.csv, FAIL): published 1, reproduced 0. 
+- D_Q_F6a (reproduce_Duncan2026_simulation.csv, FAIL): published 1, reproduced 0. 
+- D_Q_F7b (reproduce_Duncan2026_simulation.csv, FAIL): published 1, reproduced 0. 
+- D_Q_F8b (reproduce_Duncan2026_simulation.csv, FAIL): published 1, reproduced 0. 
 - M_EX1_7 (reproduce_Mukhopadhyay2018.csv, EXPLAINED): published 0.92, reproduced 0.9494. Section 4.3 first gives the range as 52% to 95% (reproduced: 0.517 and 0.949) and later in the same paragraph says the probability will unlikely be as high as 92%; the later value is inconsistent with the earlier one.
 - M_EX2_6 (reproduce_Mukhopadhyay2018.csv, EXPLAINED): published 0.52, reproduced 0.379. The interval (0.52, 2.83) labeled as 95% agrees with the equal-tailed 90% interval (items M_EX2_8 and M_EX2_9); the equal-tailed 95% interval is (0.38, 3.14).
 - M_EX2_7 (reproduce_Mukhopadhyay2018.csv, EXPLAINED): published 2.83, reproduced 3.143. The interval (0.52, 2.83) labeled as 95% agrees with the equal-tailed 90% interval (items M_EX2_8 and M_EX2_9); the equal-tailed 95% interval is (0.38, 3.14).

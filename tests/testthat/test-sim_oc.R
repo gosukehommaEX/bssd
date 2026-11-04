@@ -12,6 +12,13 @@ test_that("sim_oc returns summaries for each analysis and model", {
   expect_true(all(s$n_ok == 10L & s$n_failed == 0L))
   expect_true(all(s$prob_signal >= 0 & s$prob_signal <= 1))
   expect_equal(s$mean_n, rep(60, 6))
+  # the observed difference uses the true groups and is the same for all
+  # models at an analysis
+  r0 <- oc$results
+  expect_equal(s$mean_observed_difference[1:3],
+               rep(mean(r0$observed_difference[r0$look == 1 &
+                                                  r0$model == "BDRIBS1"]), 3))
+  expect_true(abs(s$mean_observed_difference[6] - 0.2) < 0.15)
   expect_equal(oc$truth, c(placebo = 0.1, drug = 0.3, difference = 0.2))
   r <- oc$results
   expect_identical(nrow(r), 60L)

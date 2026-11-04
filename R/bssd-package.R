@@ -24,5 +24,5 @@
 #' @useDynLib bssd, .registration = TRUE
 #' @importFrom Rcpp sourceCpp
 #' @importFrom stats integrate optimize pbeta plogis qbeta qgamma qlogis
-#'   rexp runif uniroot
+#' @importFrom stats rexp runif uniroot
 "_PACKAGE"

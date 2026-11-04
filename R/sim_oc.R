@@ -46,8 +46,11 @@
 #'     (proportion of trials with a signal), \code{se} (its Monte Carlo
 #'     standard error), \code{mean_prob} (mean posterior probability),
 #'     \code{mean_ip_difference} (mean of the posterior means of the
-#'     difference in cumulative incidence at \code{t_star}), \code{mean_n}
-#'     and \code{mean_events}.}
+#'     difference in cumulative incidence at \code{t_star}),
+#'     \code{mean_observed_difference} (mean of the difference between the
+#'     proportions of subjects with the event in the study drug and placebo
+#'     groups at the analysis, computed from the true group assignment),
+#'     \code{mean_n} and \code{mean_events}.}
 #'   \item{\code{truth}}{True cumulative incidences at \code{t_star} for
 #'     placebo and study drug and their difference.}
 #'   \item{\code{results}}{Data frame of the results of each trial (only when
@@ -120,6 +123,7 @@ sim_oc <- function(n_sim, design,
                     model = character(n_row), n = integer(n_row),
                     n_event = integer(n_row), prob = numeric(n_row),
                     ip_difference = numeric(n_row),
+                    observed_difference = numeric(n_row),
                     stringsAsFactors = FALSE)
   i <- 0L
   first_error <- NULL
@@ -127,6 +131,8 @@ sim_oc <- function(n_sim, design,
     dat <- do.call(sim_blinded, design)
     for (j in seq_len(n_look)) {
       d <- dat[dat$look == j, , drop = FALSE]
+      obs_diff <- mean(d$event[d$group == "drug"]) -
+        mean(d$event[d$group == "placebo"])
       for (m in models) {
         i <- i + 1L
         fit <- tryCatch(fit_oc_model(m, d, k, priors, rr0, cutoff, t_star,
@@ -144,6 +150,7 @@ sim_oc <- function(n_sim, design,
         res$model[i] <- m
         res$n[i] <- nrow(d)
         res$n_event[i] <- sum(d$event)
+        res$observed_difference[i] <- obs_diff
         res$prob[i] <- if (is.null(fit)) NA_real_ else fit$prob
         res$ip_difference[i] <- if (is.null(fit) || is.null(fit$incidence)) {
           NA_real_
@@ -171,6 +178,8 @@ sim_oc <- function(n_sim, design,
                prob_signal = p, se = sqrt(p * (1 - p) / sum(ok)),
                mean_prob = mean(x$prob[ok]),
                mean_ip_difference = mean(x$ip_difference[ok]),
+               mean_observed_difference = mean(x$observed_difference,
+                                               na.rm = TRUE),
                mean_n = mean(x$n), mean_events = mean(x$n_event),
                stringsAsFactors = FALSE)
   })
