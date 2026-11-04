@@ -22,7 +22,8 @@ the judgement:
   tolerance given in the script.
 - EXPLAINED: the values differ, and the reason is registered in
   `explained.csv`.
-- FAIL: the values differ without a registered reason.
+- FAIL: the values differ without a registered reason, or the reproduced
+  value is NA.
 - INFO: no published value to compare with, or a value shown for comparison
   only (the simulation results of Duncan, 2026, whose settings are not fully
   reported; the published values are read from the figures in
@@ -30,5 +31,7 @@ the judgement:
 
 Each script ends with a self-check that shifts the published values of the
 PASS items by five times their tolerance and stops unless all of them become
-FAIL, so that the tolerances are not too loose to detect a difference.
+FAIL, so that the tolerances are not too loose to detect a difference. The
+self-check also stops when no item is PASS (for example, when all tolerances
+are NA by mistake), because the judgement is then vacuous.
 `judge.R` contains the shared functions.

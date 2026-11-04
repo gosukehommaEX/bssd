@@ -13,5 +13,5 @@ test_that("fit_oc_model passes the data and priors to the posterior functions", 
   f3 <- fit_oc_model("EXP_BERN", d, 1, pr, 1, 0.95, 52, list())
   expect_equal(f3$prob, expbern_post(d$event, d$follow_up, lambda_hp = 0.004,
                                      pt_hp = 1000)$prob)
-  expect_true(is.na(f3$rr["median"]))
+  expect_true(is.na(f3$rr[["median"]]))
 })

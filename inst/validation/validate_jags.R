@@ -61,14 +61,16 @@ run_jags <- function(model, data, inits, vars) {
                              progress.bar = "none")
   as.data.frame(do.call(rbind, lapply(smp, as.matrix)))
 }
+# coda::effectiveSize() returns a named value (var1); without unname(),
+# c(se = ...) would be named se.var1 and mc["se"] would be NA
 mc_prop <- function(ind) {
-  ess <- coda::effectiveSize(ind)
+  ess <- unname(coda::effectiveSize(ind))
   p <- mean(ind)
-  c(value = p, se = sqrt(p * (1 - p) / ess), ess = unname(ess))
+  c(value = p, se = sqrt(p * (1 - p) / ess), ess = ess)
 }
 mc_mean <- function(x) {
-  ess <- coda::effectiveSize(x)
-  c(value = mean(x), se = stats::sd(x) / sqrt(ess), ess = unname(ess))
+  ess <- unname(coda::effectiveSize(x))
+  c(value = mean(x), se = stats::sd(x) / sqrt(ess), ess = ess)
 }
 
 rows <- list()
@@ -79,9 +81,10 @@ add <- function(id, source, quantity, reference, bssd, tolerance,
     reproduced = bssd, tolerance = tolerance, note = note,
     stringsAsFactors = FALSE)
 }
+# [[ ]] stops with an error when a name is missing ([ ] would return NA)
 add_mc <- function(id, model, quantity, mc, bssd) {
-  add(id, model, quantity, unname(mc["value"]), bssd, 4 * unname(mc["se"]),
-      sprintf("MCMC SE %.4f, ESS %.0f", mc["se"], mc["ess"]))
+  add(id, model, quantity, mc[["value"]], bssd, 4 * mc[["se"]],
+      sprintf("MCMC SE %.4f, ESS %.0f", mc[["se"]], mc[["ess"]]))
 }
 
 # EXP_BERN data sets: k, design and prior settings

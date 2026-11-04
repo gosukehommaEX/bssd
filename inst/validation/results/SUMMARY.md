@@ -7,7 +7,7 @@ this folder.
 |---|---|---|---|---|
 | validate_bdribs_package.csv | 35 | 0 | 0 | 0 |
 | validate_convergence.csv | 15 | 0 | 1 | 0 |
-| validate_jags.csv | 0 | 0 | 0 | 27 |
+| validate_jags.csv | 24 | 0 | 0 | 3 |
 
 ## Items that are not PASS or INFO
 

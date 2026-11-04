@@ -7,14 +7,14 @@
 #        tolerance and note
 #   explained: data frame with columns id, script and reason
 # PASS if |reproduced - published| <= tolerance; EXPLAINED if the item is
-# registered in explained.csv; FAIL otherwise; INFO if nothing is published
-# or no tolerance is given (values shown for comparison only).
+# registered in explained.csv; FAIL otherwise (including a reproduced value
+# of NA); INFO if nothing is published or no tolerance is given (values shown
+# for comparison only).
 judge <- function(tab, explained) {
   tab$abs_diff <- abs(tab$reproduced - tab$published)
   no_ref <- is.na(tab$published) | is.na(tab$tolerance)
-  tab$judgement <- ifelse(no_ref, "INFO",
-                          ifelse(tab$abs_diff <= tab$tolerance, "PASS",
-                                 "FAIL"))
+  ok <- !is.na(tab$abs_diff) & tab$abs_diff <= tab$tolerance
+  tab$judgement <- ifelse(no_ref, "INFO", ifelse(ok, "PASS", "FAIL"))
   hit <- tab$judgement == "FAIL" & tab$id %in% explained$id
   tab$judgement[hit] <- "EXPLAINED"
   tab$note[hit] <- explained$reason[match(tab$id[hit], explained$id)]
@@ -22,10 +22,16 @@ judge <- function(tab, explained) {
           "tolerance", "judgement", "note")]
 }
 
-# Check that the judgement is not vacuous: shifting each published value of
-# a PASS item by five times its tolerance must turn the item into FAIL.
+# Check that the judgement is not vacuous: there must be at least one PASS
+# item (a table with no PASS item, for example because all tolerances are NA,
+# stops), and shifting each published value of a PASS item by five times its
+# tolerance must turn the item into FAIL.
 self_check <- function(tab) {
   pass <- tab[tab$judgement == "PASS", ]
+  if (nrow(pass) == 0L) {
+    stop("Self-check failed: no PASS item, so the judgement is vacuous ",
+         "(check for tolerances or reproduced values that are NA).")
+  }
   shifted <- pass
   shifted$published <- pass$published + 5 * pass$tolerance
   re <- judge(shifted, data.frame(id = character(0), script = character(0),

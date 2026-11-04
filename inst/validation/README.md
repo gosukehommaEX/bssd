@@ -21,7 +21,9 @@ are registered in `explained.csv`. For the MCMC comparisons the tolerance is
 four Monte Carlo standard errors computed from the effective sample size.
 Each script ends with the self-check of `inst/reproduce/judge.R`, which
 shifts the reference values of the PASS items by five times their tolerance
-and stops unless all of them become FAIL.
+and stops unless all of them become FAIL. The self-check also stops when no
+item is PASS (for example, when all tolerances are NA by mistake), because the
+judgement is then vacuous.
 
 The folder `python/` contains the Python scripts that computed the expected
 values of the tests in `tests/testthat/`.
