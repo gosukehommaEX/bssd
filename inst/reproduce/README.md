@@ -1,0 +1,29 @@
+# Reproduction of published results
+
+The scripts in this folder reproduce numerical results of the articles whose
+methods are implemented in bssd, with the functions of the package.
+
+| Script | Article | Run time |
+|---|---|---|
+| `reproduce_Mukhopadhyay2018.R` | Mukhopadhyay, Waterhouse and Hartford (2018), Pharmaceutical Statistics 17(6):823-834: Table 1, hypothetical examples 1 and 2, operating characteristics in Section 5 | about one minute |
+| `reproduce_Duncan2026.R` | Duncan (2026), Journal of Biopharmaceutical Statistics 36(2):227-244: Table 1, the descriptions of the scenarios in Section 4, Figure 1 | a few seconds |
+| `summarize.R` | collects the judgements into `results/SUMMARY.md` | seconds |
+
+Run the scripts from the package root after `devtools::load_all()` (or
+`library(bssd)`), in the order of the table, for example
+`source("inst/reproduce/reproduce_Duncan2026.R")`.
+
+Each script writes `results/reproduce_<Article>.csv` with one row per item and
+the judgement:
+
+- PASS: the reproduced value agrees with the published value within the
+  tolerance given in the script.
+- EXPLAINED: the values differ, and the reason is registered in
+  `explained.csv`.
+- FAIL: the values differ without a registered reason.
+- INFO: no published value to compare with.
+
+Each script ends with a self-check that shifts the published values of the
+PASS items by five times their tolerance and stops unless all of them become
+FAIL, so that the tolerances are not too loose to detect a difference.
+`judge.R` contains the shared functions.
