@@ -1,0 +1,145 @@
+
+<!-- README.md is generated from README.Rmd. Please edit README.Rmd. -->
+
+# bssd
+
+bssd computes the posterior probability of a safety signal from blinded
+clinical trial data with the models examined by Duncan (2026). The
+posterior quantities are obtained by numerical integration instead of
+Markov chain Monte Carlo (MCMC) sampling, so the results do not depend
+on a random seed and are fast enough for simulation studies.
+
+## Models and functions
+
+| Model | Data | Function | Relative risk |
+|----|----|----|----|
+| BDRIBS(1) | number of subjects with the event and total exposure time | `bdribs_post()` | rate ratio |
+| BDRIBS(2) | number of subjects with the event and total time at risk | `bdribs_post()` | rate ratio |
+| EXP_BERN | event indicator and follow-up time of each subject | `expbern_post()` | rate ratio |
+| LL_BERN | event indicator and follow-up time of each subject | `llbern_post()` | ratio of the cumulative incidences at `t_star` |
+
+BDRIBS is the Poisson-based model of Mukhopadhyay et al. (2018). With
+`pt_hp = Inf`, `bdribs_post()` performs their screening analysis with a
+known background rate. The results of the three functions have `print()`
+and `summary()` methods.
+
+Other functions:
+
+- `time_at_risk()`: total exposure time and total time at risk from
+  subject-level data.
+- `ll_cdf()` and `ll_mu()`: cumulative incidence and location parameter
+  of the log-logistic distribution.
+- `sim_blinded()`: simulation of blinded trial data.
+- `sim_oc()`: operating characteristics of the models by simulation.
+
+## Installation
+
+``` r
+# install.packages("remotes")
+remotes::install_github("gosukehommaEX/bssd")
+```
+
+## Examples
+
+Hypothetical example 2 of Mukhopadhyay et al. (2018, Section 4.4) has 9
+subjects with the event in 540 patient-years of blinded exposure, a 2:1
+randomization, and a known background rate of 0.011 per patient-year on
+placebo.
+
+``` r
+library(bssd)
+fit <- bdribs_post(y = 9, exposure = 540, k = 2, lambda_hp = 0.011,
+                   pt_hp = Inf, p_prior = c(1, 1))
+fit
+#> Model: BDRIBS 
+#> Relative risk: rate ratio r of study drug to placebo
+#> P(r > 1 | data) = 0.753
+#> Signal (posterior probability > 0.95): no
+#> Posterior of r: mean 1.522, median 1.438, 95% interval (0.379, 3.143)
+```
+
+The posterior probability of r \> 1 is 0.753. The article reports 0.756,
+computed by MCMC with the bdribs package.
+
+The four models applied to simulated subject-level data (150 subjects,
+1:1 randomization, log-logistic times to the event, analysis at week
+117):
+
+``` r
+set.seed(2026)
+d <- sim_blinded(n = 150, k = 1, accrual = 26, follow_up = 104,
+                 analysis_time = 117, dist = "loglogistic",
+                 par_p = c(7.3, 0.8), par_d = c(5.85, 0.8))
+tar <- time_at_risk(d$follow_up, d$event, d$event_time)
+lambda_hp <- -log(1 - ll_cdf(104, mu = 7.3, sigma = 0.8)) / 104
+pt_weeks <- 75 * 104
+fits <- list(
+  BDRIBS1 = bdribs_post(y = tar[["n_event"]], exposure = tar[["exposure"]],
+                        k = 1, lambda_hp = lambda_hp, pt_hp = pt_weeks,
+                        df = 2),
+  BDRIBS2 = bdribs_post(y = tar[["n_event"]],
+                        exposure = tar[["time_at_risk"]], k = 1,
+                        lambda_hp = lambda_hp, pt_hp = pt_weeks, df = 2),
+  EXP_BERN = expbern_post(y = d$event, t = d$follow_up, k = 1,
+                          lambda_hp = lambda_hp, pt_hp = pt_weeks, df = 2),
+  LL_BERN = llbern_post(y = d$event, t = d$follow_up, k = 1, mu_hp = 7.3,
+                        sigma_hp = 0.8, pt_hp = pt_weeks / 52, df_p = 2,
+                        t_star = 104)
+)
+res <- do.call(rbind, lapply(fits, summary))
+res$model <- names(fits)
+res[, c("model", "prob", "signal", "rr_median", "error")]
+#>             model      prob signal rr_median        error
+#> BDRIBS1   BDRIBS1 0.7909268  FALSE  2.879204           NA
+#> BDRIBS2   BDRIBS2 0.8049487  FALSE  3.030938           NA
+#> EXP_BERN EXP_BERN 0.8202780  FALSE  3.242503 1.814905e-07
+#> LL_BERN   LL_BERN 0.9351465  FALSE  4.217216 3.733315e-04
+```
+
+`vignette("bssd")` explains the models, the priors of this example and
+the simulation of the operating characteristics. The documentation is
+also available at <https://gosukehommaex.github.io/bssd/>.
+
+## Validation
+
+- `tests/testthat` has 24 test files with 48 `test_that()` blocks. Their
+  expected values were computed beforehand by independent Python
+  implementations (`inst/validation/python`).
+- [`inst/reproduce`](https://github.com/gosukehommaEX/bssd/tree/main/inst/reproduce)
+  reproduces the numerical results of Mukhopadhyay et al. (2018) and
+  Duncan (2026): tables, worked examples and simulations.
+- [`inst/validation`](https://github.com/gosukehommaEX/bssd/tree/main/inst/validation)
+  compares `bdribs_post()` with the bdribs package, `expbern_post()` and
+  `llbern_post()` with MCMC in JAGS, the default integration grids with
+  finer grids and with an independent Python implementation, and
+  `sim_oc()` with an independent Python simulation.
+
+Each item is judged as PASS (agreement within the tolerance), EXPLAINED
+(a difference whose reason is registered), FAIL (a difference without a
+registered reason) or INFO (no value to compare with):
+
+| file                                | PASS | EXPLAINED | FAIL | INFO |
+|:------------------------------------|-----:|----------:|-----:|-----:|
+| reproduce_Duncan2026.csv            |   15 |         6 |    0 |    7 |
+| reproduce_Duncan2026_prior.csv      |   23 |         6 |    0 |    0 |
+| reproduce_Duncan2026_simulation.csv |   14 |         4 |    0 |  113 |
+| reproduce_Mukhopadhyay2018.csv      |   82 |         4 |    0 |    1 |
+| validate_bdribs_package.csv         |   35 |         0 |    0 |    0 |
+| validate_convergence.csv            |   19 |         0 |    0 |    0 |
+| validate_jags.csv                   |   24 |         0 |    0 |    3 |
+| validate_sim_oc.csv                 |   29 |         0 |    0 |    0 |
+
+The reasons for the EXPLAINED items are listed in
+[`inst/reproduce/results/SUMMARY.md`](https://github.com/gosukehommaEX/bssd/blob/main/inst/reproduce/results/SUMMARY.md).
+
+## References
+
+Duncan, B. (2026). Robust safety monitoring and signal detection using
+alternatives to the standard Poisson distribution. *Journal of
+Biopharmaceutical Statistics*, 36(2), 227-244.
+<https://doi.org/10.1080/10543406.2024.2395532>
+
+Mukhopadhyay, S., Waterhouse, B., and Hartford, A. (2018). Bayesian
+detection of potential risk using inference on blinded safety data.
+*Pharmaceutical Statistics*, 17(6), 823-834.
+<https://doi.org/10.1002/pst.1898>

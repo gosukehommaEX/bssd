@@ -2,3 +2,10 @@
 ^\.Rproj\.user$
 ^inst/reproduce/results/Duncan2026_simulation\.rds$
 ^inst/reproduce/results/Duncan2026_prior\.rds$
+^README\.Rmd$
+^_pkgdown\.yml$
+^docs$
+^pkgdown$
+^cran-comments\.md$
+^doc$
+^Meta$

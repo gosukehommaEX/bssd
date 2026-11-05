@@ -13,9 +13,12 @@ Description: Computes the posterior probability of a safety signal from
     the total exposure time or the total time at risk, the exponential
     Bernoulli mixture model, and the log-logistic Bernoulli mixture model.
     All posterior quantities are obtained by numerical integration instead
-    of Markov chain Monte Carlo sampling.
+    of Markov chain Monte Carlo sampling. Functions to simulate blinded
+    trial data and to estimate the operating characteristics of the models
+    by simulation are included.
 License: GPL (>= 2)
-URL: https://github.com/gosukehommaEX/bssd
+URL: https://github.com/gosukehommaEX/bssd,
+    https://gosukehommaex.github.io/bssd/
 BugReports: https://github.com/gosukehommaEX/bssd/issues
 Encoding: UTF-8
 Depends:
@@ -26,6 +29,9 @@ Imports:
 LinkingTo:
     Rcpp
 Suggests:
+    knitr,
+    rmarkdown,
     testthat (>= 3.0.0)
+VignetteBuilder: knitr
 Config/testthat/edition: 3
 Config/roxygen2/version: 8.0.0

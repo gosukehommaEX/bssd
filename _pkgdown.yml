@@ -1,0 +1,26 @@
+url: https://gosukehommaex.github.io/bssd/
+
+template:
+  bootstrap: 5
+  math-rendering: mathjax
+
+reference:
+- title: Posterior probability of a safety signal
+  desc: >
+    Posterior distributions under the BDRIBS, EXP_BERN and LL_BERN models,
+    and the methods for their results.
+  contents:
+  - bdribs_post
+  - expbern_post
+  - llbern_post
+  - print.bssd_post
+  - summary.bssd_post
+- title: Exposure and the log-logistic distribution
+  contents:
+  - time_at_risk
+  - ll_cdf
+  - ll_mu
+- title: Simulation
+  contents:
+  - sim_blinded
+  - sim_oc

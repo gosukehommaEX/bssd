@@ -29,6 +29,7 @@ detection of potential risk using inference on blinded safety data.
 Useful links:
 \itemize{
   \item \url{https://github.com/gosukehommaEX/bssd}
+  \item \url{https://gosukehommaex.github.io/bssd/}
   \item Report bugs at \url{https://github.com/gosukehommaEX/bssd/issues}
 }
 
