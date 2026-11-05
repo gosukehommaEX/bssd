@@ -53,6 +53,21 @@ test_that("llbern_post matches the reference values for other settings", {
   expect_equal(f3$prob, 0.6092996462522098, tolerance = 1e-3)
 })
 
+test_that("llbern_post reports twice the difference from the coarser grid", {
+  d <- make_data()
+  args <- list(y = d$y, t = d$t, k = 1, mu_hp = 6, sigma_hp = 0.8,
+               pt_hp = 200, df_p = 1, t_star = 104, details = FALSE)
+  fit <- do.call(llbern_post, args)
+  f0 <- do.call(llbern_post, c(args, list(control = list(check = FALSE))))
+  f1 <- do.call(llbern_post, c(args, list(control = list(
+    n_outer = 20, n_inner = 181, check = FALSE))))
+  expect_equal(fit$prob, f1$prob)
+  expect_equal(fit$integration$error, 2 * abs(f1$prob - f0$prob))
+  # the comparison is not vacuous: the difference itself is not accepted
+  expect_failure(expect_equal(fit$integration$error,
+                              abs(f1$prob - f0$prob)))
+})
+
 test_that("llbern_post checks its input", {
   d <- make_data()
   expect_error(llbern_post(d$y, d$t, mu_hp = 6, sigma_hp = 0.8, pt_hp = 200),

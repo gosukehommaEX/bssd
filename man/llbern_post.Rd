@@ -117,14 +117,20 @@ parameters, the posterior probability and the quantiles of
 interpolant without a discontinuous integrand. When \code{control$check}
 is \code{TRUE}, the computation is repeated with about 1.25 times as many
 Gauss-Legendre nodes and 1.5 times as many Chebyshev points, the finer
-result is returned, and the absolute difference in \code{prob} is reported
-as the integration error estimate.
+result is returned, and twice the absolute difference in \code{prob}
+between the two results is reported as the integration error estimate.
 
 When there are few events, the prior of \eqn{\sigma_d}{sigma_d} used by
 Duncan (2026) puts much mass near zero, where the likelihood changes
 sharply in \eqn{\mu_d}{mu_d} near the logarithms of the follow-up times.
-The default number of Chebyshev points is large for this reason; if the
-reported error estimate is too large for the purpose, increase
+The integration error then decreases only in proportion to the inverse of
+the number of Chebyshev points, and its sign changes irregularly. With 1.5
+times as many points, the error of the finer result is then about twice
+the difference between the two results, which is the reason for the
+factor 2 in the error estimate. The default number of Chebyshev points is
+large for the same reason, and the error estimate is not reliable when
+\code{control$n_inner} is much smaller than the default. If the reported
+error estimate is too large for the purpose, increase
 \code{control$n_inner}.
 
 The posterior mean of \eqn{RR(t^*)}{RR(t_star)} can be unstable because

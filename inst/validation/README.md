@@ -8,7 +8,7 @@ computations. Run them from the package root after `devtools::load_all()` (or
 |---|---|---|---|
 | `validate_bdribs_package.R` | `bdribs_post()` against the bdribs package (MCMC by the authors of the BDRIBS method), with a known and with a Gamma-distributed background rate | JAGS 4.x, rjags, coda, bdribs | a few minutes |
 | `validate_jags.R` | `expbern_post()` and `llbern_post()` against MCMC with JAGS models written from the model specifications of Duncan (2026) | JAGS 4.x, rjags, coda | 10 to 20 minutes |
-| `validate_convergence.R` | default integration grid against a finer grid; the difference must not exceed the reported integration error | none | a few minutes |
+| `validate_convergence.R` | default integration grid against a finer grid (for LL_BERN, 24 Gauss-Legendre nodes and 721 Chebyshev points) and, for one LL_BERN data set, against an independent Python reference (`python/ref_llbern_breakpoints.py`); the difference must not exceed the reported integration error | none | a few minutes |
 | `summarize.R` | collects the judgements into `results/SUMMARY.md` | none | seconds |
 
 The rjags 4-x package on CRAN does not work with JAGS 5, so JAGS 4.x is
@@ -26,4 +26,5 @@ item is PASS (for example, when all tolerances are NA by mistake), because the
 judgement is then vacuous.
 
 The folder `python/` contains the Python scripts that computed the expected
-values of the tests in `tests/testthat/`.
+values of the tests in `tests/testthat/` and the reference values used by
+`validate_convergence.R`.

@@ -6,9 +6,9 @@ this folder.
 | Results file | PASS | EXPLAINED | FAIL | INFO |
 |---|---|---|---|---|
 | validate_bdribs_package.csv | 35 | 0 | 0 | 0 |
-| validate_convergence.csv | 15 | 0 | 1 | 0 |
+| validate_convergence.csv | 19 | 0 | 0 | 0 |
 | validate_jags.csv | 24 | 0 | 0 | 3 |
 
 ## Items that are not PASS or INFO
 
-- C_L1_PROB (validate_convergence.csv, FAIL): reference 0.6114, bssd 0.6101. reported error 5.71e-04
+None.
