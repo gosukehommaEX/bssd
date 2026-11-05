@@ -1,0 +1,285 @@
+---
+title: "BDRIBS(2): Poisson model with the total time at risk"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{BDRIBS(2): Poisson model with the total time at risk}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(bssd)
+```
+
+```{r helpers, include = FALSE}
+# results and settings of the installed reproduction and validation scripts
+read_results <- function(folder, name) {
+  read.csv(system.file(folder, "results", name, package = "bssd",
+                       mustWork = TRUE), stringsAsFactors = FALSE)
+}
+# value assigned at the top level of an installed validation script
+script_value <- function(script, name) {
+  exprs <- parse(system.file("validation", script, package = "bssd",
+                             mustWork = TRUE))
+  for (e in exprs) {
+    if (is.call(e) && identical(e[[1L]], as.name("<-")) &&
+        identical(e[[2L]], as.name(name))) {
+      return(eval(e[[3L]], baseenv()))
+    }
+  }
+  stop("'", name, "' is not assigned in ", script, call. = FALSE)
+}
+fmt <- function(x, digits = 4) formatC(x, format = "f", digits = digits)
+fmt_e <- function(x) formatC(x, format = "e", digits = 1)
+fmt_n <- function(x) formatC(x, format = "d", big.mark = ",")
+# MCMC comparisons of a validation script. The tolerance of each item is four
+# Monte Carlo standard errors. For the median, the reference is 0.5 and the
+# compared value is the MCMC proportion of draws below the bssd median.
+mcmc_table <- function(v, rr = "r") {
+  v <- v[v$judgement != "INFO", ]
+  stat <- sub("^.*_", "", v$id)
+  med <- stat == "MED"
+  quantity <- stat
+  is_p <- grepl("^P[0-9]", stat)
+  quantity[is_p] <- sprintf("P(%s > %s)", rr, sub("^P", "", stat[is_p]))
+  quantity[stat == "PROB"] <- sub(" [|] data[)].*$", ")",
+                                  v$quantity[stat == "PROB"])
+  quantity[med] <- sprintf("P(%s <= bssd median)", rr)
+  quantity[stat == "MEAN"] <- sprintf("mean of %s", rr)
+  quantity[stat == "IPP"] <- "placebo incidence"
+  quantity[stat == "IPD"] <- "study drug incidence"
+  bssd_value <- ifelse(med, v$reference, v$bssd)
+  mcmc_value <- ifelse(med, v$bssd, v$reference)
+  data.frame(data = sub("^[A-Z]+_([A-Z][0-9]+)_.*$", "\\1", v$id),
+             quantity = quantity, bssd = bssd_value, mcmc = mcmc_value,
+             difference = bssd_value - mcmc_value, se = v$tolerance / 4,
+             stringsAsFactors = FALSE)
+}
+show_mcmc <- function(m) {
+  knitr::kable(data.frame(Data = m$data, Quantity = m$quantity,
+                          bssd = fmt(m$bssd), MCMC = fmt(m$mcmc),
+                          Difference = fmt_e(m$difference),
+                          SE = fmt_e(m$se),
+                          Ratio = fmt(abs(m$difference) / m$se, 2)),
+               align = "llrrrrr")
+}
+# effective sample sizes of the posterior probabilities P(r > c)
+ess_range <- function(v) {
+  note <- v$note[grepl("_(PROB|P[0-9.]+)$", v$id)]
+  range(as.numeric(sub("^.*ESS ([0-9]+).*$", "\\1", note)))
+}
+# comparison of the default integration grid with a finer grid or with the
+# Python reference (validate_convergence.R)
+show_convergence <- function(v) {
+  parts <- regmatches(v$quantity, regexec(paste0(
+    "^(.*), (finer grid vs default|Python reference vs default|",
+    "Python reference vs finer grid), (.*)$"), v$quantity))
+  parts <- do.call(rbind, parts)
+  err <- suppressWarnings(as.numeric(sub("^reported error ", "", v$note)))
+  knitr::kable(data.frame(Data = parts[, 4], Comparison = parts[, 3],
+                          Quantity = sub(" [|] data[)]$", ")", parts[, 2]),
+                          Reference = fmt(v$reference, 6),
+                          bssd = fmt(v$bssd, 6),
+                          Difference = fmt_e(v$abs_diff),
+                          `Error estimate` = ifelse(is.na(err), "",
+                                                    fmt_e(err)),
+                          check.names = FALSE),
+               align = "lllrrrr")
+}
+```
+
+## Model
+
+BDRIBS(2) is the modification of BDRIBS(1) examined by Duncan (2026,
+Section 3.2.3): the total exposure time is replaced by the total time at
+risk, in which the time after the first occurrence of the event is
+discarded. For subject $i$ with the follow-up time $t_i$ and the time to the
+first event $s_i$ ($s_i = \infty$ for a subject without the event), the two
+exposures are
+$$E_1 = \sum_i t_i \quad \text{(BDRIBS(1))}, \qquad E_2 = \sum_i \min(t_i, s_i) \quad \text{(BDRIBS(2))}.$$
+The rest of the model is that of BDRIBS(1) (`vignette("bdribs1")`):
+$$Y \sim \mathrm{Poisson}\{E_2 \delta (r k + 1) / (k + 1)\}, \quad \delta \sim \mathrm{Gamma}(\lambda_{HP} PT_{HP} / DF, PT_{HP} / DF), \quad r = \frac{p}{k (1 - p)}, \quad p \sim \mathrm{Beta}(a, b).$$
+
+The number of subjects with the event, $Y$, counts first events only, and a
+subject cannot have a first event after it. With the total exposure time,
+this time is still counted as exposure, so that the exposure is too large
+for the observed number of events. Duncan (2026, Section 3.2.3) notes that
+the distinction has no impact for small incidences and a noticeable impact
+for larger ones, and BDRIBS(1) has lower power than BDRIBS(2) at medium and
+high incidences (Duncan, 2026, Section 4.1).
+
+BDRIBS(2) uses the same function as BDRIBS(1), `bdribs_post()`, with the
+total time at risk as `exposure`. The other arguments are described in
+`vignette("bdribs1")`. `time_at_risk()` computes both exposures from
+subject-level data.
+
+## Example
+
+The following data are simulated with `sim_blinded()` with incidences of the
+high-incidence scenarios of Duncan (2026, Table 1): 200 subjects randomized
+1:1 with uniform entry over 26 weeks, 52 weeks of follow-up, and exponential
+times to the event with cumulative incidences of 30% on placebo and 45% on
+the study drug at week 52. The blinded analysis is at week 78, when all
+subjects have completed follow-up.
+
+```{r data}
+set.seed(2026)
+rate_of <- function(ip, t) -log(1 - ip) / t
+d <- sim_blinded(n = 200, k = 1, accrual = 26, follow_up = 52,
+                 analysis_time = 78, dist = "exponential",
+                 par_p = rate_of(0.30, 52), par_d = rate_of(0.45, 52))
+tar <- time_at_risk(d$follow_up, d$event, d$event_time)
+tar
+```
+
+The total time at risk is
+`r round(100 * tar[["time_at_risk"]] / tar[["exposure"]])`% of the total
+exposure time. The prior of $\delta$ is based on a historical placebo group
+of 100 subjects followed for 52 weeks with the incidence of 30%, discounted
+by $DF = 2$.
+
+```{r fit}
+fits <- list(
+  BDRIBS1 = bdribs_post(y = tar[["n_event"]], exposure = tar[["exposure"]],
+                        k = 1, lambda_hp = rate_of(0.30, 52),
+                        pt_hp = 100 * 52, df = 2, t_star = 52),
+  BDRIBS2 = bdribs_post(y = tar[["n_event"]],
+                        exposure = tar[["time_at_risk"]], k = 1,
+                        lambda_hp = rate_of(0.30, 52), pt_hp = 100 * 52,
+                        df = 2, t_star = 52)
+)
+res <- do.call(rbind, lapply(fits, summary))
+res$model <- names(fits)
+knitr::kable(res[, c("model", "prob", "signal", "rr_median", "ip_placebo",
+                     "ip_drug", "ip_difference")], digits = 3,
+             row.names = FALSE)
+```
+
+The last three columns are the posterior means of the cumulative incidences
+at week 52 and of their difference; the true values are 0.30, 0.45 and 0.15.
+The posterior means of the placebo incidence are
+`r fmt(res$ip_placebo[1], 3)` with the total exposure time and
+`r fmt(res$ip_placebo[2], 3)` with the total time at risk.
+
+## Operating characteristics
+
+```{r oc-data, include = FALSE}
+sim <- read_results("reproduce", "reproduce_Duncan2026_simulation.csv")
+design <- read_results("reproduce", "Duncan2026_simulation_design.csv")
+des <- design[design$figure %in% c(3, 4), ]
+power_of <- function(model) {
+  ids <- sprintf("D_SIM_%s_P%d_L1_%s_power", des$figure, des$point, model)
+  sim$reproduced[match(ids, sim$id)]
+}
+threshold <- sub("^.*threshold ([0-9.]+)[)].*$", "\\1",
+                 sim$quantity[match(sprintf("D_SIM_%s_P%d_L1_BDRIBS1_power",
+                                            des$figure, des$point), sim$id)])
+oc <- data.frame(
+  Figure = des$figure,
+  Placebo = sprintf("%.0f%%", 100 * (1 - exp(-as.numeric(des$par_p) *
+                                                des$follow_up))),
+  `Study drug` = sub("^drug ", "", des$label), N = des$n,
+  `Analysis (week)` = round(as.numeric(des$analysis_time), 1),
+  Threshold = threshold,
+  `BDRIBS(1)` = power_of("BDRIBS1"), `BDRIBS(2)` = power_of("BDRIBS2"),
+  check.names = FALSE)
+judgement_of <- function(id) sim$judgement[match(id, sim$id)]
+```
+
+The folder `reproduce` of the installed package contains the simulations of
+Figures 2 to 10 of Duncan (2026) with `r fmt_n(unique(des$n_sim))` simulated
+trials per scenario. For the medium (Figure 3) and high (Figure 4) incidences,
+the proportions of trials with a signal (power) of the two models are
+
+```{r oc-table, echo = FALSE}
+knitr::kable(oc, digits = 3, row.names = FALSE)
+```
+
+The incidences are at week 52. BDRIBS(1) has much lower power than BDRIBS(2),
+as stated by Duncan (2026, Section 4.1); the corresponding statements of the
+article are judged `r judgement_of("D_Q_F3a")` (Figure 3) and
+`r judgement_of("D_Q_F4a")` (Figure 4) in
+`inst/reproduce/reproduce_Duncan2026_figures.R`. The article does not report
+all settings of the simulations, so the published powers are not reproduced
+exactly; `results/SUMMARY.md` in the folder `reproduce` gives the details.
+
+## Numerical integration and comparison with MCMC
+
+The posterior computation of BDRIBS(2) is that of BDRIBS(1) with another
+exposure. The numerical integration is described in `vignette("bdribs1")`,
+and the comparison with MCMC is repeated here.
+
+```{r mcmc-data, include = FALSE}
+v <- read_results("validation", "validate_bdribs_package.csv")
+m <- mcmc_table(v)
+cases <- script_value("validate_bdribs_package.R", "cases")
+n_iter <- script_value("validate_bdribs_package.R", "n_iter")
+n_chain <- script_value("validate_bdribs_package.R", "n_chain")
+src <- readLines(system.file("validation", "validate_bdribs_package.R",
+                             package = "bssd", mustWork = TRUE))
+n_burn <- as.numeric(sub("^.*burn = ([0-9]+).*$", "\\1",
+                         grep("burn = [0-9]+", src, value = TRUE)[1L]))
+ess <- ess_range(v)
+is_prob <- grepl("^P[(]", m$quantity)
+```
+
+The bdribs package of Mukhopadhyay et al. (2018) samples the same model by
+MCMC with JAGS. The script `inst/validation/validate_bdribs_package.R`
+compares `bdribs_post()` with `bdribs::bdribs()` for the settings below, in
+which E is the exposure given to both functions. The results in this section
+are read from the output of that script (`validate_bdribs_package.csv` in the
+folder `validation/results` of the installed package); JAGS is not run when
+this article is built.
+
+```{r mcmc-settings, echo = FALSE}
+knitr::kable(data.frame(
+  Data = cases$id, y = cases$y, E = cases$pyr, k = cases$k,
+  `Historical events` = cases$bg_events,
+  `Historical patient-years` = cases$bg_pyr,
+  `Background rate` = ifelse(cases$inf_type == 1, "fixed (inf.type = 1)",
+                             "Gamma prior (inf.type = 2)"),
+  `Prior of p` = sprintf("Beta(%g, %g)", cases$a, cases$b),
+  check.names = FALSE), row.names = FALSE)
+```
+
+`bdribs::bdribs()` was run with `r n_chain` chains, `r fmt_n(n_burn)`
+burn-in iterations and `r fmt_n(n_iter)` iterations. The Monte Carlo
+standard error (SE) of each MCMC estimate uses the effective sample size of
+the draws
+(`coda::effectiveSize()`); for the posterior probabilities, the effective
+sample sizes are between `r fmt_n(ess[1])` and `r fmt_n(ess[2])`. For the
+median, the table shows the MCMC proportion of draws below the posterior
+median computed by bssd, which should be 0.5. The column Ratio is the
+absolute difference divided by the SE.
+
+```{r mcmc-table, echo = FALSE}
+show_mcmc(m)
+```
+
+In all `r nrow(m)` items, the bssd value is within
+`r fmt(max(abs(m$difference) / m$se), 1)` standard errors of the MCMC value,
+and `r sum(abs(m$difference) / m$se <= 2)` items are within two standard
+errors. The largest absolute difference in a posterior probability is
+`r fmt(max(abs(m$difference[is_prob])))`, while the SEs of the MCMC
+probabilities are between `r fmt(min(m$se[is_prob]))` and
+`r fmt(max(m$se[is_prob]))`. Differences of this size are expected from the
+Monte Carlo error of MCMC alone, so the difference between the numerical
+integration of bssd and MCMC is negligible in practice. The validation script
+judges an item PASS when the difference is at most four standard errors;
+`r sum(v$judgement == "PASS")` of the `r nrow(v)` items are PASS.
+
+## References
+
+Duncan, B. (2026). Robust safety monitoring and signal detection using
+alternatives to the standard Poisson distribution. *Journal of
+Biopharmaceutical Statistics*, 36(2), 227-244.
+<https://doi.org/10.1080/10543406.2024.2395532>
+
+Mukhopadhyay, S., Waterhouse, B., and Hartford, A. (2018). Bayesian
+detection of potential risk using inference on blinded safety data.
+*Pharmaceutical Statistics*, 17(6), 823-834.
+<https://doi.org/10.1002/pst.1898>

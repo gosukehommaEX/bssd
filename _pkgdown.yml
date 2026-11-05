@@ -24,3 +24,12 @@ reference:
   contents:
   - sim_blinded
   - sim_oc
+
+articles:
+- title: Models
+  navbar: Models
+  contents:
+  - bdribs1
+  - bdribs2
+  - expbern
+  - llbern

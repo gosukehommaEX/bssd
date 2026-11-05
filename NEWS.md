@@ -24,6 +24,10 @@
   log-logistic times to the event, and `sim_oc()` estimates the operating
   characteristics of the models by simulation.
 * `print()` and `summary()` methods for the results (class `bssd_post`).
+* Vignettes: an overview (`vignette("bssd")`) and one article for each model
+  (`vignette("bdribs1")`, `vignette("bdribs2")`, `vignette("expbern")` and
+  `vignette("llbern")`) with examples, the accuracy of the numerical
+  integration and the comparison with MCMC.
 * The folder `inst/reproduce` reproduces the numerical results of
   Mukhopadhyay et al. (2018) and Duncan (2026), and `inst/validation`
   compares the package with the bdribs package, with MCMC in JAGS and with

@@ -37,6 +37,17 @@
       <ul class="navbar-nav me-auto">
 <li class="active nav-item"><a class="nav-link" href="../articles/bssd.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Models</h6></li>
+    <li><a class="dropdown-item" href="../articles/bdribs1.html">BDRIBS(1): Poisson model with the total exposure time</a></li>
+    <li><a class="dropdown-item" href="../articles/bdribs2.html">BDRIBS(2): Poisson model with the total time at risk</a></li>
+    <li><a class="dropdown-item" href="../articles/expbern.html">EXP_BERN: exponential Bernoulli mixture model</a></li>
+    <li><a class="dropdown-item" href="../articles/llbern.html">LL_BERN: log-logistic Bernoulli mixture model</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -90,7 +101,11 @@ al. (2018) with the total exposure time or the total time at risk
 Markov chain Monte Carlo (MCMC) sampling. bssd computes them by
 numerical integration, so the results do not depend on a random seed,
 and they are fast enough for simulation studies of the operating
-characteristics (<code><a href="../reference/sim_oc.html">sim_oc()</a></code>).</p>
+characteristics (<code><a href="../reference/sim_oc.html">sim_oc()</a></code>). The articles
+<code><a href="../articles/bdribs1.html">vignette("bdribs1")</a></code>, <code><a href="../articles/bdribs2.html">vignette("bdribs2")</a></code>,
+<code><a href="../articles/expbern.html">vignette("expbern")</a></code> and <code><a href="../articles/llbern.html">vignette("llbern")</a></code>
+describe each model in detail, with examples, the accuracy of the
+numerical integration and the comparison with MCMC.</p>
 </div>
 <div class="section level2">
 <h2 id="models">Models<a class="anchor" aria-label="anchor" href="#models"></a>

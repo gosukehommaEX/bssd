@@ -43,6 +43,16 @@
 - [`print()`](https://rdrr.io/r/base/print.html) and
   [`summary()`](https://rdrr.io/r/base/summary.html) methods for the
   results (class `bssd_post`).
+- Vignettes: an overview
+  ([`vignette("bssd")`](https://gosukehommaex.github.io/bssd/articles/bssd.md))
+  and one article for each model
+  ([`vignette("bdribs1")`](https://gosukehommaex.github.io/bssd/articles/bdribs1.md),
+  [`vignette("bdribs2")`](https://gosukehommaex.github.io/bssd/articles/bdribs2.md),
+  [`vignette("expbern")`](https://gosukehommaex.github.io/bssd/articles/expbern.md)
+  and
+  [`vignette("llbern")`](https://gosukehommaex.github.io/bssd/articles/llbern.md))
+  with examples, the accuracy of the numerical integration and the
+  comparison with MCMC.
 - The folder `inst/reproduce` reproduces the numerical results of
   Mukhopadhyay et al. (2018) and Duncan (2026), and `inst/validation`
   compares the package with the bdribs package, with MCMC in JAGS and

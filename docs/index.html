@@ -39,6 +39,17 @@
       <ul class="navbar-nav me-auto">
 <li class="nav-item"><a class="nav-link" href="articles/bssd.html">Get started</a></li>
 <li class="nav-item"><a class="nav-link" href="reference/index.html">Reference</a></li>
+<li class="nav-item dropdown">
+  <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles">
+<li><hr class="dropdown-divider"></li>
+    <li><h6 class="dropdown-header" data-toc-skip>Models</h6></li>
+    <li><a class="dropdown-item" href="articles/bdribs1.html">BDRIBS(1): Poisson model with the total exposure time</a></li>
+    <li><a class="dropdown-item" href="articles/bdribs2.html">BDRIBS(2): Poisson model with the total time at risk</a></li>
+    <li><a class="dropdown-item" href="articles/expbern.html">EXP_BERN: exponential Bernoulli mixture model</a></li>
+    <li><a class="dropdown-item" href="articles/llbern.html">LL_BERN: log-logistic Bernoulli mixture model</a></li>
+  </ul>
+</li>
 <li class="nav-item"><a class="nav-link" href="news/index.html">Changelog</a></li>
       </ul>
 <ul class="navbar-nav">
@@ -166,7 +177,7 @@
 <span><span class="co">#&gt; BDRIBS2   BDRIBS2 0.8049487  FALSE  3.030938           NA</span></span>
 <span><span class="co">#&gt; EXP_BERN EXP_BERN 0.8202780  FALSE  3.242503 1.814905e-07</span></span>
 <span><span class="co">#&gt; LL_BERN   LL_BERN 0.9351465  FALSE  4.217216 3.733315e-04</span></span></code></pre></div>
-<p><code><a href="articles/bssd.html">vignette("bssd")</a></code> explains the models, the priors of this example and the simulation of the operating characteristics. The documentation is also available at <a href="https://gosukehommaex.github.io/bssd/" class="uri">https://gosukehommaex.github.io/bssd/</a>.</p>
+<p><code><a href="articles/bssd.html">vignette("bssd")</a></code> explains the models, the priors of this example and the simulation of the operating characteristics. The articles <code><a href="articles/bdribs1.html">vignette("bdribs1")</a></code>, <code><a href="articles/bdribs2.html">vignette("bdribs2")</a></code>, <code><a href="articles/expbern.html">vignette("expbern")</a></code> and <code><a href="articles/llbern.html">vignette("llbern")</a></code> describe each model, with examples, the accuracy of the numerical integration and the comparison with MCMC. The documentation is also available at <a href="https://gosukehommaex.github.io/bssd/" class="uri">https://gosukehommaex.github.io/bssd/</a>.</p>
 </div>
 <div class="section level2">
 <h2 id="validation">Validation<a class="anchor" aria-label="anchor" href="#validation"></a>

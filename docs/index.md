@@ -106,8 +106,15 @@ res[, c("model", "prob", "signal", "rr_median", "error")]
 
 [`vignette("bssd")`](https://gosukehommaex.github.io/bssd/articles/bssd.md)
 explains the models, the priors of this example and the simulation of
-the operating characteristics. The documentation is also available at
-<https://gosukehommaex.github.io/bssd/>.
+the operating characteristics. The articles
+[`vignette("bdribs1")`](https://gosukehommaex.github.io/bssd/articles/bdribs1.md),
+[`vignette("bdribs2")`](https://gosukehommaex.github.io/bssd/articles/bdribs2.md),
+[`vignette("expbern")`](https://gosukehommaex.github.io/bssd/articles/expbern.md)
+and
+[`vignette("llbern")`](https://gosukehommaex.github.io/bssd/articles/llbern.md)
+describe each model, with examples, the accuracy of the numerical
+integration and the comparison with MCMC. The documentation is also
+available at <https://gosukehommaex.github.io/bssd/>.
 
 ## Validation
 

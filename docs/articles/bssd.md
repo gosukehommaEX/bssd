@@ -28,6 +28,14 @@ numerical integration, so the results do not depend on a random seed,
 and they are fast enough for simulation studies of the operating
 characteristics
 ([`sim_oc()`](https://gosukehommaex.github.io/bssd/reference/sim_oc.md)).
+The articles
+[`vignette("bdribs1")`](https://gosukehommaex.github.io/bssd/articles/bdribs1.md),
+[`vignette("bdribs2")`](https://gosukehommaex.github.io/bssd/articles/bdribs2.md),
+[`vignette("expbern")`](https://gosukehommaex.github.io/bssd/articles/expbern.md)
+and
+[`vignette("llbern")`](https://gosukehommaex.github.io/bssd/articles/llbern.md)
+describe each model in detail, with examples, the accuracy of the
+numerical integration and the comparison with MCMC.
 
 ## Models
 

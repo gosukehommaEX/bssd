@@ -34,6 +34,10 @@ Mukhopadhyay et al. (2018) computed the posterior distributions by Markov
 chain Monte Carlo (MCMC) sampling. bssd computes them by numerical
 integration, so the results do not depend on a random seed, and they are fast
 enough for simulation studies of the operating characteristics (`sim_oc()`).
+The articles `vignette("bdribs1")`, `vignette("bdribs2")`,
+`vignette("expbern")` and `vignette("llbern")` describe each model in detail,
+with examples, the accuracy of the numerical integration and the comparison
+with MCMC.
 
 ## Models
 
