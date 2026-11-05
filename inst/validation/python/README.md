@@ -2,7 +2,8 @@
 
 These scripts computed the expected values written in `tests/testthat/`
 before the R functions were run, and the reference values used by
-`inst/validation/validate_convergence.R`. They use methods that differ from
+`inst/validation/validate_convergence.R` and
+`inst/validation/validate_sim_oc.R`. They use methods that differ from
 the package (NumPy 2.5 and SciPy 1.18 were used).
 
 | Script | Method | Values used in |
@@ -13,5 +14,6 @@ the package (NumPy 2.5 and SciPy 1.18 were used).
 | `ref_llbern.py` | all four parameters on their prior distribution-function scale, Gauss-Legendre nodes, mu_d split at the threshold of RR(t_star) | `test-llbern_post.R`: probabilities, posterior means and incidences with 48 nodes (the quantile part of this script was not used) |
 | `ref_ll_q.py` | same as `ref_llbern.py` | `test-llbern_post.R`: median and upper limit of RR (32 nodes, run as `python3 ref_ll_q.py median` and `python3 ref_ll_q.py upper`) and the probability for k = 2 (`python3 ref_ll_q.py S2`, 48 nodes) |
 | `ref_llbern_breakpoints.py` | log(mu_p) and log(sigma_p) with Gauss-Legendre nodes; sigma_d on its prior distribution-function scale with panels graded towards zero; mu_d with composite Gauss-Legendre panels whose breakpoints follow the logarithms of the follow-up times and the threshold of RR(t_star); no box refinement and no Chebyshev interpolation | `validate_convergence.R`: data set L1 (`data_llbern_L1.csv`, written by R with `sim_blinded()`); output `ref_llbern_breakpoints.csv`, which also contains the values for the data of `test-llbern_post.R` next to the reference values of `ref_llbern.py` and `ref_ll_q.py`; about 15 minutes |
+| `ref_sim_oc.py` | trials simulated with NumPy from the design of `sim_blinded()`; BDRIBS with the placebo rate integrated out analytically and the Simpson rule over logit(p); EXP_BERN with the Simpson rule over (log(lambda_p), logit(p)) on the region located by a coarse grid; `python3 ref_sim_oc.py check` compares these functions with the reference values of `test-bdribs_post.R` and `test-expbern_post.R` | `validate_sim_oc.R`: Figures 3, 4, 5 and 9 (BDRIBS, 2000 trials) and scenario 5.2 (EXP_BERN, 1000 trials) of `reproduce_Duncan2026_simulation.R`; output `ref_sim_oc.csv`; about 30 minutes |
 
 Run each script from this folder, for example `python3 ref_bdribs.py`.
