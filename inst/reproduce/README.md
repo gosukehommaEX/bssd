@@ -9,6 +9,7 @@ methods are implemented in bssd, with the functions of the package.
 | `reproduce_Duncan2026.R` | Duncan (2026), Journal of Biopharmaceutical Statistics 36(2):227-244: Table 1, the descriptions of the scenarios in Section 4, Figure 1 | a few seconds |
 | `reproduce_Duncan2026_simulation.R` | Duncan (2026): simulations for Figures 2 to 10 and the false positive rates in Section 4.2 (assumptions in the header of the script) | 2 to 3 hours with 1000 simulated trials per scenario on one core; the scenarios can run in parallel (`n_cores`) after `devtools::install()` |
 | `reproduce_Duncan2026_figures.R` | Duncan (2026): figures and judgements from the simulation results | seconds |
+| `reproduce_Duncan2026_prior.R` | Duncan (2026): simulations for Figures 4 to 6 with other priors of BDRIBS and EXP_BERN than in the main simulation, which explain the failed statements D_Q_F5a and D_Q_F6a (settings in the header of the script) | about 30 minutes with 2000 simulated trials per scenario on one core |
 | `summarize.R` | collects the judgements into `results/SUMMARY.md` | seconds |
 
 Run the scripts from the package root after `devtools::load_all()` (or
