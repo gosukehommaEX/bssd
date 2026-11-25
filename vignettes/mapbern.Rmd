@@ -1,0 +1,130 @@
+---
+title: "MAPBERN: meta-analytic predictive prior and mixture likelihood"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{MAPBERN: meta-analytic predictive prior and mixture likelihood}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(bssd)
+```
+
+```{r helpers, include = FALSE}
+res_file <- function(folder, name) {
+  system.file(folder, "results", name, package = "bssd")
+}
+read_results <- function(folder, name) {
+  read.csv(system.file(folder, "results", name, package = "bssd",
+                       mustWork = TRUE), stringsAsFactors = FALSE)
+}
+fmt <- function(x, digits = 4) formatC(x, format = "f", digits = digits)
+fmt_e <- function(x) formatC(x, format = "e", digits = 1)
+count_of <- function(tab, j) sum(tab$judgement == j)
+```
+
+## Model
+
+Brock et al. (2023) estimate the posterior probability that the event
+probability per unit time on study drug, \(\pi_d\), exceeds that on control,
+\(\pi_c\), in an ongoing blinded study. Each subject with time at risk
+\(t_i\) has the event with probability \(1 - (1 - \pi)^{t_i}\) on the arm
+received, and the likelihood of the blinded data is the mixture over the two
+arms weighted by the randomization probabilities. The prior of \(\pi_c\) is
+the meta-analytic predictive (MAP) prior from historical control arms,
+\[
+\pi_j \mid a, b \sim \mathrm{Beta}(a b N, (1 - a) b N), \quad
+a \sim \mathrm{Beta}(1/3, 1/3), \quad b \sim \mathrm{Beta}(5, 5),
+\]
+where \(N\) is the total number of historical subjects, \(a\) is the mean
+event probability and \(b\) discounts the historical information. The prior
+of \(\pi_d\) is Beta(1/3, 1/3).
+
+`map_beta()` integrates the posterior of \((a, b)\) by quadrature, which
+gives the MAP prior as a mixture of Beta distributions, and `mapbern_post()`
+integrates the two-dimensional posterior of \((\pi_c, \pi_d)\). Brock et al.
+(2023) use Stan for both steps and fit a mixture to the MCMC draws of the
+MAP prior. The likelihood is that of the exponential Bernoulli mixture model
+(`expbern_post()`) with hazards \(-\log(1 - \pi)\); only the priors differ.
+
+## Example
+
+```{r map}
+prior <- map_beta(events = c(9, 11, 10), n = c(100, 100, 100))
+attr(prior, "moments")
+nrow(prior)
+head(prior, 3)
+```
+
+```{r fit}
+set.seed(2)
+n <- 200
+drug <- rbinom(n, 1, 0.75)
+y <- rbinom(n, 1, ifelse(drug == 1, 0.18, 0.095))
+fit <- mapbern_post(y, t = rep(1, n), k = 3, prior_c = prior)
+fit
+```
+
+A prior derived with the RBesT package can be used as well: the rows `w`,
+`a` and `b` of a `mixbeta` object are the columns `w`, `shape1` and
+`shape2` of `prior_c`.
+
+```{r rbest, eval = FALSE}
+# mix: a mixbeta object of the RBesT package
+prior_c <- data.frame(w = mix["w", ], shape1 = mix["a", ],
+                      shape2 = mix["b", ])
+```
+
+## Numerical integration and comparison with MCMC
+
+```{r check, include = FALSE}
+v <- read_results("validation", "validate_methods_python.csv")
+vm <- v[grepl("^PY_MAP", v$id), ]
+j <- read_results("validation", "validate_jags_methods.csv")
+jm <- j[grepl("^J2_MAPBERN", j$id), ]
+```
+
+Against independent Python computations (dense composite Gauss-Legendre
+rules split exactly at \(\pi_d = rr_0 \pi_c\) for `mapbern_post()`, and a
+dense grid over \((a, b)\) for `map_beta()`), the largest absolute
+difference of the `r nrow(vm)` compared quantities is
+`r fmt_e(max(vm$abs_diff))`. A JAGS model with the mixture prior and latent
+treatment assignments gives:
+
+```{r mcmc-table, echo = FALSE}
+knitr::kable(data.frame(quantity = jm$quantity, MCMC = fmt(jm$reference),
+                        bssd = fmt(jm$bssd), judgement = jm$judgement),
+             align = "lrrl")
+```
+
+## Reproduction of Brock et al. (2023)
+
+```{r repro, echo = FALSE, results = "asis"}
+f <- res_file("reproduce", "reproduce_Brock2023.csv")
+if (nzchar(f)) {
+  b <- read.csv(f, stringsAsFactors = FALSE)
+  cat("`inst/reproduce/reproduce_Brock2023_simulation.R` repeats the ",
+      "simulation of Tables 1 (common events) and 3 (rare events) for the ",
+      "heterogeneity levels None and High (1000 trials per setting), and ",
+      "`inst/reproduce/reproduce_Brock2023.R` compares the mean of the ",
+      "posterior probability: ", count_of(b, "PASS"), " PASS, ",
+      count_of(b, "EXPLAINED"), " EXPLAINED and ", count_of(b, "FAIL"),
+      " FAIL of ", nrow(b), " settings.\n", sep = "")
+} else {
+  cat("The simulation of Tables 1 and 3 (`inst/reproduce/",
+      "reproduce_Brock2023_simulation.R`) has not been run for this ",
+      "installation.\n", sep = "")
+}
+```
+
+## References
+
+Brock, K., Chen, C., Ho, S., Fuller, G., Woolfolk, J., McShea, C. and
+Penard, N. (2023). A Bayesian method for safety signal detection in ongoing
+blinded randomised controlled trials. *Pharmaceutical Statistics*, 22(2),
+378--395. <https://doi.org/10.1002/pst.2278>

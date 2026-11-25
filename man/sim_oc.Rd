@@ -29,9 +29,13 @@ sim_oc(
 \code{p_prior} of \code{\link{bdribs_post}}, used by \code{"BDRIBS1"} and
 \code{"BDRIBS2"}), \code{expbern} (the same arguments for
 \code{\link{expbern_post}}; \code{bdribs} is used when it is not given)
-and \code{llbern} (arguments \code{mu_hp}, \code{sigma_hp}, \code{pt_hp}
+\code{llbern} (arguments \code{mu_hp}, \code{sigma_hp}, \code{pt_hp}
 and optionally \code{df_p}, \code{mu_d_prior} and \code{sigma_d_prior} of
-\code{\link{llbern_post}}).}
+\code{\link{llbern_post}}), \code{exptime} (arguments \code{prior_c},
+\code{prior_d} and optionally \code{rate0} of
+\code{\link{exptime_post}}) and \code{mapbern} (arguments
+\code{prior_c}, \code{prior_d} and optionally \code{rate0} of
+\code{\link{mapbern_post}}).}
 
 \item{rr0}{Critical value of the relative risk.}
 
@@ -40,10 +44,11 @@ and optionally \code{df_p}, \code{mu_d_prior} and \code{sigma_d_prior} of
 \item{t_star}{Time at which the relative risk of \code{"LL_BERN"} and the
 cumulative incidences are evaluated. Required for \code{"LL_BERN"}.}
 
-\item{control}{List with elements \code{EXP_BERN} and \code{LL_BERN}, the
-\code{control} arguments of \code{\link{expbern_post}} and
-\code{\link{llbern_post}}. By default the convergence check is turned
-off.}
+\item{control}{List with elements \code{EXP_BERN}, \code{LL_BERN},
+\code{EXPTIME} and \code{MAPBERN}, the \code{control} arguments of
+\code{\link{expbern_post}}, \code{\link{llbern_post}},
+\code{\link{exptime_post}} and \code{\link{mapbern_post}}. By default
+the convergence check is turned off.}
 
 \item{seed}{Optional seed passed to \code{\link{set.seed}}.}
 
@@ -81,8 +86,12 @@ difference in cumulative incidence.
 The models are \code{"BDRIBS1"} (\code{\link{bdribs_post}} with the total
 exposure time), \code{"BDRIBS2"} (\code{\link{bdribs_post}} with the total
 time at risk), \code{"EXP_BERN"} (\code{\link{expbern_post}}) and
-\code{"LL_BERN"} (\code{\link{llbern_post}}). The posterior functions are
-called with \code{details = FALSE}. A fit that fails is recorded as
+\code{"LL_BERN"} (\code{\link{llbern_post}}), \code{"EXPTIME"}
+(\code{\link{exptime_post}} with the event indicators and the times at
+risk, which is the exponential model for the time to the first event) and
+\code{"MAPBERN"} (\code{\link{mapbern_post}} with the event indicators and
+the follow-up times). The posterior functions are called with
+\code{details = FALSE}. A fit that fails is recorded as
 \code{NA} and counted in \code{n_failed}, and a warning with the first
 error message is given.
 }

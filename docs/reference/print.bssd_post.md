@@ -31,7 +31,12 @@ print(x, digits = 4, ...)
 
 [`bdribs_post`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md),
 [`expbern_post`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md),
-[`llbern_post`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)
+[`llbern_post`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md),
+[`exptime_post`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md),
+[`binbeta_post`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md),
+[`canary_post`](https://gosukehommaex.github.io/bssd/reference/canary_post.md),
+[`mapbern_post`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md),
+[`multibin_post`](https://gosukehommaex.github.io/bssd/reference/multibin_post.md)
 
 ## Examples
 

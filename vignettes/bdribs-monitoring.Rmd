@@ -1,0 +1,109 @@
+---
+title: "Monitoring with BDRIBS: contour plots, sensitivity and pooled trials"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Monitoring with BDRIBS: contour plots, sensitivity and pooled trials}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>", fig.width = 6,
+                      fig.height = 4)
+```
+
+```{r setup}
+library(bssd)
+```
+
+```{r helpers, include = FALSE}
+read_results <- function(folder, name) {
+  read.csv(system.file(folder, "results", name, package = "bssd",
+                       mustWork = TRUE), stringsAsFactors = FALSE)
+}
+fmt <- function(x, digits = 3) formatC(x, format = "f", digits = digits)
+count_of <- function(tab, j) sum(tab$judgement == j)
+```
+
+Waterhouse et al. (2022) describe how a safety management team uses BDRIBS
+(`vignette("bdribs1")`) in ongoing blinded trials: a contour plot of the
+posterior probability \(P(RR > 1)\) over the numbers of events and the
+patient-years of exposure prepared before the first patient enters the
+trial, a sensitivity analysis over the background rate, and pooling of
+blinded data from several trials with different randomization ratios. The
+examples use a fixed background rate and the Jeffreys prior Beta(0.5, 0.5)
+for \(p\).
+
+## Contour plot
+
+Example 1 of Waterhouse et al. (2022): MACE with a background rate of 3.1
+events per 100 patient-years and randomization 1:1.
+
+```{r grid}
+g <- bdribs_grid(y = 4:10, exposure = seq(40, 240, by = 10),
+                 lambda_hp = 0.031, p_prior = c(0.5, 0.5))
+z <- matrix(g$prob, nrow = 7)
+contour(4:10, seq(40, 240, by = 10), z, levels = c(0.6, 0.7, 0.8, 0.9),
+        xlab = "Number of events", ylab = "Patient-years of exposure")
+```
+
+The probabilities for six and seven events (Figures 3 and 4):
+
+```{r ex1}
+subset(g, y %in% 6:7 & exposure %in% c(80, 100, 140))
+```
+
+## Sensitivity to the background rate
+
+With 10 events in 200 patient-years, the probabilities at the limits of the
+90% credible interval of the background rate from 496 events in 15,730
+patient-years (Figures 5 and 6) are
+
+```{r sens}
+bg <- qgamma(c(0.05, 0.95), 496, 15730)
+bdribs_grid(y = 10, exposure = 200, lambda_hp = bg, p_prior = c(0.5, 0.5))
+```
+
+The background rate can also be given a Gamma prior instead of a fixed
+value (`pt_hp` in `bdribs_post()`).
+
+## Pooled trials
+
+Example 3: trial A with 250 patient-years at 1:1 and trial B with 80
+patient-years at 2:1 are pooled; the effective randomization ratio is the
+ratio of the expected exposures on study drug and on control.
+
+```{r pool}
+k <- pooled_ratio(c(250, 80), c(1, 2))
+k
+bdribs_post(y = 16, exposure = 330, k = k, lambda_hp = 0.031, pt_hp = Inf,
+            p_prior = c(0.5, 0.5))
+```
+
+## Reproduction of Waterhouse et al. (2022)
+
+```{r repro, include = FALSE}
+w <- read_results("reproduce", "reproduce_Waterhouse2022.csv")
+w <- w[w$judgement != "INFO", ]
+```
+
+`inst/reproduce/reproduce_Waterhouse2022.R` compares the probabilities,
+exposures and the pooled randomization ratio given in the text and figures
+(`r count_of(w, "PASS")` PASS, `r count_of(w, "FAIL")` FAIL). The published
+values were read from an R Shiny application that samples by MCMC; the
+tolerance is 0.01 for probabilities given in percent and 0.02 for those
+given as "about" (the other tolerances are in the table).
+
+```{r repro-table, echo = FALSE}
+knitr::kable(data.frame(quantity = w$quantity, published = w$published,
+                        bssd = fmt(w$reproduced), tolerance = w$tolerance,
+                        judgement = w$judgement), align = "lrrrl")
+```
+
+## References
+
+Waterhouse, B., Hartford, A., Mukhopadhyay, S., Ferguson, R. and
+Hendrickson, B. A. (2022). Using the Bayesian detection of potential risk
+using inference on blinded safety data (BDRIBS) method to support the
+decision to refer an event for unblinded evaluation. *Pharmaceutical
+Statistics*, 21(2), 372--385. <https://doi.org/10.1002/pst.2175>

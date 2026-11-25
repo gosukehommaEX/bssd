@@ -10,6 +10,22 @@ Rcpp::Rostream<true>&  Rcpp::Rcout = Rcpp::Rcpp_cout_get();
 Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 #endif
 
+// bernmix_loglik_cpp
+Rcpp::NumericMatrix bernmix_loglik_cpp(const Rcpp::NumericVector& t, const Rcpp::NumericVector& y, const Rcpp::NumericVector& w, const double wc, const Rcpp::NumericVector& hc, const Rcpp::NumericVector& hd);
+RcppExport SEXP _bssd_bernmix_loglik_cpp(SEXP tSEXP, SEXP ySEXP, SEXP wSEXP, SEXP wcSEXP, SEXP hcSEXP, SEXP hdSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type t(tSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type w(wSEXP);
+    Rcpp::traits::input_parameter< const double >::type wc(wcSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type hc(hcSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type hd(hdSEXP);
+    rcpp_result_gen = Rcpp::wrap(bernmix_loglik_cpp(t, y, w, wc, hc, hd));
+    return rcpp_result_gen;
+END_RCPP
+}
 // expbern_loglik_cpp
 Rcpp::NumericMatrix expbern_loglik_cpp(const Rcpp::NumericVector& t, const Rcpp::IntegerVector& y, const double wp, const Rcpp::NumericVector& lambda, const Rcpp::NumericVector& r);
 RcppExport SEXP _bssd_expbern_loglik_cpp(SEXP tSEXP, SEXP ySEXP, SEXP wpSEXP, SEXP lambdaSEXP, SEXP rSEXP) {
@@ -42,10 +58,28 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// mixpois_loglik_cpp
+Rcpp::NumericMatrix mixpois_loglik_cpp(const Rcpp::NumericVector& t, const Rcpp::NumericVector& y, const Rcpp::NumericVector& w, const double wc, const Rcpp::NumericVector& lc, const Rcpp::NumericVector& ld);
+RcppExport SEXP _bssd_mixpois_loglik_cpp(SEXP tSEXP, SEXP ySEXP, SEXP wSEXP, SEXP wcSEXP, SEXP lcSEXP, SEXP ldSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type t(tSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type w(wSEXP);
+    Rcpp::traits::input_parameter< const double >::type wc(wcSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type lc(lcSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type ld(ldSEXP);
+    rcpp_result_gen = Rcpp::wrap(mixpois_loglik_cpp(t, y, w, wc, lc, ld));
+    return rcpp_result_gen;
+END_RCPP
+}
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_bssd_bernmix_loglik_cpp", (DL_FUNC) &_bssd_bernmix_loglik_cpp, 6},
     {"_bssd_expbern_loglik_cpp", (DL_FUNC) &_bssd_expbern_loglik_cpp, 5},
     {"_bssd_llbern_loglik_cpp", (DL_FUNC) &_bssd_llbern_loglik_cpp, 7},
+    {"_bssd_mixpois_loglik_cpp", (DL_FUNC) &_bssd_mixpois_loglik_cpp, 6},
     {NULL, NULL, 0}
 };
 

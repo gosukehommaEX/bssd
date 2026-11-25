@@ -7,7 +7,9 @@
 #' @return \code{x}, invisibly.
 #'
 #' @seealso \code{\link{bdribs_post}}, \code{\link{expbern_post}},
-#'   \code{\link{llbern_post}}
+#'   \code{\link{llbern_post}}, \code{\link{exptime_post}},
+#'   \code{\link{binbeta_post}}, \code{\link{canary_post}},
+#'   \code{\link{mapbern_post}}, \code{\link{multibin_post}}
 #'
 #' @examples
 #' fit <- bdribs_post(y = 5, exposure = 500, k = 2, lambda_hp = 18 / 4000,
@@ -18,7 +20,9 @@
 print.bssd_post <- function(x, digits = 4, ...) {
   f <- function(v) format(signif(v, digits))
   cat("Model:", x$model, "\n")
-  if (!is.null(x$t_star) && x$model == "LL_BERN") {
+  if (!is.null(x$description)) {
+    cat(x$description, "\n", sep = "")
+  } else if (!is.null(x$t_star) && x$model == "LL_BERN") {
     cat("Relative risk: ratio of cumulative incidences at t_star =",
         f(x$t_star), "\n")
   } else {
@@ -28,10 +32,17 @@ print.bssd_post <- function(x, digits = 4, ...) {
       sep = "")
   cat("Signal (posterior probability > ", f(x$cutoff), "): ",
       if (x$signal) "yes" else "no", "\n", sep = "")
-  cat("Posterior of ", x$rr_label, ": mean ", f(x$rr["mean"]),
+  rr_name <- if (is.null(x$rr_name)) x$rr_label else x$rr_name
+  cat("Posterior of ", rr_name, ": mean ", f(x$rr["mean"]),
       ", median ", f(x$rr["median"]), ", ", f(100 * x$level),
       "% interval (", f(x$rr["lower"]), ", ", f(x$rr["upper"]), ")\n",
       sep = "")
+  if (!is.null(x$rate)) {
+    cat("Posterior of ", x$rate_name, ": mean ", f(x$rate["mean"]),
+        ", median ", f(x$rate["median"]), ", ", f(100 * x$level),
+        "% interval (", f(x$rate["lower"]), ", ", f(x$rate["upper"]),
+        ")\n", sep = "")
+  }
   if (!is.null(x$incidence)) {
     cat("Cumulative incidence at t_star = ", f(x$t_star), ": placebo ",
         f(x$incidence["placebo"]), ", study drug ", f(x$incidence["drug"]),

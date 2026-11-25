@@ -7,13 +7,21 @@
 \title{bssd: Bayesian Safety Signal Detection for Blinded Clinical Trial Data}
 \description{
 The package computes the posterior probability of a safety signal from
-blinded clinical trial data with the models examined by Duncan (2026):
-the BDRIBS model of Mukhopadhyay et al. (2018) with the total exposure time
-or the total time at risk (\code{\link{bdribs_post}}), the exponential
-Bernoulli mixture model (\code{\link{expbern_post}}), and the log-logistic
-Bernoulli mixture model (\code{\link{llbern_post}}). All posterior
-quantities are obtained by numerical integration, so no Markov chain Monte
-Carlo sampling is needed.
+blinded clinical trial data. It implements the models examined by Duncan
+(2026): the BDRIBS model of Mukhopadhyay et al. (2018) with the total
+exposure time or the total time at risk (\code{\link{bdribs_post}}), the
+exponential Bernoulli mixture model (\code{\link{expbern_post}}), and the
+log-logistic Bernoulli mixture model (\code{\link{llbern_post}}). It also
+implements the exposure-time Poisson model of Schnell and Ball (2016)
+(\code{\link{exptime_post}}), the binomial model of Ball and Schnell
+(2016) (\code{\link{binbeta_post}}), the method of Gould and Wang (2017)
+(\code{\link{canary_post}}), the meta-analytic predictive prior and
+mixture likelihood of Brock et al. (2023) (\code{\link{map_beta}},
+\code{\link{mapbern_post}}), the model of Goren et al. (2020) for several
+studies (\code{\link{multibin_post}}), and the tools of Waterhouse et al.
+(2022) for BDRIBS (\code{\link{pooled_ratio}}, \code{\link{bdribs_grid}}).
+All posterior quantities are obtained by numerical integration, so no
+Markov chain Monte Carlo sampling is needed.
 }
 \references{
 Duncan, B. (2026). Robust safety monitoring and signal detection using

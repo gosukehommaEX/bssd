@@ -11,13 +11,13 @@ Source:
 [`DESCRIPTION`](https://github.com/gosukehommaEX/bssd/blob/HEAD/DESCRIPTION)
 
 Homma G (2026). *bssd: Bayesian Safety Signal Detection for Blinded
-Clinical Trial Data*. R package version 0.1.0,
+Clinical Trial Data*. R package version 0.2.0,
 <https://github.com/gosukehommaEX/bssd>.
 
     @Manual{,
       title = {bssd: Bayesian Safety Signal Detection for Blinded Clinical Trial Data},
       author = {Gosuke Homma},
       year = {2026},
-      note = {R package version 0.1.0},
+      note = {R package version 0.2.0},
       url = {https://github.com/gosukehommaEX/bssd},
     }

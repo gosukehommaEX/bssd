@@ -4,10 +4,11 @@
 # bssd
 
 bssd computes the posterior probability of a safety signal from blinded
-clinical trial data with the models examined by Duncan (2026). The
-posterior quantities are obtained by numerical integration instead of
-Markov chain Monte Carlo (MCMC) sampling, so the results do not depend
-on a random seed and are fast enough for simulation studies.
+clinical trial data with the models examined by Duncan (2026) and with
+other published methods for blinded data. The posterior quantities are
+obtained by numerical integration instead of Markov chain Monte Carlo
+(MCMC) sampling, so the results do not depend on a random seed and are
+fast enough for simulation studies.
 
 ## Models and functions
 
@@ -31,6 +32,24 @@ Other functions:
   of the log-logistic distribution.
 - `sim_blinded()`: simulation of blinded trial data.
 - `sim_oc()`: operating characteristics of the models by simulation.
+
+## Further methods
+
+| Method | Data | Function | Tested quantity |
+|----|----|----|----|
+| Exposure-time Poisson model (Schnell and Ball, 2016) | number of events and follow-up time of each subject | `exptime_post()` | study drug rate or rate ratio |
+| Binomial model (Ball and Schnell, 2016) | numbers of subjects and of subjects with the event | `binbeta_post()` | study drug proportion or ratio |
+| Meta-analysis of several studies (Goren et al., 2020) | the same, for each study | `multibin_post()` | common rate ratio |
+| Canary in the coal mine (Gould and Wang, 2017) | total event count, with external control data | `canary_post()` | ratio, difference or odds ratio |
+| MAP prior and mixture likelihood (Brock et al., 2023) | event indicator and time at risk of each subject, historical control arms | `mapbern_post()`, `map_beta()` | ratio of the event probabilities |
+| BDRIBS monitoring (Waterhouse et al., 2022) | as BDRIBS, on grids of data and for pooled trials | `bdribs_grid()`, `pooled_ratio()` | rate ratio |
+
+- `signal_count()`: smallest event count with a signal for a number of
+  subjects (decision boundaries and control charts).
+- `count_oc()`: exact probability that the event count reaches the
+  boundary.
+- `elicit_prior()`: parameters of a Gamma, Beta or lognormal prior from
+  two quantiles.
 
 ## Installation
 
@@ -100,23 +119,29 @@ res[, c("model", "prob", "signal", "rr_median", "error")]
 the simulation of the operating characteristics. The articles
 `vignette("bdribs1")`, `vignette("bdribs2")`, `vignette("expbern")` and
 `vignette("llbern")` describe each model, with examples, the accuracy of
-the numerical integration and the comparison with MCMC. The
-documentation is also available at
+the numerical integration and the comparison with MCMC;
+`vignette("exptime")`, `vignette("binbeta")`, `vignette("canary")`,
+`vignette("mapbern")` and `vignette("bdribs-monitoring")` describe the
+further methods. The documentation is also available at
 <https://gosukehommaex.github.io/bssd/>.
 
 ## Validation
 
-- `tests/testthat` has 24 test files with 48 `test_that()` blocks. Their
-  expected values were computed beforehand by independent Python
-  implementations (`inst/validation/python`).
+- `tests/testthat` has 39 test files with 92 `testthat::test_that()`
+  blocks. Their expected values were computed beforehand by independent
+  Python implementations (`inst/validation/python`).
 - [`inst/reproduce`](https://github.com/gosukehommaEX/bssd/tree/main/inst/reproduce)
-  reproduces the numerical results of Mukhopadhyay et al. (2018) and
-  Duncan (2026): tables, worked examples and simulations.
+  reproduces the numerical results of Mukhopadhyay et al. (2018), Duncan
+  (2026), Schnell and Ball (2016), Gould and Wang (2017), Brock et al.
+  (2023), Goren et al. (2020) and Waterhouse et al. (2022): tables,
+  worked examples and simulations.
 - [`inst/validation`](https://github.com/gosukehommaEX/bssd/tree/main/inst/validation)
   compares `bdribs_post()` with the bdribs package, `expbern_post()` and
   `llbern_post()` with MCMC in JAGS, the default integration grids with
   finer grids and with an independent Python implementation, and
-  `sim_oc()` with an independent Python simulation.
+  `sim_oc()` with an independent Python simulation. The further methods
+  are compared with independent Python computations and with MCMC in
+  JAGS.
 
 Each item is judged as PASS (agreement within the tolerance), EXPLAINED
 (a difference whose reason is registered), FAIL (a difference without a
@@ -127,10 +152,17 @@ registered reason) or INFO (no value to compare with):
 | reproduce_Duncan2026.csv            |   15 |         6 |    0 |    7 |
 | reproduce_Duncan2026_prior.csv      |   23 |         6 |    0 |    0 |
 | reproduce_Duncan2026_simulation.csv |   14 |         4 |    0 |  113 |
+| reproduce_Goren2020.csv             |   12 |         0 |    0 |    0 |
+| reproduce_Gould2017.csv             |   71 |        17 |    0 |    0 |
 | reproduce_Mukhopadhyay2018.csv      |   82 |         4 |    0 |    1 |
+| reproduce_Schnell2016.csv           |   27 |         3 |    1 |   16 |
+| reproduce_Waterhouse2022.csv        |   11 |         0 |    1 |    2 |
 | validate_bdribs_package.csv         |   35 |         0 |    0 |    0 |
 | validate_convergence.csv            |   19 |         0 |    0 |    0 |
+| validate_gould2017_author_grid.csv  |   28 |         0 |    0 |    0 |
 | validate_jags.csv                   |   24 |         0 |    0 |    3 |
+| validate_jags_methods.csv           |   16 |         0 |    0 |    1 |
+| validate_methods_python.csv         |  110 |         0 |    0 |    0 |
 | validate_sim_oc.csv                 |   29 |         0 |    0 |    0 |
 
 The reasons for the EXPLAINED items are listed in
@@ -138,12 +170,44 @@ The reasons for the EXPLAINED items are listed in
 
 ## References
 
+Ball, G. and Schnell, P. M. (2016). Blinded safety signal monitoring for
+the FDA IND reporting final rule. In J. Lin et al. (eds.), *Statistical
+Applications from Clinical Trials and Personalized Medicine to Finance
+and Business Analytics*, ICSA Book Series in Statistics, 201-209.
+Springer, Cham. <https://doi.org/10.1007/978-3-319-42568-9_17>
+
+Brock, K., Chen, C., Ho, S., Fuller, G., Woolfolk, J., McShea, C. and
+Penard, N. (2023). A Bayesian method for safety signal detection in
+ongoing blinded randomised controlled trials. *Pharmaceutical
+Statistics*, 22(2), 378-395. <https://doi.org/10.1002/pst.2278>
+
 Duncan, B. (2026). Robust safety monitoring and signal detection using
 alternatives to the standard Poisson distribution. *Journal of
 Biopharmaceutical Statistics*, 36(2), 227-244.
 <https://doi.org/10.1080/10543406.2024.2395532>
 
+Goren, E., Lin, L.-A., Blaustein, R. O. and Ball, G. (2020). Bayesian
+meta-analysis of safety outcomes using blinded clinical trial data.
+*Therapeutic Innovation & Regulatory Science*, 54, 1557-1565.
+<https://doi.org/10.1007/s43441-020-00183-7>
+
+Gould, A. L. and Wang, W. B. (2017). Monitoring potential adverse event
+rate differences using data from blinded trials: the canary in the coal
+mine. *Statistics in Medicine*, 36(1), 92-104.
+<https://doi.org/10.1002/sim.7129>
+
 Mukhopadhyay, S., Waterhouse, B., and Hartford, A. (2018). Bayesian
 detection of potential risk using inference on blinded safety data.
 *Pharmaceutical Statistics*, 17(6), 823-834.
 <https://doi.org/10.1002/pst.1898>
+
+Schnell, P. M. and Ball, G. (2016). A Bayesian exposure-time method for
+clinical trial safety monitoring with blinded data. *Therapeutic
+Innovation & Regulatory Science*, 50(6), 833-838.
+<https://doi.org/10.1177/2168479016656702>
+
+Waterhouse, B., Hartford, A., Mukhopadhyay, S., Ferguson, R. and
+Hendrickson, B. A. (2022). Using the Bayesian detection of potential
+risk using inference on blinded safety data (BDRIBS) method to support
+the decision to refer an event for unblinded evaluation. *Pharmaceutical
+Statistics*, 21(2), 372-385. <https://doi.org/10.1002/pst.2175>

@@ -1,5 +1,67 @@
 # Changelog
 
+## bssd 0.2.0
+
+- New functions for other published methods for blinded safety data, all
+  computed by numerical integration and returning class `bssd_post`:
+  - [`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md):
+    the exposure-time Poisson model of Schnell and Ball (2016) with
+    subject-level event counts and follow-up times.
+  - [`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md):
+    the binomial model of Ball and Schnell (2016) with the numbers of
+    enrolled subjects and of subjects with the event.
+  - [`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md):
+    the method of Gould and Wang (2017) for the total event count, with
+    the ratio, the difference or the odds ratio as the metric and a
+    binomial or Poisson likelihood.
+  - [`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md)
+    and
+    [`map_beta()`](https://gosukehommaex.github.io/bssd/reference/map_beta.md):
+    the meta-analytic predictive prior from historical control arms and
+    the mixture likelihood of Brock et al. (2023).
+  - [`multibin_post()`](https://gosukehommaex.github.io/bssd/reference/multibin_post.md):
+    the meta-analysis of several blinded studies of Goren et al. (2020)
+    with a common rate ratio.
+- [`bdribs_grid()`](https://gosukehommaex.github.io/bssd/reference/bdribs_grid.md)
+  and
+  [`pooled_ratio()`](https://gosukehommaex.github.io/bssd/reference/pooled_ratio.md):
+  the contour plots and the pooled randomization ratio of Waterhouse et
+  al. (2022) for BDRIBS.
+- [`signal_count()`](https://gosukehommaex.github.io/bssd/reference/signal_count.md)
+  gives the smallest event count with a signal for a number of subjects
+  ([`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md)
+  or
+  [`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md)),
+  [`count_oc()`](https://gosukehommaex.github.io/bssd/reference/count_oc.md)
+  the exact probability that the event count reaches it, and
+  [`elicit_prior()`](https://gosukehommaex.github.io/bssd/reference/elicit_prior.md)
+  the parameters of a Gamma, Beta or lognormal prior from two quantiles.
+- [`sim_oc()`](https://gosukehommaex.github.io/bssd/reference/sim_oc.md)
+  also runs the models `"EXPTIME"` and `"MAPBERN"`.
+- [`print()`](https://rdrr.io/r/base/print.html) shows the tested
+  quantity of the new models and, for
+  [`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md),
+  [`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md)
+  and
+  [`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md),
+  the posterior of the study drug rate or proportion.
+- Vignettes
+  [`vignette("exptime")`](https://gosukehommaex.github.io/bssd/articles/exptime.md),
+  [`vignette("binbeta")`](https://gosukehommaex.github.io/bssd/articles/binbeta.md),
+  [`vignette("canary")`](https://gosukehommaex.github.io/bssd/articles/canary.md),
+  [`vignette("mapbern")`](https://gosukehommaex.github.io/bssd/articles/mapbern.md)
+  and
+  [`vignette("bdribs-monitoring")`](https://gosukehommaex.github.io/bssd/articles/bdribs-monitoring.md);
+  [`vignette("bssd")`](https://gosukehommaex.github.io/bssd/articles/bssd.md)
+  lists the methods, and
+  [`vignette("llbern")`](https://gosukehommaex.github.io/bssd/articles/llbern.md)
+  explains that the lower limit of the credible interval of the relative
+  risk can be unstable.
+- `inst/reproduce` reproduces results of Schnell and Ball (2016), Gould
+  and Wang (2017), Brock et al. (2023), Goren et al. (2020) and
+  Waterhouse et al. (2022), and `inst/validation` compares the new
+  functions with independent Python computations and with MCMC in JAGS.
+
 ## bssd 0.1.0
 
 - First version.

@@ -2,6 +2,9 @@
 ^\.Rproj\.user$
 ^inst/reproduce/results/Duncan2026_simulation\.rds$
 ^inst/reproduce/results/Duncan2026_prior\.rds$
+^inst/reproduce/results/Schnell2016_simulation\.rds$
+^inst/reproduce/results/Brock2023_simulation\.rds$
+^inst/reproduce/results/Goren2020_simulation\.rds$
 ^README\.Rmd$
 ^_pkgdown\.yml$
 ^docs$

@@ -1,0 +1,160 @@
+---
+title: "BINBETA and MULTIBIN: blinded binomial models"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{BINBETA and MULTIBIN: blinded binomial models}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(bssd)
+```
+
+```{r helpers, include = FALSE}
+res_file <- function(folder, name) {
+  system.file(folder, "results", name, package = "bssd")
+}
+read_results <- function(folder, name) {
+  read.csv(system.file(folder, "results", name, package = "bssd",
+                       mustWork = TRUE), stringsAsFactors = FALSE)
+}
+fmt <- function(x, digits = 4) formatC(x, format = "f", digits = digits)
+fmt_e <- function(x) formatC(x, format = "e", digits = 1)
+count_of <- function(tab, j) sum(tab$judgement == j)
+```
+
+## One study: Ball and Schnell (2016)
+
+With \(N\) enrolled subjects of whom \(Z\) had the event, the number on
+control is \(M_c \sim \mathrm{Binomial}(N, 1 / (k + 1))\), the numbers with
+the event are \(Y_c \sim \mathrm{Binomial}(M_c, \theta_c)\) and
+\(Y_d \sim \mathrm{Binomial}(N - M_c, \theta_d)\), \(Z = Y_c + Y_d\), and the
+proportions have Beta priors. Summing over \(M_c\) gives
+\(Z \sim \mathrm{Binomial}(N, (\theta_c + k \theta_d) / (k + 1))\), so the
+posterior of \((\theta_c, \theta_d)\) is two-dimensional. `binbeta_post()`
+integrates it numerically; Ball and Schnell (2016) raise a signal when the
+posterior probability that \(\theta_d\) exceeds the maximum acceptable
+proportion is larger than a threshold.
+
+```{r binbeta}
+fit <- binbeta_post(y = 40, n = 300, k = 1, prior_c = c(31, 271),
+                    prior_d = c(1, 1), p0 = 0.15, cutoff = 0.8)
+fit
+```
+
+Before the trial, the largest acceptable number of subjects with the event
+can be computed for each number of enrolled subjects (Figure 1 of Ball and
+Schnell, 2016); `signal_count()` returns the smallest number with a signal,
+which is one more than the largest acceptable number.
+
+```{r boundary}
+signal_count(n = c(50, 100, 200, 300), method = "binbeta",
+             prior_c = c(31, 271), prior_d = c(1, 1), p0 = 0.15,
+             cutoff = 0.8)
+```
+
+```{r binbeta-check, include = FALSE}
+v <- read_results("validation", "validate_methods_python.csv")
+vb <- v[grepl("^PY_BINBETA", v$id), ]
+```
+
+The binomial expansion of the likelihood makes the posterior a finite
+mixture of products of Beta distributions, which gives exact values. The
+largest absolute difference of the `r nrow(vb)` compared quantities from
+these exact values (`inst/validation/validate_methods_python.R`, relative
+tolerance 1e-5) is `r fmt_e(max(vb$abs_diff))`.
+
+## Several studies: Goren et al. (2020)
+
+For several blinded studies, Goren et al. (2020) assume
+\(Y_s \sim \mathrm{Binomial}(N_s, \theta_s (1 - r_s + r_s \delta))\) with
+study-specific control probabilities \(\theta_s \sim \mathrm{Beta}(a_s, b_s)\),
+a common rate ratio with \(\log \delta \sim N(m, v^2)\), and
+\(\theta_s \le 1 / \delta\). Given \(\delta\), each \(\theta_s\) is integrated
+out separately, so the posterior of \(\delta\) is one-dimensional and
+`multibin_post()` integrates it without MCMC.
+
+The real data of Goren et al. (2020, Table 3) are eight studies; the
+homogeneous control prior is from 20 events among 1687 control patients of a
+previous trial.
+
+```{r multibin}
+y <- c(8, 4, 5, 6, 20, 2, 7, 39)
+n <- c(354, 305, 307, 582, 244, 68, 307, 1612)
+k <- c(2, 2, 1, 1, 2, 1, 2, 1)
+fit <- multibin_post(y, n, k = k, prior_c = c(20, 1667), rr0 = 2)
+fit
+```
+
+```{r goren, include = FALSE}
+g <- read_results("reproduce", "reproduce_Goren2020.csv")
+```
+
+`inst/reproduce/reproduce_Goren2020.R` compares the posterior probabilities
+of Table 4 (homogeneous and heterogeneous priors, all studies and without
+study 5), which the authors computed by Hamiltonian Monte Carlo:
+
+```{r goren-table, echo = FALSE}
+knitr::kable(data.frame(quantity = g$quantity, published = fmt(g$published, 3),
+                        bssd = fmt(g$reproduced, 3),
+                        tolerance = fmt(g$tolerance, 4),
+                        judgement = g$judgement), align = "lrrrl")
+```
+
+```{r goren-table2, echo = FALSE, results = "asis"}
+f2 <- res_file("reproduce", "reproduce_Goren2020_table2.csv")
+if (nzchar(f2)) {
+  g2 <- read.csv(f2, stringsAsFactors = FALSE)
+  cat("The coverage of the 95% credible intervals in the simulation of ",
+      "Table 2 (`inst/reproduce/reproduce_Goren2020_simulation.R`) gives ",
+      count_of(g2, "PASS"), " PASS, ", count_of(g2, "EXPLAINED"),
+      " EXPLAINED and ", count_of(g2, "FAIL"), " FAIL items.\n", sep = "")
+} else {
+  cat("The simulation of Table 2 (`inst/reproduce/",
+      "reproduce_Goren2020_simulation.R`) has not been run for this ",
+      "installation.\n", sep = "")
+}
+```
+
+```{r multibin-check, include = FALSE}
+vm <- v[grepl("^PY_MULTIBIN", v$id), ]
+```
+
+Against nested adaptive quadrature in Python, the largest absolute
+difference of the `r nrow(vm)` compared quantities is
+`r fmt_e(max(vm$abs_diff))`.
+
+## Comparison with MCMC
+
+```{r mcmc, include = FALSE}
+j <- read_results("validation", "validate_jags_methods.csv")
+j <- j[grepl("^J2_(BINBETA|MULTIBIN)", j$id) & j$judgement != "INFO", ]
+```
+
+```{r mcmc-table, echo = FALSE}
+knitr::kable(data.frame(model = j$source, quantity = j$quantity,
+                        MCMC = fmt(j$reference), bssd = fmt(j$bssd),
+                        judgement = j$judgement), align = "llrrl")
+```
+
+The JAGS models are in `inst/validation/validate_jags_methods.R`; for
+BINBETA, the number on control and the numbers with the event in each arm
+are latent variables.
+
+## References
+
+Ball, G. and Schnell, P. M. (2016). Blinded safety signal monitoring for the
+FDA IND reporting final rule. In J. Lin et al. (eds.), *Statistical
+Applications from Clinical Trials and Personalized Medicine to Finance and
+Business Analytics*, ICSA Book Series in Statistics, 201--209. Springer,
+Cham. <https://doi.org/10.1007/978-3-319-42568-9_17>
+
+Goren, E., Lin, L.-A., Blaustein, R. O. and Ball, G. (2020). Bayesian
+meta-analysis of safety outcomes using blinded clinical trial data.
+*Therapeutic Innovation & Regulatory Science*, 54, 1557--1565.
+<https://doi.org/10.1007/s43441-020-00183-7>

@@ -15,6 +15,29 @@ reference:
   - llbern_post
   - print.bssd_post
   - summary.bssd_post
+- title: Further methods for blinded data
+  desc: >
+    Posterior distributions under the methods of Schnell and Ball (2016),
+    Ball and Schnell (2016), Goren et al. (2020), Gould and Wang (2017) and
+    Brock et al. (2023).
+  contents:
+  - exptime_post
+  - binbeta_post
+  - multibin_post
+  - canary_post
+  - mapbern_post
+  - map_beta
+- title: Monitoring tools
+  desc: >
+    Grids of BDRIBS results, pooled trials, decision boundaries for event
+    counts and their exact operating characteristics, and elicitation of
+    priors.
+  contents:
+  - bdribs_grid
+  - pooled_ratio
+  - signal_count
+  - count_oc
+  - elicit_prior
 - title: Exposure and the log-logistic distribution
   contents:
   - time_at_risk
@@ -33,3 +56,11 @@ articles:
   - bdribs2
   - expbern
   - llbern
+- title: Further methods
+  navbar: Further methods
+  contents:
+  - exptime
+  - binbeta
+  - canary
+  - mapbern
+  - bdribs-monitoring

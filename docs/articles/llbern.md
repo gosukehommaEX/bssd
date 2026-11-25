@@ -128,7 +128,11 @@ vapply(c(1, 1.5, 2), function(q) {
 
 The posterior distribution of \\RR(t^\*)\\ can have a heavy right tail,
 so the posterior median is a more stable summary than the posterior
-mean.
+mean. The lower limit of the credible interval is unstable as well: it
+can be extremely small (here 5.798e-28), because the study drug
+incidence at \\t^\*\\ tends to 0 in the tail of the prior of \\\mu_d\\,
+which the blinded data hardly restrict. The posterior median and the
+upper limit of the interval are the summaries to use.
 
 ## Numerical integration
 

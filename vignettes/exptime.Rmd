@@ -1,0 +1,190 @@
+---
+title: "EXPTIME: exposure-time Poisson model"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{EXPTIME: exposure-time Poisson model}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(collapse = TRUE, comment = "#>")
+```
+
+```{r setup}
+library(bssd)
+```
+
+```{r helpers, include = FALSE}
+# results of the installed reproduction and validation scripts
+res_file <- function(folder, name) {
+  system.file(folder, "results", name, package = "bssd")
+}
+read_results <- function(folder, name) {
+  read.csv(system.file(folder, "results", name, package = "bssd",
+                       mustWork = TRUE), stringsAsFactors = FALSE)
+}
+fmt <- function(x, digits = 4) formatC(x, format = "f", digits = digits)
+fmt_e <- function(x) formatC(x, format = "e", digits = 1)
+count_of <- function(tab, j) sum(tab$judgement == j)
+```
+
+## Model
+
+Schnell and Ball (2016) monitor the rate of an adverse event of special
+interest with blinded data: for each enrolled subject, the follow-up time
+\(t_i\) and the number of events \(y_i\). With the unknown treatment
+assignment \(a_i\) (1 for study drug),
+\[
+Y_i \mid a_i \sim \mathrm{Poisson}(\lambda_{a_i} t_i), \quad
+a_i \sim \mathrm{Bernoulli}(k / (k + 1)), \quad
+\lambda_c \sim \mathrm{Gamma}(\alpha_c, \beta_c), \quad
+\lambda_d \sim \mathrm{Gamma}(\alpha_d, \beta_d),
+\]
+where \(k\) is the randomization ratio of study drug to control. The prior
+of the control rate is informative (from historical control data), and the
+prior of the study drug rate is weaker. A safety signal is raised when the
+posterior probability that \(\lambda_d\) exceeds a critical rate is larger
+than a threshold.
+
+Summing over the assignment of each subject gives the likelihood
+\[
+\prod_i \left[ \frac{1}{k + 1} \lambda_c^{y_i} e^{-\lambda_c t_i} +
+\frac{k}{k + 1} \lambda_d^{y_i} e^{-\lambda_d t_i} \right],
+\]
+so the posterior is two-dimensional. Schnell and Ball (2016) sample it by
+Gibbs sampling; `exptime_post()` integrates it numerically. With event
+indicators as `y` and the times at risk (up to the first event) as `t`, the
+model is the exponential model for the time to the first event, which is how
+`sim_oc()` uses it (model `"EXPTIME"`).
+
+## Example
+
+The priors of the case study of Schnell and Ball (2016): 339 events in
+26,064 person-months of historical control data, and for the study drug the
+same data discounted to one hundredth plus 4 events in 167 person-months
+from a phase 2 study. The critical rate is 20% above the control rate
+0.013, and the threshold is 0.62.
+
+```{r data}
+set.seed(1)
+n <- 600
+t <- runif(n, 2, 18)
+drug <- rbinom(n, 1, 2 / 3)
+y <- rpois(n, ifelse(drug == 1, 0.016, 0.011) * t)
+c(subjects = n, events = sum(y), person_months = round(sum(t)))
+```
+
+```{r fit}
+fit <- exptime_post(y, t, k = 2, prior_c = c(339, 26064),
+                    prior_d = c(339 / 100 + 4, 26064 / 100 + 167),
+                    rate0 = 1.2 * 0.013, cutoff = 0.62)
+fit
+```
+
+The posterior probability of the rate ratio is also returned:
+
+```{r probs}
+fit$probs
+```
+
+Priors can be elicited from two quantiles with `elicit_prior()`; for
+example, 50% sure that a rate is below 0.5 and 75% sure that it is below 2:
+
+```{r elicit}
+elicit_prior(c(0.5, 2), c(0.5, 0.75), "gamma")
+```
+
+## Numerical integration
+
+```{r integration, include = FALSE}
+v <- read_results("validation", "validate_methods_python.csv")
+ve <- v[grepl("^PY_EXPTIME", v$id), ]
+pe <- ve[grepl("prob", ve$id), ]
+```
+
+The posterior is integrated on the coordinates \(\log \lambda_c\)
+(Gauss-Legendre quadrature) and the prior distribution function of
+\(\lambda_d\) (Chebyshev interpolation), after a coarse grid has located the
+region of the posterior mass. The posterior probability of a threshold that
+depends on \(\lambda_c\) (such as the rate ratio) is obtained from the
+Chebyshev series of each row of the grid. Compared with independent Python
+computations on dense grids split exactly at the thresholds
+(`inst/validation/validate_methods_python.R`), the largest absolute
+difference of the `r nrow(pe)` posterior probabilities is
+`r fmt_e(max(pe$abs_diff))`, and all `r nrow(ve)` compared quantities are
+`r if (all(ve$judgement == "PASS")) "PASS" else "not all PASS"`.
+
+## Comparison with MCMC
+
+```{r mcmc, include = FALSE}
+j <- read_results("validation", "validate_jags_methods.csv")
+je <- j[grepl("^J2_EXPTIME", j$id), ]
+```
+
+A JAGS model with the latent treatment assignments
+(`inst/validation/validate_jags_methods.R`, 4 chains of 50,000 draws) gives
+the following results for a data set of 60 subjects.
+
+```{r mcmc-table, echo = FALSE}
+knitr::kable(data.frame(quantity = je$quantity, MCMC = fmt(je$reference),
+                        bssd = fmt(je$bssd), judgement = je$judgement),
+             align = "lrrl")
+```
+
+## Reproduction of Schnell and Ball (2016)
+
+```{r repro, include = FALSE}
+r2 <- read_results("reproduce", "reproduce_Schnell2016.csv")
+```
+
+`inst/reproduce/reproduce_Schnell2016.R` generates the simulated case study
+with the data generation of the authors' code and seed 1, and compares
+Table 2 and the prior elicitation example: `r count_of(r2, "PASS")` PASS,
+`r count_of(r2, "EXPLAINED")` EXPLAINED, `r count_of(r2, "FAIL")` FAIL and
+`r count_of(r2, "INFO")` INFO. The posterior summaries in Table 2 are
+Monte Carlo estimates of the authors' Gibbs sampler, whose Metropolis step
+uses Poisson probabilities of the arm totals; bssd computes the posterior of
+the subject-level model above. The reasons for the items that are not PASS
+are in `inst/reproduce/results/SUMMARY.md`.
+
+```{r author-code, echo = FALSE, results = "asis"}
+fa <- res_file("validation", "schnell2016_author_code.csv")
+if (nzchar(fa)) {
+  a <- read.csv(fa, stringsAsFactors = FALSE)
+  cat("The authors' code was run outside the package ",
+      "(the code has no stated license): with seed 1 it reproduces the ",
+      "published probabilities, and with 200,000 draws its sampler and a ",
+      "sampler with the subject-level likelihood give the following ",
+      "probabilities that the study drug rate exceeds 0.0156.\n\n", sep = "")
+  print(knitr::kable(data.frame(
+    month = a$interim, published = fmt(a$published_prob, 3),
+    authors_code = fmt(a$author_prob, 3),
+    authors_sampler = fmt(a$author_long_prob, 3),
+    subject_level_sampler = fmt(a$subject_long_prob, 3),
+    bssd = fmt(a$bssd_prob, 3)), align = "rrrrrr"))
+}
+```
+
+```{r repro-table1, echo = FALSE, results = "asis"}
+f1 <- res_file("reproduce", "reproduce_Schnell2016_table1.csv")
+if (nzchar(f1)) {
+  r1 <- read.csv(f1, stringsAsFactors = FALSE)
+  cat("The simulation of Table 1 (control rate 0.0130, 1000 trials per ",
+      "setting with the authors' seeds; ",
+      "`inst/reproduce/reproduce_Schnell2016_simulation.R`) gives ",
+      count_of(r1, "PASS"), " PASS, ", count_of(r1, "EXPLAINED"),
+      " EXPLAINED and ", count_of(r1, "FAIL"), " FAIL items.\n", sep = "")
+} else {
+  cat("The simulation of Table 1 (`inst/reproduce/",
+      "reproduce_Schnell2016_simulation.R`) has not been run for this ",
+      "installation.\n", sep = "")
+}
+```
+
+## References
+
+Schnell, P. M. and Ball, G. (2016). A Bayesian exposure-time method for
+clinical trial safety monitoring with blinded data. *Therapeutic Innovation
+& Regulatory Science*, 50(6), 833--838.
+<https://doi.org/10.1177/2168479016656702>

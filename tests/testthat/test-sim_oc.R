@@ -48,3 +48,28 @@ test_that("sim_oc runs LL_BERN and checks its input", {
   expect_warning(sim_oc(2, design, models = "BDRIBS1", priors = bad,
                         seed = 1), "fits failed")
 })
+
+test_that("sim_oc runs EXPTIME and MAPBERN", {
+  design <- list(n = 60, k = 1, accrual = 0, follow_up = 1,
+                 par_p = -log(0.85), par_d = -log(0.7))
+  pr <- list(exptime = list(prior_c = c(50, 300), prior_d = c(1, 5)),
+             mapbern = list(prior_c = c(15, 85)))
+  oc <- sim_oc(3, design, models = c("EXPTIME", "MAPBERN"), priors = pr,
+               seed = 3, keep = TRUE)
+  expect_identical(oc$summary$model, c("EXPTIME", "MAPBERN"))
+  expect_true(all(oc$summary$n_ok == 3L))
+  r <- oc$results
+  d <- sim_blinded(n = 60, k = 1, accrual = 0, follow_up = 1,
+                   par_p = -log(0.85), par_d = -log(0.7))
+  expect_true(all(c("event", "follow_up", "time_at_risk") %in% names(d)))
+  # the first trial reproduces the direct calls with the same seed
+  set.seed(3)
+  d1 <- do.call(sim_blinded, design)
+  f1 <- exptime_post(d1$event, d1$time_at_risk, k = 1, prior_c = c(50, 300),
+                     prior_d = c(1, 5), details = FALSE,
+                     control = list(check = FALSE))
+  expect_equal(r$prob[r$sim == 1 & r$model == "EXPTIME"], f1$prob,
+               tolerance = 1e-12)
+  expect_error(sim_oc(2, design, models = "EXPTIME", priors = list()),
+               "exptime")
+})

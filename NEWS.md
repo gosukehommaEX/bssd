@@ -1,3 +1,39 @@
+# bssd 0.2.0
+
+* New functions for other published methods for blinded safety data, all
+  computed by numerical integration and returning class `bssd_post`:
+  * `exptime_post()`: the exposure-time Poisson model of Schnell and
+    Ball (2016) with subject-level event counts and follow-up times.
+  * `binbeta_post()`: the binomial model of Ball and Schnell (2016) with the
+    numbers of enrolled subjects and of subjects with the event.
+  * `canary_post()`: the method of Gould and Wang (2017) for the total event
+    count, with the ratio, the difference or the odds ratio as the metric
+    and a binomial or Poisson likelihood.
+  * `mapbern_post()` and `map_beta()`: the meta-analytic predictive prior
+    from historical control arms and the mixture likelihood of Brock et al.
+    (2023).
+  * `multibin_post()`: the meta-analysis of several blinded studies of Goren
+    et al. (2020) with a common rate ratio.
+* `bdribs_grid()` and `pooled_ratio()`: the contour plots and the pooled
+  randomization ratio of Waterhouse et al. (2022) for BDRIBS.
+* `signal_count()` gives the smallest event count with a signal for a number
+  of subjects (`canary_post()` or `binbeta_post()`), `count_oc()` the exact
+  probability that the event count reaches it, and `elicit_prior()` the
+  parameters of a Gamma, Beta or lognormal prior from two quantiles.
+* `sim_oc()` also runs the models `"EXPTIME"` and `"MAPBERN"`.
+* `print()` shows the tested quantity of the new models and, for
+  `exptime_post()`, `binbeta_post()` and `mapbern_post()`, the posterior of
+  the study drug rate or proportion.
+* Vignettes `vignette("exptime")`, `vignette("binbeta")`,
+  `vignette("canary")`, `vignette("mapbern")` and
+  `vignette("bdribs-monitoring")`; `vignette("bssd")` lists the methods, and
+  `vignette("llbern")` explains that the lower limit of the credible
+  interval of the relative risk can be unstable.
+* `inst/reproduce` reproduces results of Schnell and Ball (2016), Gould and
+  Wang (2017), Brock et al. (2023), Goren et al. (2020) and Waterhouse et
+  al. (2022), and `inst/validation` compares the new functions with
+  independent Python computations and with MCMC in JAGS.
+
 # bssd 0.1.0
 
 * First version.

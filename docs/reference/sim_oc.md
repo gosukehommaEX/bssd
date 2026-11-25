@@ -47,10 +47,15 @@ sim_oc(
   used by `"BDRIBS1"` and `"BDRIBS2"`), `expbern` (the same arguments
   for
   [`expbern_post`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md);
-  `bdribs` is used when it is not given) and `llbern` (arguments
-  `mu_hp`, `sigma_hp`, `pt_hp` and optionally `df_p`, `mu_d_prior` and
+  `bdribs` is used when it is not given) `llbern` (arguments `mu_hp`,
+  `sigma_hp`, `pt_hp` and optionally `df_p`, `mu_d_prior` and
   `sigma_d_prior` of
-  [`llbern_post`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)).
+  [`llbern_post`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)),
+  `exptime` (arguments `prior_c`, `prior_d` and optionally `rate0` of
+  [`exptime_post`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md))
+  and `mapbern` (arguments `prior_c`, `prior_d` and optionally `rate0`
+  of
+  [`mapbern_post`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md)).
 
 - rr0:
 
@@ -67,11 +72,13 @@ sim_oc(
 
 - control:
 
-  List with elements `EXP_BERN` and `LL_BERN`, the `control` arguments
-  of
-  [`expbern_post`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md)
+  List with elements `EXP_BERN`, `LL_BERN`, `EXPTIME` and `MAPBERN`, the
+  `control` arguments of
+  [`expbern_post`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md),
+  [`llbern_post`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md),
+  [`exptime_post`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md)
   and
-  [`llbern_post`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md).
+  [`mapbern_post`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md).
   By default the convergence check is turned off.
 
 - seed:
@@ -117,10 +124,16 @@ with the total exposure time), `"BDRIBS2"`
 with the total time at risk), `"EXP_BERN"`
 ([`expbern_post`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md))
 and `"LL_BERN"`
-([`llbern_post`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)).
-The posterior functions are called with `details = FALSE`. A fit that
-fails is recorded as `NA` and counted in `n_failed`, and a warning with
-the first error message is given.
+([`llbern_post`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)),
+`"EXPTIME"`
+([`exptime_post`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md)
+with the event indicators and the times at risk, which is the
+exponential model for the time to the first event) and `"MAPBERN"`
+([`mapbern_post`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md)
+with the event indicators and the follow-up times). The posterior
+functions are called with `details = FALSE`. A fit that fails is
+recorded as `NA` and counted in `n_failed`, and a warning with the first
+error message is given.
 
 ## References
 

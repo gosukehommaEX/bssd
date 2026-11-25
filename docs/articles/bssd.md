@@ -37,6 +37,9 @@ and
 describe each model in detail, with examples, the accuracy of the
 numerical integration and the comparison with MCMC.
 
+bssd also implements other published methods for blinded safety data,
+all computed by numerical integration (section “Further methods” below).
+
 ## Models
 
 The study drug and placebo are randomized in the ratio \\k:1\\. The
@@ -79,6 +82,40 @@ A signal is declared when the posterior probability that the relative
 risk exceeds the critical value \\rr_0\\ is larger than a threshold,
 \\P(RR \> rr_0 \mid \mathrm{data}) \> \mathrm{cutoff}\\. The defaults
 are \\rr_0 = 1\\ and \\\mathrm{cutoff} = 0.95\\.
+
+## Further methods
+
+| Function | Method | Blinded data | Tested quantity | Article |
+|----|----|----|----|----|
+| [`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md) | exposure-time Poisson model of Schnell and Ball (2016) | events and follow-up time of each subject | study drug rate or rate ratio | [`vignette("exptime")`](https://gosukehommaex.github.io/bssd/articles/exptime.md) |
+| [`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md) | binomial model of Ball and Schnell (2016) | numbers of subjects and of subjects with the event | study drug proportion or ratio | [`vignette("binbeta")`](https://gosukehommaex.github.io/bssd/articles/binbeta.md) |
+| [`multibin_post()`](https://gosukehommaex.github.io/bssd/reference/multibin_post.md) | binomial meta-analysis of Goren et al. (2020) | the same, for several studies | common rate ratio | [`vignette("binbeta")`](https://gosukehommaex.github.io/bssd/articles/binbeta.md) |
+| [`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md) | Gould and Wang (2017) | total event count, with external control data | ratio, difference or odds ratio | [`vignette("canary")`](https://gosukehommaex.github.io/bssd/articles/canary.md) |
+| [`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md), [`map_beta()`](https://gosukehommaex.github.io/bssd/reference/map_beta.md) | MAP prior and mixture likelihood of Brock et al. (2023) | event indicator and time at risk of each subject, historical control arms | ratio of the event probabilities | [`vignette("mapbern")`](https://gosukehommaex.github.io/bssd/articles/mapbern.md) |
+| [`bdribs_grid()`](https://gosukehommaex.github.io/bssd/reference/bdribs_grid.md), [`pooled_ratio()`](https://gosukehommaex.github.io/bssd/reference/pooled_ratio.md) | BDRIBS monitoring of Waterhouse et al. (2022) | as BDRIBS, for grids of data and pooled trials | rate ratio | [`vignette("bdribs-monitoring")`](https://gosukehommaex.github.io/bssd/articles/bdribs-monitoring.md) |
+
+[`signal_count()`](https://gosukehommaex.github.io/bssd/reference/signal_count.md)
+gives the smallest event count with a signal for a number of subjects
+(the boundaries of Ball and Schnell, 2016, and the control charts of
+Gould and Wang, 2017),
+[`count_oc()`](https://gosukehommaex.github.io/bssd/reference/count_oc.md)
+the exact probability that the count reaches it, and
+[`elicit_prior()`](https://gosukehommaex.github.io/bssd/reference/elicit_prior.md)
+the parameters of a prior from two quantiles.
+
+The methods differ in what they assume about the treatment assignment.
+In
+[`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md),
+[`multibin_post()`](https://gosukehommaex.github.io/bssd/reference/multibin_post.md),
+[`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md)
+and
+[`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md),
+each subject is on study drug with probability \\k / (k + 1)\\ (simple
+randomization); in
+[`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md)
+the arm sizes are fixed at their expected values (Gould and Wang, 2017).
+The control prior must be informative in all methods, because the
+blinded data alone do not separate the two arms.
 
 ## Example with aggregate data
 
@@ -317,10 +354,17 @@ items are
 | reproduce_Duncan2026.csv            |   15 |         6 |    0 |    7 |
 | reproduce_Duncan2026_prior.csv      |   23 |         6 |    0 |    0 |
 | reproduce_Duncan2026_simulation.csv |   14 |         4 |    0 |  113 |
+| reproduce_Goren2020.csv             |   12 |         0 |    0 |    0 |
+| reproduce_Gould2017.csv             |   71 |        17 |    0 |    0 |
 | reproduce_Mukhopadhyay2018.csv      |   82 |         4 |    0 |    1 |
+| reproduce_Schnell2016.csv           |   27 |         3 |    1 |   16 |
+| reproduce_Waterhouse2022.csv        |   11 |         0 |    1 |    2 |
 | validate_bdribs_package.csv         |   35 |         0 |    0 |    0 |
 | validate_convergence.csv            |   19 |         0 |    0 |    0 |
+| validate_gould2017_author_grid.csv  |   28 |         0 |    0 |    0 |
 | validate_jags.csv                   |   24 |         0 |    0 |    3 |
+| validate_jags_methods.csv           |   16 |         0 |    0 |    1 |
+| validate_methods_python.csv         |  110 |         0 |    0 |    0 |
 | validate_sim_oc.csv                 |   29 |         0 |    0 |    0 |
 
 The reproduction covers Table 1, the hypothetical examples and the
@@ -337,18 +381,56 @@ and
 with MCMC in JAGS, the default integration grids with finer grids and
 with an independent Python implementation, and
 [`sim_oc()`](https://gosukehommaex.github.io/bssd/reference/sim_oc.md)
-with an independent Python simulation. The number of FAIL items is 0.
-The files `README.md` and `results/SUMMARY.md` in each folder describe
-the scripts, the tolerances and the reasons for the EXPLAINED items.
+with an independent Python simulation. The reproduction of the methods
+added in version 0.2.0 covers Schnell and Ball (2016), Gould and Wang
+(2017), Brock et al. (2023), Goren et al. (2020) and Waterhouse et
+al. (2022); their validation compares the new functions with independent
+Python computations (an exact finite mixture for
+[`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md))
+and with MCMC in JAGS. The number of FAIL items is 2. The files
+`README.md` and `results/SUMMARY.md` in each folder describe the
+scripts, the tolerances and the reasons for the EXPLAINED items.
 
 ## References
+
+Ball, G. and Schnell, P. M. (2016). Blinded safety signal monitoring for
+the FDA IND reporting final rule. In J. Lin et al. (eds.), *Statistical
+Applications from Clinical Trials and Personalized Medicine to Finance
+and Business Analytics*, ICSA Book Series in Statistics, 201-209.
+Springer, Cham. <https://doi.org/10.1007/978-3-319-42568-9_17>
+
+Brock, K., Chen, C., Ho, S., Fuller, G., Woolfolk, J., McShea, C. and
+Penard, N. (2023). A Bayesian method for safety signal detection in
+ongoing blinded randomised controlled trials. *Pharmaceutical
+Statistics*, 22(2), 378-395. <https://doi.org/10.1002/pst.2278>
 
 Duncan, B. (2026). Robust safety monitoring and signal detection using
 alternatives to the standard Poisson distribution. *Journal of
 Biopharmaceutical Statistics*, 36(2), 227-244.
 <https://doi.org/10.1080/10543406.2024.2395532>
 
+Goren, E., Lin, L.-A., Blaustein, R. O. and Ball, G. (2020). Bayesian
+meta-analysis of safety outcomes using blinded clinical trial data.
+*Therapeutic Innovation & Regulatory Science*, 54, 1557-1565.
+<https://doi.org/10.1007/s43441-020-00183-7>
+
+Gould, A. L. and Wang, W. B. (2017). Monitoring potential adverse event
+rate differences using data from blinded trials: the canary in the coal
+mine. *Statistics in Medicine*, 36(1), 92-104.
+<https://doi.org/10.1002/sim.7129>
+
 Mukhopadhyay, S., Waterhouse, B., and Hartford, A. (2018). Bayesian
 detection of potential risk using inference on blinded safety data.
 *Pharmaceutical Statistics*, 17(6), 823-834.
 <https://doi.org/10.1002/pst.1898>
+
+Schnell, P. M. and Ball, G. (2016). A Bayesian exposure-time method for
+clinical trial safety monitoring with blinded data. *Therapeutic
+Innovation & Regulatory Science*, 50(6), 833-838.
+<https://doi.org/10.1177/2168479016656702>
+
+Waterhouse, B., Hartford, A., Mukhopadhyay, S., Ferguson, R. and
+Hendrickson, B. A. (2022). Using the Bayesian detection of potential
+risk using inference on blinded safety data (BDRIBS) method to support
+the decision to refer an event for unblinded evaluation. *Pharmaceutical
+Statistics*, 21(2), 372-385. <https://doi.org/10.1002/pst.2175>

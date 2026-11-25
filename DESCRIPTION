@@ -1,7 +1,7 @@
 Package: bssd
 Type: Package
 Title: Bayesian Safety Signal Detection for Blinded Clinical Trial Data
-Version: 0.1.0
+Version: 0.2.0
 Authors@R:
     person("Gosuke", "Homma", email = "gosuke.homma@astellas.com",
            role = c("aut", "cre"),
@@ -12,10 +12,20 @@ Description: Computes the posterior probability of a safety signal from
     Mukhopadhyay, Waterhouse and Hartford (2018) <doi:10.1002/pst.1898> with
     the total exposure time or the total time at risk, the exponential
     Bernoulli mixture model, and the log-logistic Bernoulli mixture model.
-    All posterior quantities are obtained by numerical integration instead
-    of Markov chain Monte Carlo sampling. Functions to simulate blinded
-    trial data and to estimate the operating characteristics of the models
-    by simulation are included.
+    Other published methods for blinded data are included: the
+    exposure-time Poisson model of Schnell and Ball (2016)
+    <doi:10.1177/2168479016656702>, the binomial model of Ball and Schnell
+    (2016) <doi:10.1007/978-3-319-42568-9_17>, the method of Gould and Wang
+    (2017) <doi:10.1002/sim.7129>, the meta-analytic predictive prior and
+    mixture likelihood of Brock et al. (2023) <doi:10.1002/pst.2278>, the
+    meta-analysis of several blinded studies of Goren et al. (2020)
+    <doi:10.1007/s43441-020-00183-7>, and the monitoring tools of Waterhouse
+    et al. (2022) <doi:10.1002/pst.2175>. All posterior quantities are
+    obtained by numerical integration instead of Markov chain Monte Carlo
+    sampling. Functions to simulate blinded trial data, to estimate the
+    operating characteristics of the models by simulation, and to compute
+    decision boundaries for event counts and their exact operating
+    characteristics are included.
 License: GPL (>= 2)
 URL: https://github.com/gosukehommaEX/bssd,
     https://gosukehommaex.github.io/bssd/

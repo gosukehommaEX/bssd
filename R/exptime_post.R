@@ -1,0 +1,153 @@
+#' Posterior of the event rates under the exposure-time Poisson model
+#'
+#' Computes the posterior distribution of the event rates of study drug and
+#' control under the Bayesian exposure-time model of Schnell and Ball (2016)
+#' from blinded subject-level data: the number of events and the follow-up
+#' time of each subject.
+#'
+#' @details
+#' For subject \eqn{i}{i} with follow-up time \eqn{t_i}{t_i} and
+#' \eqn{y_i}{y_i} events, the model is
+#' \deqn{Y_i \mid a_i \sim \mathrm{Poisson}(\lambda_{a_i} t_i), \quad a_i \sim \mathrm{Bernoulli}(k / (k + 1)),}{Y_i | a_i ~ Poisson(lambda_(a_i) * t_i), a_i ~ Bernoulli(k / (k + 1)),}
+#' \deqn{\lambda_c \sim \mathrm{Gamma}(\alpha_c, \beta_c), \quad \lambda_d \sim \mathrm{Gamma}(\alpha_d, \beta_d),}{lambda_c ~ Gamma(alpha_c, beta_c), lambda_d ~ Gamma(alpha_d, beta_d),}
+#' where \eqn{a_i = 1}{a_i = 1} means study drug and the Gamma distributions
+#' are parameterized by shape and rate. Summing over the unknown treatment
+#' assignment of each subject gives the likelihood
+#' \deqn{\prod_i [\lambda_c^{y_i} e^{-\lambda_c t_i} / (k + 1) + k \lambda_d^{y_i} e^{-\lambda_d t_i} / (k + 1)],}{prod_i (lambda_c^y_i * exp(-lambda_c * t_i) / (k + 1) + k * lambda_d^y_i * exp(-lambda_d * t_i) / (k + 1)),}
+#' so the posterior is two-dimensional. Schnell and Ball (2016) sample it by
+#' Gibbs sampling; here it is integrated numerically on the coordinates
+#' \eqn{\log \lambda_c}{log(lambda_c)} (Gauss-Legendre quadrature) and the
+#' prior distribution function of \eqn{\lambda_d}{lambda_d} (Chebyshev
+#' interpolation), after a coarse grid has located the region that holds all
+#' but \code{control$eps} of the posterior mass. When \code{control$check} is
+#' \code{TRUE}, the computation is repeated with about 1.5 times as many
+#' nodes, the finer result is returned, and the largest absolute difference
+#' in the posterior probabilities is reported as the integration error
+#' estimate.
+#'
+#' The prior of the control rate is expected to be informative (for example,
+#' a posterior from historical control data); without it the blinded data do
+#' not separate the two rates.
+#'
+#' When \code{rate0} is given, a signal is declared when
+#' \eqn{P(\lambda_d > rate_0 \mid \mathrm{data}) > }{P(lambda_d > rate0 | data) > }
+#' \code{cutoff}, which is the rule of Schnell and Ball (2016); otherwise
+#' the rate ratio \eqn{r = \lambda_d / \lambda_c}{r = lambda_d / lambda_c} is
+#' tested against \code{rr0}. Both probabilities are returned in
+#' \code{probs}.
+#'
+#' With event indicators as \code{y} and the times at risk (follow-up up to
+#' the first event) as \code{t}, the model is the exponential model for the
+#' time to the first event.
+#'
+#' @param y Numbers of events of the subjects (non-negative integers).
+#' @param t Follow-up times of the subjects (positive), in the time unit of
+#'   the rates.
+#' @param k Randomization ratio of study drug to control (\code{k:1}).
+#' @param prior_c Shape and rate \code{c(alpha_c, beta_c)} of the Gamma prior
+#'   of the control rate.
+#' @param prior_d Shape and rate \code{c(alpha_d, beta_d)} of the Gamma prior
+#'   of the study drug rate.
+#' @param rate0 Optional critical value of the study drug rate.
+#' @param rr0 Critical value of the rate ratio, used for the signal when
+#'   \code{rate0} is \code{NULL}.
+#' @param cutoff Posterior probability threshold for a signal.
+#' @param level Probability of the equal-tailed credible intervals.
+#' @param details Logical; if \code{FALSE}, the quantiles are not computed
+#'   (they are \code{NA}). This is faster.
+#' @param control List of settings of the numerical integration:
+#'   \code{n_coarse} (cells per coordinate of the coarse grid, default 41),
+#'   \code{n_u} and \code{n_v} (nodes of the two coordinates, defaults 48 and
+#'   49), \code{check} (default \code{TRUE}), \code{eps} (default 1e-8) and
+#'   \code{max_iter} (default 12).
+#'
+#' @return An object of class \code{bssd_post}, a list with elements
+#' \describe{
+#'   \item{\code{model}}{\code{"EXPTIME"}.}
+#'   \item{\code{prob}}{Posterior probability of the tested quantity
+#'     (\code{lambda_d > rate0}, or \code{r > rr0} when \code{rate0} is
+#'     \code{NULL}).}
+#'   \item{\code{signal}}{Logical; \code{prob > cutoff}.}
+#'   \item{\code{probs}}{Both posterior probabilities: \code{drug}
+#'     (\eqn{\lambda_d > rate_0}{lambda_d > rate0}, \code{NA} without
+#'     \code{rate0}) and \code{ratio} (\eqn{r > rr_0}{r > rr0}).}
+#'   \item{\code{rr}}{Posterior mean, median and the limits of the
+#'     equal-tailed credible interval of the rate ratio \eqn{r}{r}.}
+#'   \item{\code{rate}}{The same summaries of \eqn{\lambda_d}{lambda_d}.}
+#'   \item{\code{estimates}}{Posterior means of \code{lambda_c},
+#'     \code{lambda_d}, \code{r} and the difference
+#'     \eqn{\lambda_d - \lambda_c}{lambda_d - lambda_c}.}
+#'   \item{\code{rr_label}, \code{rr0}, \code{rr_name}, \code{rate_name},
+#'     \code{description}, \code{cutoff}, \code{level}}{Labels and settings
+#'     used by \code{print}.}
+#'   \item{\code{data}, \code{prior}}{Data summary and prior parameters.}
+#'   \item{\code{integration}}{Description of the numerical integration.}
+#' }
+#'
+#' @references
+#' Schnell, P. M. and Ball, G. (2016). A Bayesian exposure-time method for
+#' clinical trial safety monitoring with blinded data. \emph{Therapeutic
+#' Innovation & Regulatory Science}, 50(6), 833--838.
+#' \doi{10.1177/2168479016656702}
+#'
+#' @seealso \code{\link{elicit_prior}} for priors from quantiles,
+#'   \code{\link{expbern_post}} for the exponential Bernoulli mixture model.
+#'
+#' @examples
+#' set.seed(1)
+#' n <- 300
+#' t <- runif(n, 6, 18)
+#' drug <- rbinom(n, 1, 2 / 3)
+#' y <- rpois(n, ifelse(drug == 1, 0.016, 0.011) * t)
+#' # priors of Schnell and Ball (2016): control rate from 339 events in 26064
+#' # person-months, study drug rate with one hundredth of that information
+#' fit <- exptime_post(y, t, k = 2, prior_c = c(339, 26064),
+#'                     prior_d = c(339 / 100 + 4, 26064 / 100 + 167),
+#'                     rate0 = 0.0156, cutoff = 0.62)
+#' fit
+#'
+#' @export
+exptime_post <- function(y, t, k = 1, prior_c, prior_d, rate0 = NULL,
+                         rr0 = 1, cutoff = 0.95, level = 0.95,
+                         details = TRUE, control = list()) {
+  check_num(y, "y", len = NULL, lower = 0, integer = TRUE)
+  check_num(t, "t", len = length(y), lower = 0, lower_open = TRUE)
+  check_num(k, "k", lower = 0, lower_open = TRUE)
+  check_num(prior_c, "prior_c", len = 2L, lower = 0, lower_open = TRUE)
+  check_num(prior_d, "prior_d", len = 2L, lower = 0, lower_open = TRUE)
+  if (!is.null(rate0)) {
+    check_num(rate0, "rate0", lower = 0, lower_open = TRUE)
+  }
+  check_common(rr0, cutoff, level, details)
+  ctrl <- merge_control(control, list(n_coarse = 41L, n_u = 48L, n_v = 49L,
+                                      check = TRUE, eps = 1e-8,
+                                      max_iter = 12L))
+  pat <- group_patterns(round(y), t)
+  wc <- 1 / (k + 1)
+  ac <- prior_c[[1L]]
+  bc <- prior_c[[2L]]
+  ad <- prior_d[[1L]]
+  bd <- prior_d[[2L]]
+
+  res <- mix2_post(
+    loglik = function(lc, ld) {
+      mixpois_loglik_cpp(pat$t, pat$y, pat$w, wc, lc, ld)
+    },
+    c_of = exp,
+    lprior_u = function(u) ac * log(bc) - lgamma(ac) + ac * u - bc * exp(u),
+    d_of = function(v) qgamma(v, ad, bd),
+    F_d = function(x) pgamma(x, ad, bd),
+    lo_u = log(max(qgamma(1e-10, ac, bc), .Machine$double.xmin)),
+    hi_u = log(qgamma(1 - 1e-10, ac, bc)),
+    d_max = Inf, rate0 = rate0, rr0 = rr0, level = level,
+    details = details, ctrl = ctrl)
+
+  mix2_output(
+    res, model = "EXPTIME", rate0 = rate0, rr0 = rr0, cutoff = cutoff,
+    level = level,
+    labels = c(control = "lambda_c", drug = "lambda_d", ratio = "r",
+               drug_text = "event rate lambda_d of study drug",
+               ratio_text = "rate ratio r = lambda_d / lambda_c"),
+    data = list(n = length(y), n_event = sum(y), exposure = sum(t), k = k),
+    prior = list(prior_c = prior_c, prior_d = prior_d))
+}
