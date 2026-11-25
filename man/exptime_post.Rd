@@ -90,15 +90,22 @@ are parameterized by shape and rate. Summing over the unknown treatment
 assignment of each subject gives the likelihood
 \deqn{\prod_i [\lambda_c^{y_i} e^{-\lambda_c t_i} / (k + 1) + k \lambda_d^{y_i} e^{-\lambda_d t_i} / (k + 1)],}{prod_i (lambda_c^y_i * exp(-lambda_c * t_i) / (k + 1) + k * lambda_d^y_i * exp(-lambda_d * t_i) / (k + 1)),}
 so the posterior is two-dimensional. Schnell and Ball (2016) sample it by
-Gibbs sampling; here it is integrated numerically on the coordinates
-\eqn{\log \lambda_c}{log(lambda_c)} (Gauss-Legendre quadrature) and the
-prior distribution function of \eqn{\lambda_d}{lambda_d} (Chebyshev
-interpolation), after a coarse grid has located the region that holds all
-but \code{control$eps} of the posterior mass. When \code{control$check} is
-\code{TRUE}, the computation is repeated with about 1.5 times as many
-nodes, the finer result is returned, and the largest absolute difference
-in the posterior probabilities is reported as the integration error
-estimate.
+Gibbs sampling; here it is integrated numerically. A coarse grid locates
+the region that holds all but \code{control$eps} of the posterior mass in
+the coordinates \eqn{\log \lambda_c}{log(lambda_c)} and
+\eqn{z = \Phi^{-1}(F_d(\lambda_d))}{z = qnorm(F_d(lambda_d))}, where
+\eqn{F_d}{F_d} is the prior distribution function of
+\eqn{\lambda_d}{lambda_d}. \eqn{\log \lambda_c}{log(lambda_c)} is
+integrated by Gauss-Legendre quadrature. For each of its nodes, the
+interval of \eqn{z}{z} that holds the conditional posterior mass is
+located separately, and the density is interpolated at Chebyshev points
+in \eqn{z}{z} or in \eqn{F_d(\lambda_d)}{F_d(lambda_d)}, whichever
+represents it more accurately. This keeps the integration accurate when
+the data conflict with an informative prior of \eqn{\lambda_d}{lambda_d}.
+When \code{control$check} is \code{TRUE}, the computation is repeated
+with about 1.5 times as many nodes, the finer result is returned, and the
+largest absolute difference in the posterior probabilities is reported as
+the integration error estimate.
 
 The prior of the control rate is expected to be informative (for example,
 a posterior from historical control data); without it the blinded data do

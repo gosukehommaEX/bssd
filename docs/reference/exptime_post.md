@@ -138,14 +138,19 @@ Summing over the unknown treatment assignment of each subject gives the
 likelihood \$\$\prod_i \[\lambda_c^{y_i} e^{-\lambda_c t_i} / (k + 1) +
 k \lambda_d^{y_i} e^{-\lambda_d t_i} / (k + 1)\],\$\$ so the posterior
 is two-dimensional. Schnell and Ball (2016) sample it by Gibbs sampling;
-here it is integrated numerically on the coordinates \\\log \lambda_c\\
-(Gauss-Legendre quadrature) and the prior distribution function of
-\\\lambda_d\\ (Chebyshev interpolation), after a coarse grid has located
-the region that holds all but `control$eps` of the posterior mass. When
-`control$check` is `TRUE`, the computation is repeated with about 1.5
-times as many nodes, the finer result is returned, and the largest
-absolute difference in the posterior probabilities is reported as the
-integration error estimate.
+here it is integrated numerically. A coarse grid locates the region that
+holds all but `control$eps` of the posterior mass in the coordinates
+\\\log \lambda_c\\ and \\z = \Phi^{-1}(F_d(\lambda_d))\\, where \\F_d\\
+is the prior distribution function of \\\lambda_d\\. \\\log \lambda_c\\
+is integrated by Gauss-Legendre quadrature. For each of its nodes, the
+interval of \\z\\ that holds the conditional posterior mass is located
+separately, and the density is interpolated at Chebyshev points in \\z\\
+or in \\F_d(\lambda_d)\\, whichever represents it more accurately. This
+keeps the integration accurate when the data conflict with an
+informative prior of \\\lambda_d\\. When `control$check` is `TRUE`, the
+computation is repeated with about 1.5 times as many nodes, the finer
+result is returned, and the largest absolute difference in the posterior
+probabilities is reported as the integration error estimate.
 
 The prior of the control rate is expected to be informative (for
 example, a posterior from historical control data); without it the

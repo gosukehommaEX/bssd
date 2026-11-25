@@ -17,7 +17,11 @@
 #' and the posterior is two-dimensional. It is integrated numerically on the
 #' coordinates \eqn{\mathrm{logit}(\theta_c)}{logit(theta_c)} and the prior
 #' distribution function of \eqn{\theta_d}{theta_d} as in
-#' \code{\link{exptime_post}}.
+#' \code{\link{exptime_post}}. For \eqn{rr_0 > 1}{rr0 > 1}, the
+#' Gauss-Legendre rule over \eqn{\mathrm{logit}(\theta_c)}{logit(theta_c)}
+#' is split at \eqn{\theta_c = 1 / rr_0}{theta_c = 1 / rr0}, where the
+#' posterior probability of the ratio has a kink because
+#' \eqn{\theta_d \le 1}{theta_d <= 1}.
 #'
 #' When \code{p0} is given, a signal is declared when
 #' \eqn{P(\theta_d > p_0 \mid Z) > }{P(theta_d > p0 | Z) > } \code{cutoff}
@@ -95,28 +99,32 @@ binbeta_post <- function(y, n, k = 1, prior_c, prior_d, p0 = NULL, rr0 = 1,
   bd <- prior_d[[2L]]
 
   res <- mix2_post(
-    loglik = function(tc, td) {
-      pm <- outer(wc * tc, (1 - wc) * td, "+")
-      ll <- 0
+    loglik = function(tc, TD) {
+      pm <- wc * tc + (1 - wc) * TD
+      ll <- matrix(0, nrow(TD), ncol(TD))
       if (y > 0) {
         ll <- ll + y * log(pm)
       }
       if (n - y > 0) {
         ll <- ll + (n - y) * log1p(-pm)
       }
-      ll + matrix(0, length(tc), length(td))
+      ll
     },
-    c_of = plogis,
+    c_of = plogis, u_of = qlogis,
     lprior_u = function(u) {
       ac * plogis(u, log.p = TRUE) + bc * plogis(-u, log.p = TRUE) -
         lbeta(ac, bc)
     },
-    d_of = function(v) qbeta(v, ad, bd),
-    F_d = function(x) pbeta(x, ad, bd),
+    pfun = function(x, lower.tail = TRUE, log.p = FALSE) {
+      pbeta(x, ad, bd, lower.tail = lower.tail, log.p = log.p)
+    },
+    qfun = function(p, lower.tail = TRUE, log.p = FALSE) {
+      qbeta(p, ad, bd, lower.tail = lower.tail, log.p = log.p)
+    },
     lo_u = max(qlogis(qbeta(1e-10, ac, bc)), -40),
     hi_u = min(qlogis(qbeta(1 - 1e-10, ac, bc)), 40),
-    d_max = 1, rate0 = p0, rr0 = rr0, level = level, details = details,
-    ctrl = ctrl)
+    d_max = 1, u_split = if (rr0 > 1) qlogis(1 / rr0) else numeric(0),
+    rate0 = p0, rr0 = rr0, level = level, details = details, ctrl = ctrl)
 
   mix2_output(
     res, model = "BINBETA", rate0 = p0, rr0 = rr0, cutoff = cutoff,

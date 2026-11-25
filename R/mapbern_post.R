@@ -26,7 +26,8 @@
 #' \eqn{-\log(1 - \pi)}{-log(1 - pi)}; only the priors differ. The posterior
 #' is integrated numerically on the coordinates
 #' \eqn{\mathrm{logit}(\pi_c)}{logit(pi_c)} and the prior distribution
-#' function of \eqn{\pi_d}{pi_d}, as in \code{\link{exptime_post}}.
+#' function of \eqn{\pi_d}{pi_d}, as in \code{\link{exptime_post}} and
+#' \code{\link{binbeta_post}}.
 #'
 #' A prior derived with the \pkg{RBesT} package can be used: the rows
 #' \code{w}, \code{a} and \code{b} of a \code{mixbeta} object are the
@@ -112,14 +113,27 @@ mapbern_post <- function(y, t, k = 1, prior_c, prior_d = c(1 / 3, 1 / 3),
   hi_u <- min(max(qlogis(qbeta(1 - 1e-10, mix$shape1, mix$shape2))), 40)
 
   res <- mix2_post(
-    loglik = function(pc, pd) {
-      bernmix_loglik_cpp(pat$t, pat$y, pat$w, wc, -log1p(-pc), -log1p(-pd))
+    loglik = function(pc, PD) {
+      # one row of study drug probabilities per control probability
+      hc <- -log1p(-pc)
+      HD <- -log1p(-PD)
+      out <- matrix(0, nrow(PD), ncol(PD))
+      for (i in seq_len(nrow(PD))) {
+        out[i, ] <- bernmix_loglik_cpp(pat$t, pat$y, pat$w, wc, hc[i],
+                                       HD[i, ])
+      }
+      out
     },
-    c_of = plogis, lprior_u = lprior_u,
-    d_of = function(v) qbeta(v, ad, bd),
-    F_d = function(x) pbeta(x, ad, bd),
-    lo_u = lo_u, hi_u = hi_u, d_max = 1, rate0 = rate0, rr0 = rr0,
-    level = level, details = details, ctrl = ctrl)
+    c_of = plogis, u_of = qlogis, lprior_u = lprior_u,
+    pfun = function(x, lower.tail = TRUE, log.p = FALSE) {
+      pbeta(x, ad, bd, lower.tail = lower.tail, log.p = log.p)
+    },
+    qfun = function(p, lower.tail = TRUE, log.p = FALSE) {
+      qbeta(p, ad, bd, lower.tail = lower.tail, log.p = log.p)
+    },
+    lo_u = lo_u, hi_u = hi_u, d_max = 1,
+    u_split = if (rr0 > 1) qlogis(1 / rr0) else numeric(0), rate0 = rate0,
+    rr0 = rr0, level = level, details = details, ctrl = ctrl)
 
   mix2_output(
     res, model = "MAPBERN", rate0 = rate0, rr0 = rr0, cutoff = cutoff,

@@ -3,7 +3,11 @@
 Binomial likelihood: the convolution of two binomial counts with fixed arm
 sizes, on (x, z) = (logit p_c, log M) for the ratio and the odds ratio and
 (logit p_c, logit p_d) for the difference, with composite Gauss-Legendre
-rules split exactly at the threshold. Poisson likelihood: the Gamma prior
+rules split exactly at the threshold; for the ratio, each row of z ends at
+the truncation point z = -log(p_c). The panels of x are dense where the
+posterior lies (the range is widened when the posterior of p_c lies outside
+the central range of its prior) and split where the probability of the
+metric has a kink. Poisson likelihood: the Gamma prior
 of the control rate is integrated out analytically and log R is integrated
 by scipy.integrate.quad. Output: ref_canary.json.
 """
@@ -21,6 +25,12 @@ CASES = [
      "metric": "odds", "crit": 1.2},
     {"id": "C4", "y": 250, "n": 20000, "k": 1, "prior_c": [75.71, 8500],
      "metric": "ratio", "likelihood": "poisson", "crit": 2.0},
+    # all subjects with the event: the posterior of p_c lies far above its
+    # prior, and the density of log(R) is largest at its limit -log(p_c)
+    # (the quantiles are not computed: the probabilities at other thresholds
+    # have kinks at other values of p_c)
+    {"id": "C5", "y": 100, "n": 100, "k": 1, "prior_c": [1, 49],
+     "metric": "ratio", "crit": 2.0, "quantiles": False},
 ]
 
 
@@ -90,13 +100,39 @@ def run_binom(cs):
         zl, zh = -40.0, 40.0
     else:
         zl, zh = mu - 11 * sd, mu + 11 * sd
-    xs = np.linspace(xl, xh, 121)
+    # the range of logit(p_c) is widened where the posterior lies outside
+    # the central range of its prior (event probabilities near 1)
+    xs = np.linspace(-30, 30, 601)
     zs = np.linspace(zl, zh, 401)
     L = lp(xs, np.broadcast_to(zs, (xs.size, zs.size)))
     keep = L > L.max() - 40
+    xk = xs[np.any(keep, axis=1)]
+    xl = min(xl, xk.min() - 0.5)
+    xh = max(xh, xk.max() + 0.5)
+    xs = np.linspace(xl, xh, 121)
+    L = lp(xs, np.broadcast_to(zs, (xs.size, zs.size)))
+    keep = L > L.max() - 40
     zk = zs[np.any(keep, axis=0)]
-    S = rc.Split2D(lp, np.linspace(xl, xh, 41), zl, zh,
-                   (zk.min() - 0.5, zk.max() + 0.5), n_core=120, n_tail=40)
+    # for the ratio, the density of log(R) ends at -log(p_c) (R <= 1 / p_c),
+    # and each row is integrated up to that limit
+    top = None
+    if cs["metric"] == "ratio":
+        top = lambda x: softplus(-x)
+    # panels of x: dense where the posterior lies, and split where the
+    # probability of the metric above crit has a kink (p_c = 1 / crit for
+    # the ratio, p_c = 1 - crit or -crit for the difference)
+    x_edges = rc.graded_edges(xl, xh, xk.min() - 0.5, xk.max() + 0.5, 80,
+                              20)
+    kink = None
+    if cs["metric"] == "ratio" and cs["crit"] > 1:
+        kink = special.logit(1 / cs["crit"])
+    elif cs["metric"] == "difference" and cs["crit"] != 0:
+        kink = special.logit(1 - cs["crit"] if cs["crit"] > 0
+                             else -cs["crit"])
+    if kink is not None and xl < kink < xh:
+        x_edges = np.unique(np.append(x_edges, kink))
+    S = rc.Split2D(lp, x_edges, zl, zh, (zk.min() - 0.5, zk.max() + 0.5),
+                   n_core=120, n_tail=40, z_hi_of=top)
     sig = lambda v: 1 / (1 + np.exp(-v))
     out = {"id": cs["id"]}
     lev = [0.025, 0.5, 0.975]
@@ -109,8 +145,9 @@ def run_binom(cs):
     else:
         out["prob"] = 1 - S.below(np.log(cs["crit"]))
         out["mean_metric"] = S.mean(lambda x, z: np.exp(z))
-        out["q"] = [S.quantile(lambda c: np.log(c), p, 1e-6, 1e4)
-                    for p in lev]
+        if cs.get("quantiles", True):
+            out["q"] = [S.quantile(lambda c: np.log(c), p, 1e-6, 1e4)
+                        for p in lev]
     out["mean_p_c"] = S.mean(lambda x, z: sig(x))
     return out
 

@@ -9,90 +9,51 @@ library(bssd)
 
 The safety of a study drug is often monitored while the treatment
 assignment of an ongoing trial is still blinded. The blinded data show
-which subjects had an adverse event of special interest, but not their
-treatment groups. bssd computes the posterior probability that the risk
-of the event is higher on the study drug than on placebo from such data,
-with the models examined by Duncan (2026):
-
-- BDRIBS(1) and BDRIBS(2), the Poisson-based model of Mukhopadhyay et
-  al. (2018) with the total exposure time or the total time at risk
-  ([`bdribs_post()`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md));
-- EXP_BERN, the exponential Bernoulli mixture model
-  ([`expbern_post()`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md));
-- LL_BERN, the log-logistic Bernoulli mixture model
-  ([`llbern_post()`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)).
-
-Mukhopadhyay et al. (2018) computed the posterior distributions by
-Markov chain Monte Carlo (MCMC) sampling. bssd computes them by
-numerical integration, so the results do not depend on a random seed,
-and they are fast enough for simulation studies of the operating
-characteristics
+the adverse events of special interest, but not the treatment groups of
+the subjects. bssd computes the posterior probability that the risk of
+the event is higher on the study drug than on placebo (control) from
+such data, with published Bayesian methods. Several of these methods
+were computed by Markov chain Monte Carlo (MCMC) sampling. bssd computes
+all posterior distributions by numerical integration, so the results do
+not depend on a random seed, and they are fast enough for simulation
+studies of the operating characteristics
 ([`sim_oc()`](https://gosukehommaex.github.io/bssd/reference/sim_oc.md)).
-The articles
-[`vignette("bdribs1")`](https://gosukehommaex.github.io/bssd/articles/bdribs1.md),
-[`vignette("bdribs2")`](https://gosukehommaex.github.io/bssd/articles/bdribs2.md),
-[`vignette("expbern")`](https://gosukehommaex.github.io/bssd/articles/expbern.md)
-and
-[`vignette("llbern")`](https://gosukehommaex.github.io/bssd/articles/llbern.md)
-describe each model in detail, with examples, the accuracy of the
-numerical integration and the comparison with MCMC.
 
-bssd also implements other published methods for blinded safety data,
-all computed by numerical integration (section “Further methods” below).
+## Models and functions
 
-## Models
+| Model | Function | Blinded data | Tested quantity | Article |
+|----|----|----|----|----|
+| BDRIBS(1) (Mukhopadhyay et al., 2018; Duncan, 2026) | [`bdribs_post()`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md) | number of subjects with the event and total exposure time | rate ratio | [`vignette("bdribs1")`](https://gosukehommaex.github.io/bssd/articles/bdribs1.md) |
+| BDRIBS(2) (Mukhopadhyay et al., 2018; Duncan, 2026) | [`bdribs_post()`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md) | number of subjects with the event and total time at risk | rate ratio | [`vignette("bdribs2")`](https://gosukehommaex.github.io/bssd/articles/bdribs2.md) |
+| BINBETA (Ball and Schnell, 2016) | [`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md) | numbers of subjects and of subjects with the event | study drug proportion or ratio | [`vignette("binbeta")`](https://gosukehommaex.github.io/bssd/articles/binbeta.md) |
+| MULTIBIN (Goren et al., 2020) | [`multibin_post()`](https://gosukehommaex.github.io/bssd/reference/multibin_post.md) | the same, for each of several studies | common rate ratio | [`vignette("binbeta")`](https://gosukehommaex.github.io/bssd/articles/binbeta.md) |
+| CANARY (Gould and Wang, 2017) | [`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md) | total event count, with external control data | ratio, difference or odds ratio | [`vignette("canary")`](https://gosukehommaex.github.io/bssd/articles/canary.md) |
+| EXP_BERN (Duncan, 2026) | [`expbern_post()`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md) | event indicator and follow-up time of each subject | rate ratio | [`vignette("expbern")`](https://gosukehommaex.github.io/bssd/articles/expbern.md) |
+| LL_BERN (Duncan, 2026) | [`llbern_post()`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md) | event indicator and follow-up time of each subject | ratio of the cumulative incidences at `t_star` | [`vignette("llbern")`](https://gosukehommaex.github.io/bssd/articles/llbern.md) |
+| EXPTIME (Schnell and Ball, 2016) | [`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md) | number of events and follow-up time of each subject | study drug rate or rate ratio | [`vignette("exptime")`](https://gosukehommaex.github.io/bssd/articles/exptime.md) |
+| MAPBERN (Brock et al., 2023) | [`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md), [`map_beta()`](https://gosukehommaex.github.io/bssd/reference/map_beta.md) | event indicator and time at risk of each subject, historical control arms | ratio of the event probabilities | [`vignette("mapbern")`](https://gosukehommaex.github.io/bssd/articles/mapbern.md) |
+| BDRIBS monitoring (Waterhouse et al., 2022) | [`bdribs_grid()`](https://gosukehommaex.github.io/bssd/reference/bdribs_grid.md), [`pooled_ratio()`](https://gosukehommaex.github.io/bssd/reference/pooled_ratio.md) | as BDRIBS, for grids of data and pooled trials | rate ratio | [`vignette("bdribs-monitoring")`](https://gosukehommaex.github.io/bssd/articles/bdribs-monitoring.md) |
+
+Each article describes the model and its numerical integration, with
+examples and comparisons with MCMC or with the published results.
 
 The study drug and placebo are randomized in the ratio \\k:1\\. The
-prior distribution of the placebo parameters is based on historical
-placebo data with the event rate \\\lambda\_{HP}\\ and the total patient
-time \\PT\_{HP}\\, discounted by the factor \\DF\\.
+models differ in what they assume about the treatment assignment. In
+EXP_BERN, LL_BERN, BINBETA, MULTIBIN, EXPTIME and MAPBERN, each subject
+is on study drug with probability \\k / (k + 1)\\ (simple
+randomization); in BDRIBS the exposure is divided between the arms in
+the ratio \\k:1\\, and in CANARY the arm sizes are fixed at their
+expected values (Gould and Wang, 2017). The prior of the placebo
+parameters must be informative in all models (for example, from
+historical placebo data), because the blinded data alone do not separate
+the two arms.
 
-**BDRIBS.** The number of subjects with the event in the blinded data,
-\\Y\\, follows \\Y \sim \mathrm{Poisson}\\E \delta (r k + 1) / (k +
-1)\\,\\ where \\E\\ is the exposure, \\\delta\\ is the event rate on
-placebo and \\r\\ is the rate ratio of the study drug to placebo. The
-priors are \\\delta \sim \mathrm{Gamma}(\lambda\_{HP} PT\_{HP} / DF,
-PT\_{HP} / DF)\\ with shape and rate parameters, and \\r = p / \\k (1 -
-p)\\\\ with \\p \sim \mathrm{Beta}(a, b)\\. BDRIBS(1) uses the total
-exposure time as \\E\\. BDRIBS(2) uses the total time at risk, which
-leaves out the time after the first occurrence of the event. Both are
-computed by
-[`time_at_risk()`](https://gosukehommaex.github.io/bssd/reference/time_at_risk.md).
-
-**EXP_BERN.** Subject \\i\\ with the follow-up time \\t_i\\ had the
-event (\\Y_i = 1\\) with the probability \\P(Y_i = 1) = w_p \\1 -
-\exp(-\lambda_p t_i)\\ + w_d \\1 - \exp(-r \lambda_p t_i)\\,\\ where
-\\w_p = 1 / (k + 1)\\ and \\w_d = k / (k + 1)\\. The priors of
-\\\lambda_p\\ and \\r\\ are those of \\\delta\\ and \\r\\ in BDRIBS.
-
-**LL_BERN.** The exponential distribution is replaced by the
-log-logistic distribution, \\P(Y_i = 1) = w_p F(t_i; \mu_p, \sigma_p) +
-w_d F(t_i; \mu_d, \sigma_d), \quad F(t; \mu, \sigma) = 1 - \frac{1}{1 +
-\exp\\(\log t - \mu) / \sigma\\},\\ so that the hazard can change over
-time
-([`ll_cdf()`](https://gosukehommaex.github.io/bssd/reference/ll_cdf.md)).
-The relative risk is the ratio of the cumulative incidences at a time
-\\t^\*\\, \\RR(t^\*) = F(t^\*; \mu_d, \sigma_d) / F(t^\*; \mu_p,
-\sigma_p)\\. Duncan (2026) does not state which relative risk is used
-for this model.
-[`?llbern_post`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)
-describes this choice and the priors.
-
-A signal is declared when the posterior probability that the relative
-risk exceeds the critical value \\rr_0\\ is larger than a threshold,
-\\P(RR \> rr_0 \mid \mathrm{data}) \> \mathrm{cutoff}\\. The defaults
-are \\rr_0 = 1\\ and \\\mathrm{cutoff} = 0.95\\.
-
-## Further methods
-
-| Function | Method | Blinded data | Tested quantity | Article |
-|----|----|----|----|----|
-| [`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md) | exposure-time Poisson model of Schnell and Ball (2016) | events and follow-up time of each subject | study drug rate or rate ratio | [`vignette("exptime")`](https://gosukehommaex.github.io/bssd/articles/exptime.md) |
-| [`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md) | binomial model of Ball and Schnell (2016) | numbers of subjects and of subjects with the event | study drug proportion or ratio | [`vignette("binbeta")`](https://gosukehommaex.github.io/bssd/articles/binbeta.md) |
-| [`multibin_post()`](https://gosukehommaex.github.io/bssd/reference/multibin_post.md) | binomial meta-analysis of Goren et al. (2020) | the same, for several studies | common rate ratio | [`vignette("binbeta")`](https://gosukehommaex.github.io/bssd/articles/binbeta.md) |
-| [`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md) | Gould and Wang (2017) | total event count, with external control data | ratio, difference or odds ratio | [`vignette("canary")`](https://gosukehommaex.github.io/bssd/articles/canary.md) |
-| [`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md), [`map_beta()`](https://gosukehommaex.github.io/bssd/reference/map_beta.md) | MAP prior and mixture likelihood of Brock et al. (2023) | event indicator and time at risk of each subject, historical control arms | ratio of the event probabilities | [`vignette("mapbern")`](https://gosukehommaex.github.io/bssd/articles/mapbern.md) |
-| [`bdribs_grid()`](https://gosukehommaex.github.io/bssd/reference/bdribs_grid.md), [`pooled_ratio()`](https://gosukehommaex.github.io/bssd/reference/pooled_ratio.md) | BDRIBS monitoring of Waterhouse et al. (2022) | as BDRIBS, for grids of data and pooled trials | rate ratio | [`vignette("bdribs-monitoring")`](https://gosukehommaex.github.io/bssd/articles/bdribs-monitoring.md) |
+A signal is declared when the posterior probability that the tested
+quantity exceeds its critical value is larger than a threshold, for
+example \\P(RR \> rr_0 \mid \mathrm{data}) \> \mathrm{cutoff}\\ for a
+relative risk \\RR\\. The defaults are \\rr_0 = 1\\ and
+\\\mathrm{cutoff} = 0.95\\. BINBETA, EXPTIME and MAPBERN can instead
+test the study drug proportion or rate against a critical value.
 
 [`signal_count()`](https://gosukehommaex.github.io/bssd/reference/signal_count.md)
 gives the smallest event count with a signal for a number of subjects
@@ -103,28 +64,18 @@ the exact probability that the count reaches it, and
 [`elicit_prior()`](https://gosukehommaex.github.io/bssd/reference/elicit_prior.md)
 the parameters of a prior from two quantiles.
 
-The methods differ in what they assume about the treatment assignment.
-In
-[`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md),
-[`multibin_post()`](https://gosukehommaex.github.io/bssd/reference/multibin_post.md),
-[`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md)
-and
-[`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md),
-each subject is on study drug with probability \\k / (k + 1)\\ (simple
-randomization); in
-[`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md)
-the arm sizes are fixed at their expected values (Gould and Wang, 2017).
-The control prior must be informative in all methods, because the
-blinded data alone do not separate the two arms.
-
 ## Example with aggregate data
 
 Hypothetical example 2 of Mukhopadhyay et al. (2018, Section 4.4) has a
 2:1 randomization, a background event rate of 0.011 per patient-year on
-placebo, and 540 patient-years of blinded exposure. The screening
-analysis of the article treats the background rate as known, which
-corresponds to `pt_hp = Inf`. With the uniform prior for \\p\\, the
-posterior probabilities for 8 and 9 events are
+placebo, and 540 patient-years of blinded exposure. The BDRIBS model
+sets the prior of the rate ratio \\r\\ through the probability \\p = r k
+/ (r k + 1)\\ that a subject with the event is on the study drug, with
+\\p \sim \mathrm{Beta}(a, b)\\ (`p_prior`;
+[`vignette("bdribs1")`](https://gosukehommaex.github.io/bssd/articles/bdribs1.md)).
+The screening analysis of the article treats the background rate as
+known, which corresponds to `pt_hp = Inf`. With the uniform prior for
+\\p\\, the posterior probabilities for 8 and 9 events are
 
 ``` r
 
@@ -205,15 +156,23 @@ tar
 The column `group` of `d` holds the true treatment group, which the
 blinded analyses do not use.
 
-The priors follow the simulations in the folder `reproduce`: a
-historical placebo group of 75 subjects, the size of the current placebo
-group, followed for 104 weeks and discounted by \\DF = 2\\. For BDRIBS
-and EXP_BERN, \\\lambda\_{HP}\\ is the constant hazard per week that
-gives the placebo incidence at week 104, and \\PT\_{HP}\\ is in
-patient-weeks. For LL_BERN, the Gamma priors of \\\mu_p\\ and
-\\\sigma_p\\ have the means `mu_hp` and `sigma_hp`, and `pt_hp` divided
-by `df_p` sets their precision. The simulations use the historical
-patient time in patient-years for it.
+The data are analyzed with the four models of Duncan (2026). Their
+priors of the placebo parameters are based on historical placebo data
+with the event rate \\\lambda\_{HP}\\ and the total patient time
+\\PT\_{HP}\\, discounted by the factor \\DF\\. The priors follow the
+simulations in the folder `reproduce`: a historical placebo group of 75
+subjects, the size of the current placebo group, followed for 104 weeks
+and discounted by \\DF = 2\\. For BDRIBS and EXP_BERN, \\\lambda\_{HP}\\
+is the constant hazard per week that gives the placebo incidence at week
+104, and \\PT\_{HP}\\ is in patient-weeks. For LL_BERN, the Gamma priors
+of \\\mu_p\\ and \\\sigma_p\\ have the means `mu_hp` and `sigma_hp`, and
+`pt_hp` divided by `df_p` sets their precision. The simulations use the
+historical patient time in patient-years for it. For LL_BERN, the
+relative risk is the ratio of the cumulative incidences at the time
+\\t^\* = 104\\; Duncan (2026) does not state which relative risk is used
+for this model, and
+[`?llbern_post`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)
+describes this choice and the priors.
 
 ``` r
 
@@ -268,14 +227,18 @@ incidences at week 104 and of their difference. The true values are
 
 [`bdribs_post()`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md)
 integrates over one dimension with
-[`stats::integrate()`](https://rdrr.io/r/stats/integrate.html).
-[`expbern_post()`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md)
-(two dimensions) and
-[`llbern_post()`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)
-(four dimensions) use Gauss-Legendre and Chebyshev quadrature on a
-region located by a coarse grid. With `control$check = TRUE`, the
+[`stats::integrate()`](https://rdrr.io/r/stats/integrate.html). The
+other functions use Gauss-Legendre and Chebyshev quadrature on a region
+located by a coarse grid
+([`llbern_post()`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)
+in four dimensions,
+[`multibin_post()`](https://gosukehommaex.github.io/bssd/reference/multibin_post.md)
+and the Poisson likelihood of
+[`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md)
+in one, and the others in two). With `control$check = TRUE`, the
 default, they repeat the computation on a finer grid, return the finer
-result, and report an estimate of the integration error of `prob`:
+result, and report an estimate of the integration error of `prob`, for
+example for the data above:
 
 ``` r
 
@@ -364,32 +327,29 @@ items are
 | validate_gould2017_author_grid.csv  |   28 |         0 |    0 |    0 |
 | validate_jags.csv                   |   24 |         0 |    0 |    3 |
 | validate_jags_methods.csv           |   16 |         0 |    0 |    1 |
-| validate_methods_python.csv         |  110 |         0 |    0 |    0 |
+| validate_methods_python.csv         |  174 |         0 |    0 |    0 |
 | validate_sim_oc.csv                 |   29 |         0 |    0 |    0 |
 
 The reproduction covers Table 1, the hypothetical examples and the
-operating characteristics of Mukhopadhyay et al. (2018), and Table 1,
-Figure 1 and the simulations of Figures 2 to 10 of Duncan (2026). Many
-simulation results are INFO, because the article does not report all
-settings of the simulations and the published values are read from the
+operating characteristics of Mukhopadhyay et al. (2018), Table 1, Figure
+1 and the simulations of Figures 2 to 10 of Duncan (2026), and the
+published results of Schnell and Ball (2016), Gould and Wang (2017),
+Brock et al. (2023), Goren et al. (2020) and Waterhouse et al. (2022).
+Many simulation results are INFO, because the articles do not report all
+settings of the simulations and some published values are read from the
 figures. The validation compares
 [`bdribs_post()`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md)
-with the bdribs package,
-[`expbern_post()`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md)
-and
-[`llbern_post()`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)
-with MCMC in JAGS, the default integration grids with finer grids and
-with an independent Python implementation, and
+with the bdribs package; the other posterior functions with MCMC in JAGS
+(for
+[`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md),
+with the Poisson likelihood) and with independent Python computations
+(an exact finite mixture for
+[`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md));
+the default integration grids with finer grids; and
 [`sim_oc()`](https://gosukehommaex.github.io/bssd/reference/sim_oc.md)
-with an independent Python simulation. The reproduction of the methods
-added in version 0.2.0 covers Schnell and Ball (2016), Gould and Wang
-(2017), Brock et al. (2023), Goren et al. (2020) and Waterhouse et
-al. (2022); their validation compares the new functions with independent
-Python computations (an exact finite mixture for
-[`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md))
-and with MCMC in JAGS. The number of FAIL items is 2. The files
-`README.md` and `results/SUMMARY.md` in each folder describe the
-scripts, the tolerances and the reasons for the EXPLAINED items.
+with an independent Python simulation. The number of FAIL items is 2.
+The files `README.md` and `results/SUMMARY.md` in each folder describe
+the scripts, the tolerances and the reasons for the EXPLAINED items.
 
 ## References
 

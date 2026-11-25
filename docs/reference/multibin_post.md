@@ -90,9 +90,13 @@ probabilities \\\theta_s\\ may differ between studies, and \\\delta\\ is
 common. Given \\\delta\\, each \\\theta_s\\ is integrated out by
 composite Gauss-Legendre quadrature on \\\mathrm{logit}(\theta_s)\\ over
 the region where the integrand is not negligible, so the posterior of
-\\\delta\\ is one-dimensional; it is integrated at Chebyshev points of
-the prior distribution function of \\\log \delta\\. Goren et al. (2020)
-sample the same posterior by Hamiltonian Monte Carlo.
+\\\delta\\ is one-dimensional. A coarse grid locates the posterior mass
+in \\z = (\log \delta - m) / v\\, and the posterior is integrated at
+Chebyshev points of \\z\\ or of the prior distribution function
+\\\Phi(z)\\, whichever represents the density more accurately
+(`integration$coordinate`); \\z\\ is used when the data conflict with an
+informative prior of \\\log \delta\\. Goren et al. (2020) sample the
+same posterior by Hamiltonian Monte Carlo.
 
 A signal is declared when \\P(\delta \> rr_0 \mid \mathrm{data}) \> \\
 `cutoff`. With a single study, the likelihood is that of
@@ -122,5 +126,5 @@ multibin_post(y = c(6, 10, 25, 47), n = c(200, 400, 800, 1600), k = 1,
 #> Tested quantity: rate ratio delta common to the studies
 #> P(delta > 1 | data) = 0.7692
 #> Signal (posterior probability > 0.95): no
-#> Posterior of delta: mean NA, median 1.675, 95% interval (0.1729, 5.239)
+#> Posterior of delta: median 1.675, 95% interval (0.1729, 5.239)
 ```

@@ -53,9 +53,9 @@ signal_count(n = c(50, 100, 200, 300), method = "binbeta",
 
 The binomial expansion of the likelihood makes the posterior a finite
 mixture of products of Beta distributions, which gives exact values. The
-largest absolute difference of the 21 compared quantities from these
+largest absolute difference of the 52 compared quantities from these
 exact values (`inst/validation/validate_methods_python.R`, relative
-tolerance 1e-5) is 8.7e-07.
+tolerance 1e-5) is 8.2e-06.
 
 ## Several studies: Goren et al. (2020)
 
@@ -84,7 +84,7 @@ fit
 #> Tested quantity: rate ratio delta common to the studies
 #> P(delta > 2 | data) = 0.9828
 #> Signal (posterior probability > 0.95): yes
-#> Posterior of delta: mean NA, median 2.951, 95% interval (2.061, 4.093)
+#> Posterior of delta: median 2.951, 95% interval (2.061, 4.093)
 ```
 
 `inst/reproduce/reproduce_Goren2020.R` compares the posterior
@@ -112,7 +112,7 @@ The simulation of Table 2
 this installation.
 
 Against nested adaptive quadrature in Python, the largest absolute
-difference of the 10 compared quantities is 3.7e-07.
+difference of the 20 compared quantities is 2.5e-07.
 
 ## Comparison with MCMC
 

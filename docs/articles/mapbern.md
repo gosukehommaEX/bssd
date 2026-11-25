@@ -82,8 +82,8 @@ rules split exactly at \\\pi_d = rr_0 \pi_c\\ for
 [`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md),
 and a dense grid over \\(a, b)\\ for
 [`map_beta()`](https://gosukehommaex.github.io/bssd/reference/map_beta.md)),
-the largest absolute difference of the 34 compared quantities is
-1.2e-05. A JAGS model with the mixture prior and latent treatment
+the largest absolute difference of the 43 compared quantities is
+1.1e-06. A JAGS model with the mixture prior and latent treatment
 assignments gives:
 
 | quantity                                        |   MCMC |   bssd | judgement |

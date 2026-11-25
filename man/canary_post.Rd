@@ -93,7 +93,15 @@ prior \eqn{p_c \sim \mathrm{Beta}(a, b)}{p_c ~ Beta(a, b)}. The metric is
 The two-dimensional posterior is integrated on
 \eqn{\mathrm{logit}(p_c)}{logit(p_c)} (Gauss-Legendre quadrature) and the
 logarithm of the metric, or \eqn{p_d}{p_d} for the difference (Chebyshev
-interpolation).
+interpolation). For each node of \eqn{\mathrm{logit}(p_c)}{logit(p_c)},
+the interval of the second coordinate that holds the conditional
+posterior mass is located separately; for the ratio it ends at the
+truncation point \eqn{R = 1 / p_c}{R = 1 / p_c}. The Gauss-Legendre rule
+is split where the posterior probability of the metric has a kink
+(\eqn{p_c = 1 / crit}{p_c = 1 / crit} for the ratio,
+\eqn{p_c = 1 - crit}{p_c = 1 - crit} or \eqn{p_c = -crit}{p_c = -crit}
+for the difference), so that the results stay accurate when the event
+probabilities are large.
 
 \strong{Poisson likelihood.} With the total exposure \eqn{E}{E} (\code{n})
 and the control event rate \eqn{\lambda_c}{lambda_c} per unit of exposure,

@@ -90,8 +90,10 @@ The published critical counts were computed by the authors’ R code on
 fixed grids. A transcription of the code, kept outside the package
 because the code has no stated license, reproduces 28 of the 28
 published counts
-(`inst/validation/python/ref_gould2017_author_grid.csv`); the
-differences from the exact counts of bssd come from the grids (100
+(`inst/validation/python/ref_gould2017_author_grid.csv`). The authors’
+code itself, run by a script outside the package, gives 28 of the 28
+published counts (`inst/validation/results/gould2017_author_code.csv`).
+The differences from the exact counts of bssd come from the grids (100
 values of \\R\\ in \\(0, 10)\\, with the threshold 2 evaluated at the
 grid point 1.98, for the binomial model; a coarse grid of the expected
 control count for the Poisson model). The binomial counts of Table III
@@ -127,10 +129,16 @@ the authors’ code, which is used here as well.
 
 ## Numerical integration
 
-Against independent Python computations on dense grids split exactly at
-the thresholds, the largest absolute difference of the 24 compared
-quantities (four data sets with the ratio, the difference, the odds
-ratio and the Poisson likelihood) is 6.3e-07. For the Poisson
+For the binomial likelihood, the posterior is integrated over
+\\\mathrm{logit}(p_c)\\ by Gauss-Legendre quadrature, and for each of
+its nodes over an interval of \\\log R\\ (or \\p_d\\) located from the
+conditional posterior; for the ratio the interval ends at the truncation
+point \\R = 1 / p_c\\, where the density of \\\log R\\ can be largest
+when many subjects had the event. Against independent Python
+computations on dense grids split exactly at the thresholds, the largest
+absolute difference of the 27 compared quantities (five data sets: the
+ratio, the difference, the odds ratio, the Poisson likelihood, and the
+ratio when all 100 subjects had the event) is 5.8e-07. For the Poisson
 likelihood, MCMC in JAGS gives 0.2214 for \\P(R \> 2 \mid X)\\ against
 0.2213 from bssd (PASS).
 

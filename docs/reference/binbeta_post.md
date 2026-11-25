@@ -96,6 +96,10 @@ two-dimensional. It is integrated numerically on the coordinates
 \\\mathrm{logit}(\theta_c)\\ and the prior distribution function of
 \\\theta_d\\ as in
 [`exptime_post`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md).
+For \\rr_0 \> 1\\, the Gauss-Legendre rule over
+\\\mathrm{logit}(\theta_c)\\ is split at \\\theta_c = 1 / rr_0\\, where
+the posterior probability of the ratio has a kink because \\\theta_d \le
+1\\.
 
 When `p0` is given, a signal is declared when \\P(\theta_d \> p_0 \mid
 Z) \> \\ `cutoff` (the rule of Ball and Schnell, 2016); otherwise the

@@ -72,7 +72,11 @@ Under simple randomization each subject is on control with probability
 and the posterior is two-dimensional. It is integrated numerically on the
 coordinates \eqn{\mathrm{logit}(\theta_c)}{logit(theta_c)} and the prior
 distribution function of \eqn{\theta_d}{theta_d} as in
-\code{\link{exptime_post}}.
+\code{\link{exptime_post}}. For \eqn{rr_0 > 1}{rr0 > 1}, the
+Gauss-Legendre rule over \eqn{\mathrm{logit}(\theta_c)}{logit(theta_c)}
+is split at \eqn{\theta_c = 1 / rr_0}{theta_c = 1 / rr0}, where the
+posterior probability of the ratio has a kink because
+\eqn{\theta_d \le 1}{theta_d <= 1}.
 
 When \code{p0} is given, a signal is declared when
 \eqn{P(\theta_d > p_0 \mid Z) > }{P(theta_d > p0 | Z) > } \code{cutoff}

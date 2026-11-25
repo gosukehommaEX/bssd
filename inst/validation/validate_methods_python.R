@@ -3,7 +3,9 @@
 # multibin_post()) against independent Python computations
 # (inst/validation/python/ref_*.py): composite Gauss-Legendre rules split
 # exactly at the thresholds, an exact finite mixture for binbeta_post(), and
-# nested adaptive quadrature for multibin_post(). The reference values are
+# nested adaptive quadrature for multibin_post(). The cases include data
+# that conflict with informative priors (E3, B3 to B5, M3, G3, G4) and all
+# subjects with the event (C5). The reference values are
 # collected in python/ref_methods.csv and the data in
 # python/data_methods.csv.
 #
@@ -62,6 +64,19 @@ add("PY_EXPTIME_E2_mean_lambda_d", f$estimates[["lambda_d"]])
 add("PY_EXPTIME_E2_mean_r", f$estimates[["r"]])
 add_q("PY_EXPTIME_E2_q_lambda_d", f$rate)
 add_q("PY_EXPTIME_E2_q_r", f$rr)
+# E3: priors of Schnell and Ball (2016), study drug rate far in the upper
+# tail of the prior of lambda_d
+d <- get_data("E3")
+f <- exptime_post(d$y, d$t, k = 2, prior_c = c(340, 26064),
+                  prior_d = c(339 / 100 + 4, 26064 / 100 + 167),
+                  rate0 = 0.065, rr0 = 5)
+add("PY_EXPTIME_E3_prob_rate", f$probs[["drug"]])
+add("PY_EXPTIME_E3_prob_ratio", f$probs[["ratio"]])
+add("PY_EXPTIME_E3_mean_lambda_c", f$estimates[["lambda_c"]])
+add("PY_EXPTIME_E3_mean_lambda_d", f$estimates[["lambda_d"]])
+add("PY_EXPTIME_E3_mean_r", f$estimates[["r"]])
+add_q("PY_EXPTIME_E3_q_lambda_d", f$rate)
+add_q("PY_EXPTIME_E3_q_r", f$rr)
 
 # BINBETA -----------------------------------------------------------------
 f <- binbeta_post(40, 300, k = 1, prior_c = c(31, 271), prior_d = c(1, 1),
@@ -81,6 +96,28 @@ add("PY_BINBETA_B2_mean_theta_d", f$estimates[["theta_d"]])
 add("PY_BINBETA_B2_mean_rr", f$estimates[["rr"]])
 add_q("PY_BINBETA_B2_q_theta_d", f$rate)
 add_q("PY_BINBETA_B2_q_rr", f$rr)
+# B3 to B5: informative priors that conflict with the data (the posterior
+# mean of the ratio is infinite in B3 and B4, whose control prior has
+# shape1 = 1)
+cases <- list(
+  B3 = list(y = 12, n = 100, k = 1, prior_c = c(1, 49), prior_d = c(1, 49),
+            p0 = 0.05, rr0 = 1),
+  B4 = list(y = 100, n = 100, k = 1, prior_c = c(1, 99), prior_d = c(1, 99),
+            p0 = 0.3, rr0 = 2),
+  B5 = list(y = 5, n = 1000, k = 1, prior_c = c(5, 495),
+            prior_d = c(30, 270), p0 = 0.04, rr0 = 8))
+for (id in names(cases)) {
+  f <- do.call(binbeta_post, cases[[id]])
+  add(sprintf("PY_BINBETA_%s_prob_rate", id), f$probs[["drug"]])
+  add(sprintf("PY_BINBETA_%s_prob_ratio", id), f$probs[["ratio"]])
+  add(sprintf("PY_BINBETA_%s_mean_theta_c", id), f$estimates[["theta_c"]])
+  add(sprintf("PY_BINBETA_%s_mean_theta_d", id), f$estimates[["theta_d"]])
+  if (id == "B5") {
+    add("PY_BINBETA_B5_mean_rr", f$estimates[["rr"]])
+  }
+  add_q(sprintf("PY_BINBETA_%s_q_theta_d", id), f$rate)
+  add_q(sprintf("PY_BINBETA_%s_q_rr", id), f$rr)
+}
 
 # CANARY ------------------------------------------------------------------
 cases <- list(
@@ -91,7 +128,9 @@ cases <- list(
   C3 = list(y = 20, n = 120, k = 2, prior_c = c(5, 45), metric = "odds",
             crit = 1.2),
   C4 = list(y = 250, n = 20000, k = 1, prior_c = c(75.71, 8500),
-            metric = "ratio", crit = 2, likelihood = "poisson"))
+            metric = "ratio", crit = 2, likelihood = "poisson"),
+  C5 = list(y = 100, n = 100, k = 1, prior_c = c(1, 49), metric = "ratio",
+            crit = 2))
 for (id in names(cases)) {
   f <- do.call(canary_post, cases[[id]])
   add(sprintf("PY_CANARY_%s_prob", id), f$prob)
@@ -101,20 +140,25 @@ for (id in names(cases)) {
   } else {
     add(sprintf("PY_CANARY_%s_mean_p_c", id), f$estimates[["p_c"]])
   }
-  add_q(sprintf("PY_CANARY_%s_q", id), f$rr)
+  # the reference has no quantiles for C5 (ref_canary.py)
+  if (id != "C5") {
+    add_q(sprintf("PY_CANARY_%s_q", id), f$rr)
+  }
 }
 
 # MAPBERN and MAP prior ---------------------------------------------------
 d <- get_data("M1")
 mix <- data.frame(w = c(0.7, 0.3), shape1 = c(20, 2), shape2 = c(180, 18))
-for (cs in list(c("M1", 1), c("M2", 1.5))) {
-  f <- mapbern_post(d$y, d$t, k = 3, prior_c = mix,
-                    rr0 = as.numeric(cs[2]))
-  add(sprintf("PY_MAPBERN_%s_prob_ratio", cs[1]), f$prob)
-  add(sprintf("PY_MAPBERN_%s_mean_pi_c", cs[1]), f$estimates[["pi_c"]])
-  add(sprintf("PY_MAPBERN_%s_mean_pi_d", cs[1]), f$estimates[["pi_d"]])
-  add_q(sprintf("PY_MAPBERN_%s_q_pi_d", cs[1]), f$rate)
-  add_q(sprintf("PY_MAPBERN_%s_q_rr", cs[1]), f$rr)
+for (cs in list(list(id = "M1", rr0 = 1, prior_d = c(1 / 3, 1 / 3)),
+                list(id = "M2", rr0 = 1.5, prior_d = c(1 / 3, 1 / 3)),
+                list(id = "M3", rr0 = 0.25, prior_d = c(2, 98)))) {
+  f <- mapbern_post(d$y, d$t, k = 3, prior_c = mix, prior_d = cs$prior_d,
+                    rr0 = cs$rr0)
+  add(sprintf("PY_MAPBERN_%s_prob_ratio", cs$id), f$prob)
+  add(sprintf("PY_MAPBERN_%s_mean_pi_c", cs$id), f$estimates[["pi_c"]])
+  add(sprintf("PY_MAPBERN_%s_mean_pi_d", cs$id), f$estimates[["pi_d"]])
+  add_q(sprintf("PY_MAPBERN_%s_q_pi_d", cs$id), f$rate)
+  add_q(sprintf("PY_MAPBERN_%s_q_rr", cs$id), f$rr)
 }
 for (cs in list(list(id = "P1", e = c(9, 11, 10), n = c(100, 100, 100)),
                 list(id = "P2", e = c(3, 9, 1, 6), n = c(40, 60, 30, 80)))) {
@@ -146,6 +190,19 @@ f <- multibin_post(c(3, 9), c(150, 300), k = c(1, 2),
 add("PY_MULTIBIN_G2_prob", f$prob)
 add("PY_MULTIBIN_G2_mean_log_delta", f$estimates[["log_delta"]])
 add_q("PY_MULTIBIN_G2_q", f$rr)
+# G3 and G4: an informative prior of log(delta) that conflicts with the data
+f <- multibin_post(c(60, 120), c(1000, 2000), k = 1,
+                   prior_c = rbind(c(20, 1980), c(40, 3960)),
+                   lrr_prior = c(0, 0.1), rr0 = 1.5)
+add("PY_MULTIBIN_G3_prob", f$prob)
+add("PY_MULTIBIN_G3_mean_log_delta", f$estimates[["log_delta"]])
+add_q("PY_MULTIBIN_G3_q", f$rr)
+f <- multibin_post(c(2, 3), c(1000, 2000), k = 1,
+                   prior_c = rbind(c(200, 19800), c(400, 39600)),
+                   lrr_prior = c(0, 0.1), rr0 = 0.8)
+add("PY_MULTIBIN_G4_prob", f$prob)
+add("PY_MULTIBIN_G4_mean_log_delta", f$estimates[["log_delta"]])
+add_q("PY_MULTIBIN_G4_q", f$rr)
 
 missing <- setdiff(ref$id, vapply(rows, function(r) r$id, character(1)))
 if (length(missing) > 0L) {

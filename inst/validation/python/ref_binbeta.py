@@ -20,6 +20,16 @@ CASES = [
      "prior_d": [1, 1], "p0": 0.15, "rr0": 1.0},
     {"id": "B2", "y": 12, "n": 80, "k": 2, "prior_c": [5, 45],
      "prior_d": [0.5, 0.5], "p0": None, "rr0": 1.5},
+    # informative priors of both proportions that conflict with the data:
+    # the posterior of theta_d lies in the upper tail of its prior (B3, B4)
+    # or in the lower tail (B5); P(theta_d > theta_c) = 0.5 in B3 by
+    # symmetry
+    {"id": "B3", "y": 12, "n": 100, "k": 1, "prior_c": [1, 49],
+     "prior_d": [1, 49], "p0": 0.05, "rr0": 1.0},
+    {"id": "B4", "y": 100, "n": 100, "k": 1, "prior_c": [1, 99],
+     "prior_d": [1, 99], "p0": 0.3, "rr0": 2.0},
+    {"id": "B5", "y": 5, "n": 1000, "k": 1, "prior_c": [5, 495],
+     "prior_d": [30, 270], "p0": 0.04, "rr0": 8.0},
 ]
 
 
@@ -67,8 +77,10 @@ def run_case(cs):
     out["prob_ratio"] = 1 - p_ratio_le(cs["rr0"])
     out["mean_theta_c"] = float(np.sum(w * a1 / (a1 + b1)))
     out["mean_theta_d"] = float(np.sum(w * a2 / (a2 + b2)))
-    out["mean_rr"] = float(np.sum(w * a2 / (a2 + b2) * (a1 + b1 - 1) /
-                                  (a1 - 1)))
+    # E(1 / theta_c) is infinite in components with a1 <= 1
+    if np.all(a1 > 1):
+        out["mean_rr"] = float(np.sum(w * a2 / (a2 + b2) * (a1 + b1 - 1) /
+                                      (a1 - 1)))
     cdf_d = lambda x: float(np.sum(w * stats.beta.cdf(x, a2, b2)))
     out["q_theta_d"] = [brentq(lambda x: cdf_d(x) - p, 1e-12, 1 - 1e-12,
                                xtol=1e-13) for p in [0.025, 0.5, 0.975]]

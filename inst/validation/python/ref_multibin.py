@@ -3,8 +3,9 @@
 The posterior density of w = log(delta) is computed with nested adaptive
 quadrature: for each w, the control probability of each study is
 integrated out by scipy.integrate.quad on (0, min(1, exp(-w))); the outer
-integrals over w use scipy.integrate.quad on (-inf, inf) split at the
-threshold. Output: ref_multibin.json.
+integrals over w use scipy.integrate.quad split at the mode and at the
+threshold, over 12 prior standard deviations or more. Output:
+ref_multibin.json.
 """
 import numpy as np
 from scipy import special, stats, integrate
@@ -17,6 +18,13 @@ CASES = [
      "rr0": 1.0},
     {"id": "G2", "y": [3, 9], "n": [150, 300], "k": [1, 2],
      "prior_c": [(2, 98), (4, 196)], "lrr": [0, 2], "rr0": 1.5},
+    # informative priors of log(delta) that conflict with the data: the
+    # posterior lies far in the upper (G3) or lower (G4) tail of the prior
+    {"id": "G3", "y": [60, 120], "n": [1000, 2000], "k": [1, 1],
+     "prior_c": [(20, 1980), (40, 3960)], "lrr": [0, 0.1], "rr0": 1.5},
+    {"id": "G4", "y": [2, 3], "n": [1000, 2000], "k": [1, 1],
+     "prior_c": [(200, 19800), (400, 39600)], "lrr": [0, 0.1],
+     "rr0": 0.8},
 ]
 
 
@@ -62,31 +70,35 @@ def run_case(cs):
                                       epsrel=1e-10)[0]
     m, s = cs["lrr"]
     lo, hi = wm - 6, wm + 6
-    tails = (integrate.quad(f, m - 12 * s, lo, limit=200, epsabs=0,
+    # outer limits: 12 prior standard deviations, and at least the central
+    # range around the mode (for an informative prior that conflicts with
+    # the data)
+    a_lo, b_hi = min(m - 12 * s, lo), max(m + 12 * s, hi)
+    tails = (integrate.quad(f, a_lo, lo, limit=200, epsabs=0,
                             epsrel=1e-8)[0],
-             integrate.quad(f, hi, m + 12 * s, limit=200, epsabs=0,
+             integrate.quad(f, hi, b_hi, limit=200, epsabs=0,
                             epsrel=1e-8)[0])
     Z = q(lo, wm) + q(wm, hi) + tails[0] + tails[1]
 
     def cdf(w):
         if w <= lo:
-            return integrate.quad(f, m - 12 * s, w, limit=200)[0] / Z
+            return integrate.quad(f, a_lo, w, limit=200)[0] / Z
         if w <= wm:
             return (tails[0] + q(lo, w)) / Z
         if w <= hi:
             return (tails[0] + q(lo, wm) + q(wm, w)) / Z
-        return 1 - integrate.quad(f, w, m + 12 * s, limit=200)[0] / Z
+        return 1 - integrate.quad(f, w, b_hi, limit=200)[0] / Z
     out = {"id": cs["id"], "prob": 1 - cdf(np.log(cs["rr0"])),
            "tail_mass": [t / Z for t in tails]}
     out["q"] = [np.exp(brentq(lambda w: cdf(w) - p, lo, hi, xtol=1e-12))
                 for p in [0.025, 0.5, 0.975]]
     wf = lambda w: w * f(w)
     out["mean_log_delta"] = (
-        integrate.quad(wf, m - 12 * s, lo, limit=200, epsabs=0,
+        integrate.quad(wf, a_lo, lo, limit=200, epsabs=0,
                        epsrel=1e-8)[0] +
         integrate.quad(wf, lo, wm, limit=400)[0] +
         integrate.quad(wf, wm, hi, limit=400)[0] +
-        integrate.quad(wf, hi, m + 12 * s, limit=200, epsabs=0,
+        integrate.quad(wf, hi, b_hi, limit=200, epsabs=0,
                        epsrel=1e-8)[0]) / Z
     return out
 

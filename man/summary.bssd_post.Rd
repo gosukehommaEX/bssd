@@ -28,6 +28,8 @@ summary(fit)
 
 }
 \seealso{
-\code{\link{bdribs_post}}, \code{\link{expbern_post}},
-  \code{\link{llbern_post}}
+\code{\link{bdribs_post}}, \code{\link{binbeta_post}},
+  \code{\link{multibin_post}}, \code{\link{canary_post}},
+  \code{\link{expbern_post}}, \code{\link{llbern_post}},
+  \code{\link{exptime_post}}, \code{\link{mapbern_post}}
 }

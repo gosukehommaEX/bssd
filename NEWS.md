@@ -21,9 +21,20 @@
   probability that the event count reaches it, and `elicit_prior()` the
   parameters of a Gamma, Beta or lognormal prior from two quantiles.
 * `sim_oc()` also runs the models `"EXPTIME"` and `"MAPBERN"`.
+* The two-dimensional integrals of `exptime_post()`, `binbeta_post()`,
+  `mapbern_post()` and `canary_post()` (binomial likelihood) locate, for
+  each node of the control parameter, the interval of the second coordinate
+  that holds the conditional posterior mass, and `multibin_post()` locates
+  the posterior of the log rate ratio on its standardized scale. The results
+  stay accurate when the data conflict with an informative prior of the
+  study drug parameter, and, in `canary_post()`, when the event
+  probabilities are large (all subjects with the event, for example).
 * `print()` shows the tested quantity of the new models and, for
   `exptime_post()`, `binbeta_post()` and `mapbern_post()`, the posterior of
-  the study drug rate or proportion.
+  the study drug rate or proportion. Summaries that are not available, such
+  as the posterior mean of `multibin_post()`, are not shown.
+* The README, `vignette("bssd")`, the reference index and the articles of
+  the website list all models together.
 * Vignettes `vignette("exptime")`, `vignette("binbeta")`,
   `vignette("canary")`, `vignette("mapbern")` and
   `vignette("bdribs-monitoring")`; `vignette("bssd")` lists the methods, and

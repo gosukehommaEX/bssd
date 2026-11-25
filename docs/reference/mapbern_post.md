@@ -106,7 +106,9 @@ The likelihood is that of the exponential Bernoulli mixture model
 with hazards \\-\log(1 - \pi)\\; only the priors differ. The posterior
 is integrated numerically on the coordinates \\\mathrm{logit}(\pi_c)\\
 and the prior distribution function of \\\pi_d\\, as in
-[`exptime_post`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md).
+[`exptime_post`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md)
+and
+[`binbeta_post`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md).
 
 A prior derived with the RBesT package can be used: the rows `w`, `a`
 and `b` of a `mixbeta` object are the columns `w`, `shape1` and `shape2`

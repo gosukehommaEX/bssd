@@ -95,11 +95,11 @@ elicit_prior <- function(q, p, family = c("gamma", "beta", "lnorm"),
   if (family == "gamma") {
     check_num(q, "q", len = 2L, lower = 0, lower_open = TRUE)
     rate_of <- function(s) qgamma(p[1L], s) / q[1L]
-    f <- function(ls) {
+    f_gamma <- function(ls) {
       s <- exp(ls)
       pgamma(q[2L] * rate_of(s), s) - p[2L]
     }
-    ls <- uniroot(f, c(-5, 5), tol = 1e-12, extendInt = "upX")$root
+    ls <- uniroot(f_gamma, c(-5, 5), tol = 1e-12, extendInt = "upX")$root
     return(c(shape = exp(ls), rate = rate_of(exp(ls))))
   }
   check_num(q, "q", len = 2L, lower = 0, upper = 1, lower_open = TRUE,
@@ -109,19 +109,19 @@ elicit_prior <- function(q, p, family = c("gamma", "beta", "lnorm"),
     exp(uniroot(function(lb) pbeta(q[1L], s, exp(lb)) - p[1L], c(-5, 5),
                 tol = 1e-12, extendInt = "upX")$root)
   }
-  f <- function(la) {
+  f_beta <- function(la) {
     s <- exp(la)
     pbeta(q[2L], s, b_of(s)) - p[2L]
   }
   grid <- seq(-6, 8, by = 0.5)
   vals <- vapply(grid, function(la) {
-    tryCatch(f(la), error = function(e) NA_real_)
+    tryCatch(f_beta(la), error = function(e) NA_real_)
   }, numeric(1))
   i <- which(!is.na(vals[-1L]) & !is.na(vals[-length(vals)]) &
                sign(vals[-1L]) != sign(vals[-length(vals)]))
   if (length(i) == 0L) {
     stop("No Beta distribution has these quantiles.", call. = FALSE)
   }
-  la <- uniroot(f, grid[c(i[1L], i[1L] + 1L)], tol = 1e-12)$root
+  la <- uniroot(f_beta, grid[c(i[1L], i[1L] + 1L)], tol = 1e-12)$root
   c(shape1 = exp(la), shape2 = b_of(exp(la)))
 }

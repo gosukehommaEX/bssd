@@ -1,7 +1,7 @@
 # Reference values: inst/validation/python/ref_exptime.py (composite
 # Gauss-Legendre rules on (log lambda_c, log lambda_d), split exactly at the
 # thresholds), without the box refinement and the Chebyshev interpolation of
-# the package.
+# the package (data sets E1, E2 and E3).
 
 test_that("exptime_post matches the reference values with rate0", {
   d <- data_e1()
@@ -53,6 +53,24 @@ test_that("exptime_post matches the reference values for the rate ratio", {
   expect_equal(unname(fit$rr[c("lower", "median", "upper")]),
                c(0.16317195087743558, 0.8693380934443319,
                  2.1576335854057658), tolerance = 1e-5)
+})
+
+test_that("exptime_post is accurate far in the tail of the prior of lambda_d", {
+  # priors of Schnell and Ball (2016); the data give a study drug rate about
+  # ten prior standard deviations above the prior mean of lambda_d
+  d <- data_e3()
+  fit <- exptime_post(d$y, d$t, k = 2, prior_c = c(340, 26064),
+                      prior_d = c(339 / 100 + 4, 26064 / 100 + 167),
+                      rate0 = 0.065, rr0 = 5)
+  expect_equal(unname(fit$probs), c(0.5833139942029082, 0.5387867240969044),
+               tolerance = 1e-6)
+  expect_equal(unname(fit$estimates[c("lambda_c", "lambda_d", "r")]),
+               c(0.013152882722575759, 0.06672096049812178,
+                 5.088247250129221), tolerance = 1e-6)
+  expect_equal(unname(fit$rate[c("lower", "median", "upper")]),
+               c(0.05372537361458052, 0.06645926303473489,
+                 0.08120418936496594), tolerance = 1e-6)
+  expect_lt(fit$integration$error, 1e-5)
 })
 
 test_that("exptime_post with details = FALSE gives the same probability", {

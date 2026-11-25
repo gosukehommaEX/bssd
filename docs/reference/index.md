@@ -2,28 +2,11 @@
 
 ## Posterior probability of a safety signal
 
-Posterior distributions under the BDRIBS, EXP_BERN and LL_BERN models,
-and the methods for their results.
+Posterior distributions under the models of the package, and the methods
+for their results.
 
 - [`bdribs_post()`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md)
   : Posterior probability of a safety signal under the BDRIBS model
-- [`expbern_post()`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md)
-  : Posterior probability of a safety signal under the EXP_BERN model
-- [`llbern_post()`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)
-  : Posterior probability of a safety signal under the LL_BERN model
-- [`print(`*`<bssd_post>`*`)`](https://gosukehommaex.github.io/bssd/reference/print.bssd_post.md)
-  : Print a posterior summary for safety signal detection
-- [`summary(`*`<bssd_post>`*`)`](https://gosukehommaex.github.io/bssd/reference/summary.bssd_post.md)
-  : Summarize a posterior for safety signal detection as a data frame
-
-## Further methods for blinded data
-
-Posterior distributions under the methods of Schnell and Ball (2016),
-Ball and Schnell (2016), Goren et al. (2020), Gould and Wang (2017) and
-Brock et al. (2023).
-
-- [`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md)
-  : Posterior of the event rates under the exposure-time Poisson model
 - [`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md)
   : Posterior of the event proportions under the blinded binomial model
 - [`multibin_post()`](https://gosukehommaex.github.io/bssd/reference/multibin_post.md)
@@ -31,11 +14,21 @@ Brock et al. (2023).
   studies
 - [`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md)
   : Posterior of the risk elevation from the total event count
+- [`expbern_post()`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md)
+  : Posterior probability of a safety signal under the EXP_BERN model
+- [`llbern_post()`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)
+  : Posterior probability of a safety signal under the LL_BERN model
+- [`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md)
+  : Posterior of the event rates under the exposure-time Poisson model
 - [`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md)
   : Posterior probability of a higher event probability on study drug
   with a meta-analytic predictive prior
 - [`map_beta()`](https://gosukehommaex.github.io/bssd/reference/map_beta.md)
   : Meta-analytic predictive prior of an event probability
+- [`print(`*`<bssd_post>`*`)`](https://gosukehommaex.github.io/bssd/reference/print.bssd_post.md)
+  : Print a posterior summary for safety signal detection
+- [`summary(`*`<bssd_post>`*`)`](https://gosukehommaex.github.io/bssd/reference/summary.bssd_post.md)
+  : Summarize a posterior for safety signal detection as a data frame
 
 ## Monitoring tools
 

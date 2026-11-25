@@ -44,15 +44,13 @@
     <li><h6 class="dropdown-header" data-toc-skip>Models</h6></li>
     <li><a class="dropdown-item" href="../articles/bdribs1.html">BDRIBS(1): Poisson model with the total exposure time</a></li>
     <li><a class="dropdown-item" href="../articles/bdribs2.html">BDRIBS(2): Poisson model with the total time at risk</a></li>
-    <li><a class="dropdown-item" href="../articles/expbern.html">EXP_BERN: exponential Bernoulli mixture model</a></li>
-    <li><a class="dropdown-item" href="../articles/llbern.html">LL_BERN: log-logistic Bernoulli mixture model</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Further methods</h6></li>
-    <li><a class="dropdown-item" href="../articles/exptime.html">EXPTIME: exposure-time Poisson model</a></li>
+    <li><a class="dropdown-item" href="../articles/bdribs-monitoring.html">Monitoring with BDRIBS: contour plots, sensitivity and pooled trials</a></li>
     <li><a class="dropdown-item" href="../articles/binbeta.html">BINBETA and MULTIBIN: blinded binomial models</a></li>
     <li><a class="dropdown-item" href="../articles/canary.html">CANARY: the canary in the coal mine</a></li>
+    <li><a class="dropdown-item" href="../articles/expbern.html">EXP_BERN: exponential Bernoulli mixture model</a></li>
+    <li><a class="dropdown-item" href="../articles/llbern.html">LL_BERN: log-logistic Bernoulli mixture model</a></li>
+    <li><a class="dropdown-item" href="../articles/exptime.html">EXPTIME: exposure-time Poisson model</a></li>
     <li><a class="dropdown-item" href="../articles/mapbern.html">MAPBERN: meta-analytic predictive prior and mixture likelihood</a></li>
-    <li><a class="dropdown-item" href="../articles/bdribs-monitoring.html">Monitoring with BDRIBS: contour plots, sensitivity and pooled trials</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -161,7 +159,10 @@ PASS.</li>
 fixed grids. A transcription of the code, kept outside the package
 because the code has no stated license, reproduces 28 of the 28
 published counts
-(<code>inst/validation/python/ref_gould2017_author_grid.csv</code>); the
+(<code>inst/validation/python/ref_gould2017_author_grid.csv</code>). The
+authors’ code itself, run by a script outside the package, gives 28 of
+the 28 published counts
+(<code>inst/validation/results/gould2017_author_code.csv</code>). The
 differences from the exact counts of bssd come from the grids (100
 values of <span class="math inline">\(R\)</span> in <span class="math inline">\((0, 10)\)</span>, with the threshold 2 evaluated
 at the grid point 1.98, for the binomial model; a coarse grid of the
@@ -335,12 +336,16 @@ default of the authors’ code, which is used here as well.</p>
 <div class="section level2">
 <h2 id="numerical-integration">Numerical integration<a class="anchor" aria-label="anchor" href="#numerical-integration"></a>
 </h2>
-<p>Against independent Python computations on dense grids split exactly
-at the thresholds, the largest absolute difference of the 24 compared
-quantities (four data sets with the ratio, the difference, the odds
-ratio and the Poisson likelihood) is 6.3e-07. For the Poisson
-likelihood, MCMC in JAGS gives 0.2214 for <span class="math inline">\(P(R &gt; 2 \mid X)\)</span> against 0.2213 from
-bssd (PASS).</p>
+<p>For the binomial likelihood, the posterior is integrated over <span class="math inline">\(\mathrm{logit}(p_c)\)</span> by Gauss-Legendre
+quadrature, and for each of its nodes over an interval of <span class="math inline">\(\log R\)</span> (or <span class="math inline">\(p_d\)</span>) located from the conditional
+posterior; for the ratio the interval ends at the truncation point <span class="math inline">\(R = 1 / p_c\)</span>, where the density of <span class="math inline">\(\log R\)</span> can be largest when many subjects
+had the event. Against independent Python computations on dense grids
+split exactly at the thresholds, the largest absolute difference of the
+27 compared quantities (five data sets: the ratio, the difference, the
+odds ratio, the Poisson likelihood, and the ratio when all 100 subjects
+had the event) is 5.8e-07. For the Poisson likelihood, MCMC in JAGS
+gives 0.2214 for <span class="math inline">\(P(R &gt; 2 \mid X)\)</span>
+against 0.2213 from bssd (PASS).</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

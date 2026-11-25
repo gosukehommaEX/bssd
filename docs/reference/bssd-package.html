@@ -6,34 +6,42 @@
     }
   };
 </script><script src="../deps/jquery-3.6.0/jquery-3.6.0.min.js"></script><meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no"><link href="../deps/bootstrap-5.3.1/bootstrap.min.css" rel="stylesheet"><script src="../deps/bootstrap-5.3.1/bootstrap.bundle.min.js"></script><link href="../deps/font-awesome-6.5.2/css/all.min.css" rel="stylesheet"><link href="../deps/font-awesome-6.5.2/css/v4-shims.min.css" rel="stylesheet"><script src="../deps/headroom-0.11.0/headroom.min.js"></script><script src="../deps/headroom-0.11.0/jQuery.headroom.min.js"></script><script src="../deps/bootstrap-toc-1.0.1/bootstrap-toc.min.js"></script><script src="../deps/clipboard.js-2.0.11/clipboard.min.js"></script><script src="../deps/search-1.0.0/autocomplete.jquery.min.js"></script><script src="../deps/search-1.0.0/fuse.min.js"></script><script src="../deps/search-1.0.0/mark.min.js"></script><!-- pkgdown --><script src="../pkgdown.js"></script><meta property="og:title" content="bssd: Bayesian Safety Signal Detection for Blinded Clinical Trial Data — bssd-package"><meta name="description" content="The package computes the posterior probability of a safety signal from
-blinded clinical trial data. It implements the models examined by Duncan
-(2026): the BDRIBS model of Mukhopadhyay et al. (2018) with the total
-exposure time or the total time at risk (bdribs_post), the
-exponential Bernoulli mixture model (expbern_post), and the
-log-logistic Bernoulli mixture model (llbern_post). It also
-implements the exposure-time Poisson model of Schnell and Ball (2016)
-(exptime_post), the binomial model of Ball and Schnell
-(2016) (binbeta_post), the method of Gould and Wang (2017)
-(canary_post), the meta-analytic predictive prior and
-mixture likelihood of Brock et al. (2023) (map_beta,
-mapbern_post), the model of Goren et al. (2020) for several
-studies (multibin_post), and the tools of Waterhouse et al.
-(2022) for BDRIBS (pooled_ratio, bdribs_grid).
+blinded clinical trial data with published Bayesian methods:
+the Poisson-based model BDRIBS of Mukhopadhyay et al. (2018) with
+    the total exposure time or the total time at risk, as specified by
+    Duncan (2026) (bdribs_post), and the tools of Waterhouse
+    et al. (2022) for it (bdribs_grid,
+    pooled_ratio);
+the binomial model of Ball and Schnell (2016)
+    (binbeta_post) and the model of Goren et al. (2020) for
+    several studies (multibin_post);
+the method of Gould and Wang (2017) (canary_post);
+the exponential Bernoulli and log-logistic Bernoulli mixture models
+    of Duncan (2026) (expbern_post,
+    llbern_post);
+the exposure-time Poisson model of Schnell and Ball (2016)
+    (exptime_post);
+the meta-analytic predictive prior and mixture likelihood of Brock
+    et al. (2023) (map_beta, mapbern_post).
 All posterior quantities are obtained by numerical integration, so no
 Markov chain Monte Carlo sampling is needed."><meta property="og:description" content="The package computes the posterior probability of a safety signal from
-blinded clinical trial data. It implements the models examined by Duncan
-(2026): the BDRIBS model of Mukhopadhyay et al. (2018) with the total
-exposure time or the total time at risk (bdribs_post), the
-exponential Bernoulli mixture model (expbern_post), and the
-log-logistic Bernoulli mixture model (llbern_post). It also
-implements the exposure-time Poisson model of Schnell and Ball (2016)
-(exptime_post), the binomial model of Ball and Schnell
-(2016) (binbeta_post), the method of Gould and Wang (2017)
-(canary_post), the meta-analytic predictive prior and
-mixture likelihood of Brock et al. (2023) (map_beta,
-mapbern_post), the model of Goren et al. (2020) for several
-studies (multibin_post), and the tools of Waterhouse et al.
-(2022) for BDRIBS (pooled_ratio, bdribs_grid).
+blinded clinical trial data with published Bayesian methods:
+the Poisson-based model BDRIBS of Mukhopadhyay et al. (2018) with
+    the total exposure time or the total time at risk, as specified by
+    Duncan (2026) (bdribs_post), and the tools of Waterhouse
+    et al. (2022) for it (bdribs_grid,
+    pooled_ratio);
+the binomial model of Ball and Schnell (2016)
+    (binbeta_post) and the model of Goren et al. (2020) for
+    several studies (multibin_post);
+the method of Gould and Wang (2017) (canary_post);
+the exponential Bernoulli and log-logistic Bernoulli mixture models
+    of Duncan (2026) (expbern_post,
+    llbern_post);
+the exposure-time Poisson model of Schnell and Ball (2016)
+    (exptime_post);
+the meta-analytic predictive prior and mixture likelihood of Brock
+    et al. (2023) (map_beta, mapbern_post).
 All posterior quantities are obtained by numerical integration, so no
 Markov chain Monte Carlo sampling is needed."></head><body>
     <a href="#main" class="visually-hidden-focusable">Skip to contents</a>
@@ -59,15 +67,13 @@ Markov chain Monte Carlo sampling is needed."></head><body>
     <li><h6 class="dropdown-header" data-toc-skip>Models</h6></li>
     <li><a class="dropdown-item" href="../articles/bdribs1.html">BDRIBS(1): Poisson model with the total exposure time</a></li>
     <li><a class="dropdown-item" href="../articles/bdribs2.html">BDRIBS(2): Poisson model with the total time at risk</a></li>
-    <li><a class="dropdown-item" href="../articles/expbern.html">EXP_BERN: exponential Bernoulli mixture model</a></li>
-    <li><a class="dropdown-item" href="../articles/llbern.html">LL_BERN: log-logistic Bernoulli mixture model</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Further methods</h6></li>
-    <li><a class="dropdown-item" href="../articles/exptime.html">EXPTIME: exposure-time Poisson model</a></li>
+    <li><a class="dropdown-item" href="../articles/bdribs-monitoring.html">Monitoring with BDRIBS: contour plots, sensitivity and pooled trials</a></li>
     <li><a class="dropdown-item" href="../articles/binbeta.html">BINBETA and MULTIBIN: blinded binomial models</a></li>
     <li><a class="dropdown-item" href="../articles/canary.html">CANARY: the canary in the coal mine</a></li>
+    <li><a class="dropdown-item" href="../articles/expbern.html">EXP_BERN: exponential Bernoulli mixture model</a></li>
+    <li><a class="dropdown-item" href="../articles/llbern.html">LL_BERN: log-logistic Bernoulli mixture model</a></li>
+    <li><a class="dropdown-item" href="../articles/exptime.html">EXPTIME: exposure-time Poisson model</a></li>
     <li><a class="dropdown-item" href="../articles/mapbern.html">MAPBERN: meta-analytic predictive prior and mixture likelihood</a></li>
-    <li><a class="dropdown-item" href="../articles/bdribs-monitoring.html">Monitoring with BDRIBS: contour plots, sensitivity and pooled trials</a></li>
   </ul></li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
       </ul><ul class="navbar-nav"><li class="nav-item"><form class="form-inline" role="search">
@@ -88,20 +94,23 @@ Markov chain Monte Carlo sampling is needed."></head><body>
 
     <div class="ref-description section level2">
     <p>The package computes the posterior probability of a safety signal from
-blinded clinical trial data. It implements the models examined by Duncan
-(2026): the BDRIBS model of Mukhopadhyay et al. (2018) with the total
-exposure time or the total time at risk (<code><a href="bdribs_post.html">bdribs_post</a></code>), the
-exponential Bernoulli mixture model (<code><a href="expbern_post.html">expbern_post</a></code>), and the
-log-logistic Bernoulli mixture model (<code><a href="llbern_post.html">llbern_post</a></code>). It also
-implements the exposure-time Poisson model of Schnell and Ball (2016)
-(<code><a href="exptime_post.html">exptime_post</a></code>), the binomial model of Ball and Schnell
-(2016) (<code><a href="binbeta_post.html">binbeta_post</a></code>), the method of Gould and Wang (2017)
-(<code><a href="canary_post.html">canary_post</a></code>), the meta-analytic predictive prior and
-mixture likelihood of Brock et al. (2023) (<code><a href="map_beta.html">map_beta</a></code>,
-<code><a href="mapbern_post.html">mapbern_post</a></code>), the model of Goren et al. (2020) for several
-studies (<code><a href="multibin_post.html">multibin_post</a></code>), and the tools of Waterhouse et al.
-(2022) for BDRIBS (<code><a href="pooled_ratio.html">pooled_ratio</a></code>, <code><a href="bdribs_grid.html">bdribs_grid</a></code>).
-All posterior quantities are obtained by numerical integration, so no
+blinded clinical trial data with published Bayesian methods:</p><ul><li><p>the Poisson-based model BDRIBS of Mukhopadhyay et al. (2018) with
+    the total exposure time or the total time at risk, as specified by
+    Duncan (2026) (<code><a href="bdribs_post.html">bdribs_post</a></code>), and the tools of Waterhouse
+    et al. (2022) for it (<code><a href="bdribs_grid.html">bdribs_grid</a></code>,
+    <code><a href="pooled_ratio.html">pooled_ratio</a></code>);</p></li>
+<li><p>the binomial model of Ball and Schnell (2016)
+    (<code><a href="binbeta_post.html">binbeta_post</a></code>) and the model of Goren et al. (2020) for
+    several studies (<code><a href="multibin_post.html">multibin_post</a></code>);</p></li>
+<li><p>the method of Gould and Wang (2017) (<code><a href="canary_post.html">canary_post</a></code>);</p></li>
+<li><p>the exponential Bernoulli and log-logistic Bernoulli mixture models
+    of Duncan (2026) (<code><a href="expbern_post.html">expbern_post</a></code>,
+    <code><a href="llbern_post.html">llbern_post</a></code>);</p></li>
+<li><p>the exposure-time Poisson model of Schnell and Ball (2016)
+    (<code><a href="exptime_post.html">exptime_post</a></code>);</p></li>
+<li><p>the meta-analytic predictive prior and mixture likelihood of Brock
+    et al. (2023) (<code><a href="map_beta.html">map_beta</a></code>, <code><a href="mapbern_post.html">mapbern_post</a></code>).</p></li>
+</ul><p>All posterior quantities are obtained by numerical integration, so no
 Markov chain Monte Carlo sampling is needed.</p>
     </div>
 

@@ -9,8 +9,10 @@
 #'   \code{ip_difference} and \code{error}. The incidence columns are
 #'   \code{NA} when \code{t_star} was not given.
 #'
-#' @seealso \code{\link{bdribs_post}}, \code{\link{expbern_post}},
-#'   \code{\link{llbern_post}}
+#' @seealso \code{\link{bdribs_post}}, \code{\link{binbeta_post}},
+#'   \code{\link{multibin_post}}, \code{\link{canary_post}},
+#'   \code{\link{expbern_post}}, \code{\link{llbern_post}},
+#'   \code{\link{exptime_post}}, \code{\link{mapbern_post}}
 #'
 #' @examples
 #' fit <- bdribs_post(y = 5, exposure = 500, k = 2, lambda_hp = 18 / 4000,

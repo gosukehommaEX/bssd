@@ -90,16 +90,23 @@ elicit_prior(c(0.5, 2), c(0.5, 0.75), "gamma")
 
 ## Numerical integration
 
-The posterior is integrated on the coordinates \\\log \lambda_c\\
-(Gauss-Legendre quadrature) and the prior distribution function of
-\\\lambda_d\\ (Chebyshev interpolation), after a coarse grid has located
-the region of the posterior mass. The posterior probability of a
-threshold that depends on \\\lambda_c\\ (such as the rate ratio) is
-obtained from the Chebyshev series of each row of the grid. Compared
-with independent Python computations on dense grids split exactly at the
-thresholds (`inst/validation/validate_methods_python.R`), the largest
-absolute difference of the 3 posterior probabilities is 6.7e-10, and all
-21 compared quantities are PASS.
+The posterior is integrated over \\\log \lambda_c\\ by Gauss-Legendre
+quadrature. For each of its nodes, the interval of \\\lambda_d\\ that
+holds the conditional posterior mass is located on the scale \\z =
+\Phi^{-1}(F_d(\lambda_d))\\, where \\F_d\\ is the prior distribution
+function of \\\lambda_d\\, and the density is interpolated at Chebyshev
+points in \\z\\ or in \\F_d(\lambda_d)\\, whichever represents it more
+accurately. The first scale keeps the far tails of an informative prior,
+which matters when the data put \\\lambda_d\\ many prior standard
+deviations above its prior mean; the second keeps a vague prior from
+creating long tails. The posterior probability of a threshold that
+depends on \\\lambda_c\\ (such as the rate ratio) is obtained from the
+Chebyshev series of each row. Compared with independent Python
+computations on dense grids split exactly at the thresholds
+(`inst/validation/validate_methods_python.R`, three data sets including
+one with a study drug rate far in the upper tail of the prior of Schnell
+and Ball, 2016), the largest absolute difference of the 5 posterior
+probabilities is 2.9e-09, and all 32 compared quantities are PASS.
 
 ## Comparison with MCMC
 

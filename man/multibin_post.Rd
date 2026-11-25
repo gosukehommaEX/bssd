@@ -75,9 +75,14 @@ between studies, and \eqn{\delta}{delta} is common. Given
 composite Gauss-Legendre quadrature on
 \eqn{\mathrm{logit}(\theta_s)}{logit(theta_s)} over the region where the
 integrand is not negligible, so the posterior of \eqn{\delta}{delta} is
-one-dimensional; it is integrated at Chebyshev points of the prior
-distribution function of \eqn{\log \delta}{log(delta)}. Goren et al.
-(2020) sample the same posterior by Hamiltonian Monte Carlo.
+one-dimensional. A coarse grid locates the posterior mass in
+\eqn{z = (\log \delta - m) / v}{z = (log(delta) - m) / v}, and the
+posterior is integrated at Chebyshev points of \eqn{z}{z} or of the prior
+distribution function \eqn{\Phi(z)}{pnorm(z)}, whichever represents the
+density more accurately (\code{integration$coordinate}); \eqn{z}{z} is
+used when the data conflict with an informative prior of
+\eqn{\log \delta}{log(delta)}. Goren et al. (2020) sample the same
+posterior by Hamiltonian Monte Carlo.
 
 A signal is declared when
 \eqn{P(\delta > rr_0 \mid \mathrm{data}) > }{P(delta > rr0 | data) > }

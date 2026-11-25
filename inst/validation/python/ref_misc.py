@@ -85,8 +85,7 @@ if __name__ == "__main__":
     res["signal_count_probs"] = probs
     # signal_count: prior Beta(1, 49), R > 2 with cutoff 0.8, N = 100: the
     # probability passes 0.8 between the counts 16 and 17 (it falls again
-    # for counts near N, where the posterior of p_c lies outside the range
-    # of this rule, so those counts are not computed here)
+    # for counts near N; the count N is case C5 of ref_canary.py)
     probs = {}
     for y in (16, 17):
         cs = {"id": "T%d" % y, "y": y, "n": 100, "k": 1, "prior_c": [1, 49],

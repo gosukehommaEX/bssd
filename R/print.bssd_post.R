@@ -1,15 +1,19 @@
 #' Print a posterior summary for safety signal detection
 #'
+#' Summaries that are not available (\code{NA}), such as the posterior mean
+#' of \code{\link{multibin_post}} or the quantiles with
+#' \code{details = FALSE}, are not shown.
+#'
 #' @param x An object of class \code{bssd_post}.
 #' @param digits Number of significant digits.
 #' @param ... Not used.
 #'
 #' @return \code{x}, invisibly.
 #'
-#' @seealso \code{\link{bdribs_post}}, \code{\link{expbern_post}},
-#'   \code{\link{llbern_post}}, \code{\link{exptime_post}},
-#'   \code{\link{binbeta_post}}, \code{\link{canary_post}},
-#'   \code{\link{mapbern_post}}, \code{\link{multibin_post}}
+#' @seealso \code{\link{bdribs_post}}, \code{\link{binbeta_post}},
+#'   \code{\link{multibin_post}}, \code{\link{canary_post}},
+#'   \code{\link{expbern_post}}, \code{\link{llbern_post}},
+#'   \code{\link{exptime_post}}, \code{\link{mapbern_post}}
 #'
 #' @examples
 #' fit <- bdribs_post(y = 5, exposure = 500, k = 2, lambda_hp = 18 / 4000,
@@ -33,15 +37,31 @@ print.bssd_post <- function(x, digits = 4, ...) {
   cat("Signal (posterior probability > ", f(x$cutoff), "): ",
       if (x$signal) "yes" else "no", "\n", sep = "")
   rr_name <- if (is.null(x$rr_name)) x$rr_label else x$rr_name
-  cat("Posterior of ", rr_name, ": mean ", f(x$rr["mean"]),
-      ", median ", f(x$rr["median"]), ", ", f(100 * x$level),
-      "% interval (", f(x$rr["lower"]), ", ", f(x$rr["upper"]), ")\n",
-      sep = "")
+  # summaries that are not available (NA) are not shown
+  summ <- function(v) {
+    v <- unname(v[c("mean", "median", "lower", "upper")])
+    parts <- character(0)
+    if (!is.na(v[1L])) {
+      parts <- c(parts, paste0("mean ", f(v[1L])))
+    }
+    if (!is.na(v[2L])) {
+      parts <- c(parts, paste0("median ", f(v[2L])))
+    }
+    if (!is.na(v[3L]) && !is.na(v[4L])) {
+      parts <- c(parts, paste0(f(100 * x$level), "% interval (", f(v[3L]),
+                               ", ", f(v[4L]), ")"))
+    }
+    paste(parts, collapse = ", ")
+  }
+  s_rr <- summ(x$rr)
+  if (nzchar(s_rr)) {
+    cat("Posterior of ", rr_name, ": ", s_rr, "\n", sep = "")
+  }
   if (!is.null(x$rate)) {
-    cat("Posterior of ", x$rate_name, ": mean ", f(x$rate["mean"]),
-        ", median ", f(x$rate["median"]), ", ", f(100 * x$level),
-        "% interval (", f(x$rate["lower"]), ", ", f(x$rate["upper"]),
-        ")\n", sep = "")
+    s_rate <- summ(x$rate)
+    if (nzchar(s_rate)) {
+      cat("Posterior of ", x$rate_name, ": ", s_rate, "\n", sep = "")
+    }
   }
   if (!is.null(x$incidence)) {
     cat("Cumulative incidence at t_star = ", f(x$t_star), ": placebo ",

@@ -17,6 +17,9 @@ CASES = [
      "prior_d": [1 / 3, 1 / 3], "rr0": 1.0},
     {"id": "M2", "data": "M1", "k": 3, "prior_c": MIX1,
      "prior_d": [1 / 3, 1 / 3], "rr0": 1.5},
+    # an informative prior of pi_d (mean 0.02) that conflicts with the data
+    {"id": "M3", "data": "M1", "k": 3, "prior_c": MIX1,
+     "prior_d": [2, 98], "rr0": 0.25},
 ]
 MAP_CASES = [
     {"id": "P1", "events": [9, 11, 10], "n": [100, 100, 100]},

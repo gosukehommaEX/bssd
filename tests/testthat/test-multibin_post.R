@@ -30,6 +30,25 @@ test_that("multibin_post matches the reference values with study priors", {
                tolerance = 1e-5)
 })
 
+test_that("multibin_post is accurate in the tails of an informative prior", {
+  # prior N(0, 0.1^2) of log(delta); the data move the posterior about five
+  # prior standard deviations up (G3) or the probabilities down (G4)
+  f3 <- multibin_post(y = c(60, 120), n = c(1000, 2000), k = 1,
+                      prior_c = rbind(c(20, 1980), c(40, 3960)),
+                      lrr_prior = c(0, 0.1), rr0 = 1.5)
+  expect_equal(f3$prob, 0.9105855687058478, tolerance = 1e-6)
+  expect_equal(unname(f3$rr[c("lower", "median", "upper")]),
+               c(1.4104418483834271, 1.7134029102646928, 2.072925906187109),
+               tolerance = 1e-6)
+  expect_identical(f3$integration$coordinate, "z")
+  f4 <- multibin_post(y = c(2, 3), n = c(1000, 2000), k = 1,
+                      prior_c = rbind(c(200, 19800), c(400, 39600)),
+                      lrr_prior = c(0, 0.1), rr0 = 0.8)
+  expect_equal(f4$prob, 0.8888460854122495, tolerance = 1e-6)
+  expect_equal(unname(f4$estimates["log_delta"]), -0.10755336138623892,
+               tolerance = 1e-6)
+})
+
 test_that("multibin_post checks its input", {
   expect_error(multibin_post(y = c(3, 9), n = c(150), prior_c = c(2, 98)),
                "'y'")

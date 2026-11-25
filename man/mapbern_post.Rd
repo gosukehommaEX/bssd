@@ -84,7 +84,8 @@ The likelihood is that of the exponential Bernoulli mixture model
 \eqn{-\log(1 - \pi)}{-log(1 - pi)}; only the priors differ. The posterior
 is integrated numerically on the coordinates
 \eqn{\mathrm{logit}(\pi_c)}{logit(pi_c)} and the prior distribution
-function of \eqn{\pi_d}{pi_d}, as in \code{\link{exptime_post}}.
+function of \eqn{\pi_d}{pi_d}, as in \code{\link{exptime_post}} and
+\code{\link{binbeta_post}}.
 
 A prior derived with the \pkg{RBesT} package can be used: the rows
 \code{w}, \code{a} and \code{b} of a \code{mixbeta} object are the

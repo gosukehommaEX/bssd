@@ -1,6 +1,6 @@
 # Reference values: inst/validation/python/ref_binbeta.py (exact finite
 # mixture of products of Beta distributions from the binomial expansion of
-# the likelihood).
+# the likelihood; cases B1 to B5).
 
 test_that("binbeta_post matches the exact values with p0", {
   fit <- binbeta_post(y = 40, n = 300, k = 1, prior_c = c(31, 271),
@@ -34,6 +34,33 @@ test_that("binbeta_post matches the exact values for the ratio", {
   expect_equal(unname(fit$rr[c("lower", "median", "upper")]),
                c(0.36994837263017366, 1.8189007890849602,
                  6.678978679651721), tolerance = 1e-6)
+})
+
+test_that("binbeta_post is accurate when the data conflict with the priors", {
+  # priors with mean 0.02 for both proportions and 12 of 100 subjects with
+  # the event; P(theta_d > theta_c) = 0.5 by symmetry
+  f3 <- binbeta_post(y = 12, n = 100, k = 1, prior_c = c(1, 49),
+                     prior_d = c(1, 49), p0 = 0.05)
+  expect_equal(unname(f3$probs), c(0.6276917768448429, 0.5),
+               tolerance = 1e-6)
+  # all subjects with the event: the posterior of theta_d lies far in the
+  # upper tail of its prior Beta(1, 99)
+  f4 <- binbeta_post(y = 100, n = 100, k = 1, prior_c = c(1, 99),
+                     prior_d = c(1, 99), p0 = 0.3, rr0 = 2)
+  expect_equal(f4$prob, 0.7584271492339151, tolerance = 1e-6)
+  expect_equal(f4$probs[["ratio"]], 0.010088886231998995, tolerance = 1e-5)
+  expect_equal(unname(f4$rate[c("lower", "median", "upper")]),
+               c(0.2292367577406037, 0.3385467317214596,
+                 0.4420681123754414), tolerance = 1e-5)
+  # few events: the posterior of theta_d lies in the lower tail of its prior
+  # Beta(30, 270)
+  f5 <- binbeta_post(y = 5, n = 1000, k = 1, prior_c = c(5, 495),
+                     prior_d = c(30, 270), p0 = 0.04, rr0 = 8)
+  expect_equal(unname(f5$probs), c(0.6669027639364123, 0.5333887099059609),
+               tolerance = 1e-6)
+  expect_equal(unname(f5$rr[c("lower", "median", "upper")]),
+               c(3.4809226654317693, 8.335877831033217, 25.13355630126387),
+               tolerance = 1e-5)
 })
 
 test_that("binbeta_post handles no events and all events", {

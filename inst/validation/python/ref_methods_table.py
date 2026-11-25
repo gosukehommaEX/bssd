@@ -75,7 +75,7 @@ data = rc.make_data()
 with open("data_methods.csv", "w", newline="") as f:
     w = csv.writer(f, lineterminator="\n")
     w.writerow(["dataset", "y", "t", "study"])
-    for name in ("E1", "E2", "M1"):
+    for name in ("E1", "E2", "E3", "M1"):
         for yy, tt in zip(data[name]["y"], data[name]["t"]):
             w.writerow([name, int(yy), repr(float(tt)), 1])
     d = mb["map_subject_data"]

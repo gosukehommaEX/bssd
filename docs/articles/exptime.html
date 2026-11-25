@@ -44,15 +44,13 @@
     <li><h6 class="dropdown-header" data-toc-skip>Models</h6></li>
     <li><a class="dropdown-item" href="../articles/bdribs1.html">BDRIBS(1): Poisson model with the total exposure time</a></li>
     <li><a class="dropdown-item" href="../articles/bdribs2.html">BDRIBS(2): Poisson model with the total time at risk</a></li>
-    <li><a class="dropdown-item" href="../articles/expbern.html">EXP_BERN: exponential Bernoulli mixture model</a></li>
-    <li><a class="dropdown-item" href="../articles/llbern.html">LL_BERN: log-logistic Bernoulli mixture model</a></li>
-    <li><hr class="dropdown-divider"></li>
-    <li><h6 class="dropdown-header" data-toc-skip>Further methods</h6></li>
-    <li><a class="dropdown-item" href="../articles/exptime.html">EXPTIME: exposure-time Poisson model</a></li>
+    <li><a class="dropdown-item" href="../articles/bdribs-monitoring.html">Monitoring with BDRIBS: contour plots, sensitivity and pooled trials</a></li>
     <li><a class="dropdown-item" href="../articles/binbeta.html">BINBETA and MULTIBIN: blinded binomial models</a></li>
     <li><a class="dropdown-item" href="../articles/canary.html">CANARY: the canary in the coal mine</a></li>
+    <li><a class="dropdown-item" href="../articles/expbern.html">EXP_BERN: exponential Bernoulli mixture model</a></li>
+    <li><a class="dropdown-item" href="../articles/llbern.html">LL_BERN: log-logistic Bernoulli mixture model</a></li>
+    <li><a class="dropdown-item" href="../articles/exptime.html">EXPTIME: exposure-time Poisson model</a></li>
     <li><a class="dropdown-item" href="../articles/mapbern.html">MAPBERN: meta-analytic predictive prior and mixture likelihood</a></li>
-    <li><a class="dropdown-item" href="../articles/bdribs-monitoring.html">Monitoring with BDRIBS: contour plots, sensitivity and pooled trials</a></li>
   </ul>
 </li>
 <li class="nav-item"><a class="nav-link" href="../news/index.html">Changelog</a></li>
@@ -160,15 +158,24 @@ control rate 0.013, and the threshold is 0.62.</p>
 <div class="section level2">
 <h2 id="numerical-integration">Numerical integration<a class="anchor" aria-label="anchor" href="#numerical-integration"></a>
 </h2>
-<p>The posterior is integrated on the coordinates <span class="math inline">\(\log \lambda_c\)</span> (Gauss-Legendre
-quadrature) and the prior distribution function of <span class="math inline">\(\lambda_d\)</span> (Chebyshev interpolation),
-after a coarse grid has located the region of the posterior mass. The
-posterior probability of a threshold that depends on <span class="math inline">\(\lambda_c\)</span> (such as the rate ratio) is
-obtained from the Chebyshev series of each row of the grid. Compared
-with independent Python computations on dense grids split exactly at the
-thresholds (<code>inst/validation/validate_methods_python.R</code>), the
-largest absolute difference of the 3 posterior probabilities is 6.7e-10,
-and all 21 compared quantities are PASS.</p>
+<p>The posterior is integrated over <span class="math inline">\(\log
+\lambda_c\)</span> by Gauss-Legendre quadrature. For each of its nodes,
+the interval of <span class="math inline">\(\lambda_d\)</span> that
+holds the conditional posterior mass is located on the scale <span class="math inline">\(z = \Phi^{-1}(F_d(\lambda_d))\)</span>, where
+<span class="math inline">\(F_d\)</span> is the prior distribution
+function of <span class="math inline">\(\lambda_d\)</span>, and the
+density is interpolated at Chebyshev points in <span class="math inline">\(z\)</span> or in <span class="math inline">\(F_d(\lambda_d)\)</span>, whichever represents it
+more accurately. The first scale keeps the far tails of an informative
+prior, which matters when the data put <span class="math inline">\(\lambda_d\)</span> many prior standard deviations
+above its prior mean; the second keeps a vague prior from creating long
+tails. The posterior probability of a threshold that depends on <span class="math inline">\(\lambda_c\)</span> (such as the rate ratio) is
+obtained from the Chebyshev series of each row. Compared with
+independent Python computations on dense grids split exactly at the
+thresholds (<code>inst/validation/validate_methods_python.R</code>,
+three data sets including one with a study drug rate far in the upper
+tail of the prior of Schnell and Ball, 2016), the largest absolute
+difference of the 5 posterior probabilities is 2.9e-09, and all 32
+compared quantities are PASS.</p>
 </div>
 <div class="section level2">
 <h2 id="comparison-with-mcmc">Comparison with MCMC<a class="anchor" aria-label="anchor" href="#comparison-with-mcmc"></a>

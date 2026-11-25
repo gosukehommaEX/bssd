@@ -1,31 +1,45 @@
 # bssd
 
 bssd computes the posterior probability of a safety signal from blinded
-clinical trial data with the models examined by Duncan (2026) and with
-other published methods for blinded data. The posterior quantities are
-obtained by numerical integration instead of Markov chain Monte Carlo
-(MCMC) sampling, so the results do not depend on a random seed and are
-fast enough for simulation studies.
+clinical trial data, in which the treatment groups of the subjects with
+an adverse event are unknown, with published Bayesian methods. The
+posterior quantities are obtained by numerical integration instead of
+Markov chain Monte Carlo (MCMC) sampling, so the results do not depend
+on a random seed and are fast enough for simulation studies.
 
 ## Models and functions
 
-| Model | Data | Function | Relative risk |
+| Model | Blinded data | Function | Tested quantity |
 |----|----|----|----|
-| BDRIBS(1) | number of subjects with the event and total exposure time | [`bdribs_post()`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md) | rate ratio |
-| BDRIBS(2) | number of subjects with the event and total time at risk | [`bdribs_post()`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md) | rate ratio |
-| EXP_BERN | event indicator and follow-up time of each subject | [`expbern_post()`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md) | rate ratio |
-| LL_BERN | event indicator and follow-up time of each subject | [`llbern_post()`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md) | ratio of the cumulative incidences at `t_star` |
+| BDRIBS(1) (Mukhopadhyay et al., 2018; Duncan, 2026) | number of subjects with the event and total exposure time | [`bdribs_post()`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md) | rate ratio |
+| BDRIBS(2) (Mukhopadhyay et al., 2018; Duncan, 2026) | number of subjects with the event and total time at risk | [`bdribs_post()`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md) | rate ratio |
+| BINBETA (Ball and Schnell, 2016) | numbers of subjects and of subjects with the event | [`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md) | study drug proportion or ratio |
+| MULTIBIN (Goren et al., 2020) | the same, for each of several studies | [`multibin_post()`](https://gosukehommaex.github.io/bssd/reference/multibin_post.md) | common rate ratio |
+| CANARY (Gould and Wang, 2017) | total event count, with external control data | [`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md) | ratio, difference or odds ratio |
+| EXP_BERN (Duncan, 2026) | event indicator and follow-up time of each subject | [`expbern_post()`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md) | rate ratio |
+| LL_BERN (Duncan, 2026) | event indicator and follow-up time of each subject | [`llbern_post()`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md) | ratio of the cumulative incidences at `t_star` |
+| EXPTIME (Schnell and Ball, 2016) | number of events and follow-up time of each subject | [`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md) | study drug rate or rate ratio |
+| MAPBERN (Brock et al., 2023) | event indicator and time at risk of each subject, historical control arms | [`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md), [`map_beta()`](https://gosukehommaex.github.io/bssd/reference/map_beta.md) | ratio of the event probabilities |
+| BDRIBS monitoring (Waterhouse et al., 2022) | as BDRIBS, on grids of data and for pooled trials | [`bdribs_grid()`](https://gosukehommaex.github.io/bssd/reference/bdribs_grid.md), [`pooled_ratio()`](https://gosukehommaex.github.io/bssd/reference/pooled_ratio.md) | rate ratio |
 
-BDRIBS is the Poisson-based model of Mukhopadhyay et al. (2018). With
-`pt_hp = Inf`,
+BDRIBS is the Poisson-based model of Mukhopadhyay et al. (2018), with
+the total exposure time or the total time at risk as specified by Duncan
+(2026); with `pt_hp = Inf`,
 [`bdribs_post()`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md)
-performs their screening analysis with a known background rate. The
-results of the three functions have
-[`print()`](https://rdrr.io/r/base/print.html) and
+performs the screening analysis of Mukhopadhyay et al. (2018) with a
+known background rate. The posterior functions (`*_post()`) return
+objects with [`print()`](https://rdrr.io/r/base/print.html) and
 [`summary()`](https://rdrr.io/r/base/summary.html) methods.
 
 Other functions:
 
+- [`signal_count()`](https://gosukehommaex.github.io/bssd/reference/signal_count.md):
+  smallest event count with a signal for a number of subjects (decision
+  boundaries and control charts).
+- [`count_oc()`](https://gosukehommaex.github.io/bssd/reference/count_oc.md):
+  exact probability that the event count reaches the boundary.
+- [`elicit_prior()`](https://gosukehommaex.github.io/bssd/reference/elicit_prior.md):
+  parameters of a Gamma, Beta or lognormal prior from two quantiles.
 - [`time_at_risk()`](https://gosukehommaex.github.io/bssd/reference/time_at_risk.md):
   total exposure time and total time at risk from subject-level data.
 - [`ll_cdf()`](https://gosukehommaex.github.io/bssd/reference/ll_cdf.md)
@@ -37,25 +51,6 @@ Other functions:
   simulation of blinded trial data.
 - [`sim_oc()`](https://gosukehommaex.github.io/bssd/reference/sim_oc.md):
   operating characteristics of the models by simulation.
-
-## Further methods
-
-| Method | Data | Function | Tested quantity |
-|----|----|----|----|
-| Exposure-time Poisson model (Schnell and Ball, 2016) | number of events and follow-up time of each subject | [`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md) | study drug rate or rate ratio |
-| Binomial model (Ball and Schnell, 2016) | numbers of subjects and of subjects with the event | [`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md) | study drug proportion or ratio |
-| Meta-analysis of several studies (Goren et al., 2020) | the same, for each study | [`multibin_post()`](https://gosukehommaex.github.io/bssd/reference/multibin_post.md) | common rate ratio |
-| Canary in the coal mine (Gould and Wang, 2017) | total event count, with external control data | [`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md) | ratio, difference or odds ratio |
-| MAP prior and mixture likelihood (Brock et al., 2023) | event indicator and time at risk of each subject, historical control arms | [`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md), [`map_beta()`](https://gosukehommaex.github.io/bssd/reference/map_beta.md) | ratio of the event probabilities |
-| BDRIBS monitoring (Waterhouse et al., 2022) | as BDRIBS, on grids of data and for pooled trials | [`bdribs_grid()`](https://gosukehommaex.github.io/bssd/reference/bdribs_grid.md), [`pooled_ratio()`](https://gosukehommaex.github.io/bssd/reference/pooled_ratio.md) | rate ratio |
-
-- [`signal_count()`](https://gosukehommaex.github.io/bssd/reference/signal_count.md):
-  smallest event count with a signal for a number of subjects (decision
-  boundaries and control charts).
-- [`count_oc()`](https://gosukehommaex.github.io/bssd/reference/count_oc.md):
-  exact probability that the event count reaches the boundary.
-- [`elicit_prior()`](https://gosukehommaex.github.io/bssd/reference/elicit_prior.md):
-  parameters of a Gamma, Beta or lognormal prior from two quantiles.
 
 ## Installation
 
@@ -125,27 +120,26 @@ res[, c("model", "prob", "signal", "rr_median", "error")]
 ```
 
 [`vignette("bssd")`](https://gosukehommaex.github.io/bssd/articles/bssd.md)
-explains the models, the priors of this example and the simulation of
-the operating characteristics. The articles
+gives an overview of the models, the priors of this example and the
+simulation of the operating characteristics. The articles
 [`vignette("bdribs1")`](https://gosukehommaex.github.io/bssd/articles/bdribs1.md),
 [`vignette("bdribs2")`](https://gosukehommaex.github.io/bssd/articles/bdribs2.md),
-[`vignette("expbern")`](https://gosukehommaex.github.io/bssd/articles/expbern.md)
-and
-[`vignette("llbern")`](https://gosukehommaex.github.io/bssd/articles/llbern.md)
-describe each model, with examples, the accuracy of the numerical
-integration and the comparison with MCMC;
-[`vignette("exptime")`](https://gosukehommaex.github.io/bssd/articles/exptime.md),
+[`vignette("bdribs-monitoring")`](https://gosukehommaex.github.io/bssd/articles/bdribs-monitoring.md),
 [`vignette("binbeta")`](https://gosukehommaex.github.io/bssd/articles/binbeta.md),
 [`vignette("canary")`](https://gosukehommaex.github.io/bssd/articles/canary.md),
-[`vignette("mapbern")`](https://gosukehommaex.github.io/bssd/articles/mapbern.md)
+[`vignette("expbern")`](https://gosukehommaex.github.io/bssd/articles/expbern.md),
+[`vignette("llbern")`](https://gosukehommaex.github.io/bssd/articles/llbern.md),
+[`vignette("exptime")`](https://gosukehommaex.github.io/bssd/articles/exptime.md)
 and
-[`vignette("bdribs-monitoring")`](https://gosukehommaex.github.io/bssd/articles/bdribs-monitoring.md)
-describe the further methods. The documentation is also available at
+[`vignette("mapbern")`](https://gosukehommaex.github.io/bssd/articles/mapbern.md)
+describe each model, with examples, the accuracy of the numerical
+integration, the comparison with MCMC and the reproduction of the
+published results. The documentation is also available at
 <https://gosukehommaex.github.io/bssd/>.
 
 ## Validation
 
-- `tests/testthat` has 39 test files with 92
+- `tests/testthat` has 42 test files with 105
   [`testthat::test_that()`](https://testthat.r-lib.org/reference/test_that.html)
   blocks. Their expected values were computed beforehand by independent
   Python implementations (`inst/validation/python`).
@@ -157,15 +151,21 @@ describe the further methods. The documentation is also available at
 - [`inst/validation`](https://github.com/gosukehommaEX/bssd/tree/main/inst/validation)
   compares
   [`bdribs_post()`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md)
-  with the bdribs package,
-  [`expbern_post()`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md)
+  with the bdribs package;
+  [`expbern_post()`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md),
+  [`llbern_post()`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md),
+  [`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md),
+  [`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md),
+  [`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md),
+  [`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md)
   and
-  [`llbern_post()`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)
-  with MCMC in JAGS, the default integration grids with finer grids and
-  with an independent Python implementation, and
+  [`multibin_post()`](https://gosukehommaex.github.io/bssd/reference/multibin_post.md)
+  with MCMC in JAGS (for
+  [`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md),
+  with the Poisson likelihood) and with independent Python computations;
+  the default integration grids with finer grids; and
   [`sim_oc()`](https://gosukehommaex.github.io/bssd/reference/sim_oc.md)
-  with an independent Python simulation. The further methods are
-  compared with independent Python computations and with MCMC in JAGS.
+  with an independent Python simulation.
 
 Each item is judged as PASS (agreement within the tolerance), EXPLAINED
 (a difference whose reason is registered), FAIL (a difference without a
@@ -186,7 +186,7 @@ registered reason) or INFO (no value to compare with):
 | validate_gould2017_author_grid.csv  |   28 |         0 |    0 |    0 |
 | validate_jags.csv                   |   24 |         0 |    0 |    3 |
 | validate_jags_methods.csv           |   16 |         0 |    0 |    1 |
-| validate_methods_python.csv         |  110 |         0 |    0 |    0 |
+| validate_methods_python.csv         |  174 |         0 |    0 |    0 |
 | validate_sim_oc.csv                 |   29 |         0 |    0 |    0 |
 
 The reasons for the EXPLAINED items are listed in

@@ -27,6 +27,19 @@ test_that("mapbern_post matches the reference value with rr0 = 1.5", {
   expect_equal(fit$prob, 0.8670458703679775, tolerance = 2e-6)
 })
 
+test_that("mapbern_post matches the reference with an informative prior_d", {
+  # prior of pi_d with mean 0.02, which conflicts with the data
+  d <- data_m1()
+  fit <- mapbern_post(d$y, d$t, k = 3, prior_c = mix_m1(), prior_d = c(2, 98),
+                      rr0 = 0.25)
+  expect_equal(fit$prob, 0.4532473341175618, tolerance = 2e-6)
+  expect_equal(unname(fit$estimates[c("pi_c", "pi_d")]),
+               c(0.21092135853218738, 0.045348003438555634), tolerance = 1e-6)
+  expect_equal(unname(fit$rate[c("lower", "median", "upper")]),
+               c(0.006748974569721206, 0.04194418468409068,
+                 0.1035246193589002), tolerance = 1e-5)
+})
+
 test_that("mapbern_post accepts a single Beta prior and a map_beta() prior", {
   d <- data_m1()
   f1 <- mapbern_post(d$y, d$t, k = 3, prior_c = c(20, 180), details = FALSE)

@@ -112,7 +112,14 @@ convolution of the two. The control probability has the prior \\p_c \sim
 
 The two-dimensional posterior is integrated on \\\mathrm{logit}(p_c)\\
 (Gauss-Legendre quadrature) and the logarithm of the metric, or \\p_d\\
-for the difference (Chebyshev interpolation).
+for the difference (Chebyshev interpolation). For each node of
+\\\mathrm{logit}(p_c)\\, the interval of the second coordinate that
+holds the conditional posterior mass is located separately; for the
+ratio it ends at the truncation point \\R = 1 / p_c\\. The
+Gauss-Legendre rule is split where the posterior probability of the
+metric has a kink (\\p_c = 1 / crit\\ for the ratio, \\p_c = 1 - crit\\
+or \\p_c = -crit\\ for the difference), so that the results stay
+accurate when the event probabilities are large.
 
 **Poisson likelihood.** With the total exposure \\E\\ (`n`) and the
 control event rate \\\lambda_c\\ per unit of exposure, \\X \sim

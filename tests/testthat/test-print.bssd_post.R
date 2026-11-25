@@ -26,3 +26,17 @@ test_that("print.bssd_post prints the tested quantity of the new models", {
   out2 <- capture.output(print(fit2))
   expect_true(any(grepl("P(delta > 1 | data) =", out2, fixed = TRUE)))
 })
+
+test_that("print.bssd_post does not show the summaries that are NA", {
+  # multibin_post() does not report the posterior mean of delta
+  fit <- multibin_post(y = c(3, 9), n = c(150, 300), prior_c = c(2, 98))
+  out <- capture.output(print(fit))
+  expect_true(any(grepl("Posterior of delta: median", out, fixed = TRUE)))
+  expect_false(any(grepl("NA", out, fixed = TRUE)))
+  # without the quantiles only the mean is shown
+  fit2 <- binbeta_post(y = 40, n = 300, prior_c = c(31, 271),
+                       prior_d = c(1, 1), details = FALSE)
+  out2 <- capture.output(print(fit2))
+  expect_true(any(grepl("Posterior of rr: mean [0-9.]+$", out2)))
+  expect_false(any(grepl("NA", out2, fixed = TRUE)))
+})

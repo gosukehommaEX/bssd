@@ -29,8 +29,13 @@ A data frame with one row and the columns `model`, `prob`, `signal`,
 ## See also
 
 [`bdribs_post`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md),
+[`binbeta_post`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md),
+[`multibin_post`](https://gosukehommaex.github.io/bssd/reference/multibin_post.md),
+[`canary_post`](https://gosukehommaex.github.io/bssd/reference/canary_post.md),
 [`expbern_post`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md),
-[`llbern_post`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)
+[`llbern_post`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md),
+[`exptime_post`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md),
+[`mapbern_post`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md)
 
 ## Examples
 

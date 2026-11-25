@@ -1,6 +1,7 @@
 # Reference values: inst/validation/python/ref_canary.py (binomial: composite
 # Gauss-Legendre rules on (logit p_c, log M) or (logit p_c, logit p_d),
-# split exactly at the threshold; Poisson: adaptive quadrature).
+# split exactly at the threshold and, for the ratio, at the truncation point
+# of each row; Poisson: adaptive quadrature).
 
 test_that("canary_post matches the reference values for the ratio", {
   fit <- canary_post(y = 12, n = 100, k = 1, prior_c = c(1, 49))
@@ -53,6 +54,17 @@ test_that("canary_post matches the reference values with Poisson counts", {
   expect_equal(unname(fit$estimates[c("lambda_c", "metric")]),
                c(0.009160493109283355, 1.7405131865276489),
                tolerance = 1e-6)
+})
+
+test_that("canary_post is accurate when all subjects had the event", {
+  # the posterior of p_c lies far above its prior, and the density of log(R)
+  # is largest at its limit -log(p_c)
+  fit <- canary_post(y = 100, n = 100, k = 1, prior_c = c(1, 49), crit = 2)
+  expect_equal(fit$prob, 0.30070256225719694, tolerance = 1e-6)
+  expect_equal(unname(fit$rr["mean"]), 1.9155563213386304, tolerance = 1e-6)
+  expect_equal(unname(fit$estimates["p_c"]), 0.5163759207909249,
+               tolerance = 1e-6)
+  expect_lt(fit$integration$error, 1e-6)
 })
 
 test_that("canary_post uses the lognormal prior of Gould and Wang by default", {

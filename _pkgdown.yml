@@ -7,26 +7,20 @@ template:
 reference:
 - title: Posterior probability of a safety signal
   desc: >
-    Posterior distributions under the BDRIBS, EXP_BERN and LL_BERN models,
-    and the methods for their results.
+    Posterior distributions under the models of the package, and the
+    methods for their results.
   contents:
   - bdribs_post
-  - expbern_post
-  - llbern_post
-  - print.bssd_post
-  - summary.bssd_post
-- title: Further methods for blinded data
-  desc: >
-    Posterior distributions under the methods of Schnell and Ball (2016),
-    Ball and Schnell (2016), Goren et al. (2020), Gould and Wang (2017) and
-    Brock et al. (2023).
-  contents:
-  - exptime_post
   - binbeta_post
   - multibin_post
   - canary_post
+  - expbern_post
+  - llbern_post
+  - exptime_post
   - mapbern_post
   - map_beta
+  - print.bssd_post
+  - summary.bssd_post
 - title: Monitoring tools
   desc: >
     Grids of BDRIBS results, pooled trials, decision boundaries for event
@@ -54,13 +48,10 @@ articles:
   contents:
   - bdribs1
   - bdribs2
-  - expbern
-  - llbern
-- title: Further methods
-  navbar: Further methods
-  contents:
-  - exptime
+  - bdribs-monitoring
   - binbeta
   - canary
+  - expbern
+  - llbern
+  - exptime
   - mapbern
-  - bdribs-monitoring

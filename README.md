@@ -4,45 +4,35 @@
 # bssd
 
 bssd computes the posterior probability of a safety signal from blinded
-clinical trial data with the models examined by Duncan (2026) and with
-other published methods for blinded data. The posterior quantities are
-obtained by numerical integration instead of Markov chain Monte Carlo
-(MCMC) sampling, so the results do not depend on a random seed and are
-fast enough for simulation studies.
+clinical trial data, in which the treatment groups of the subjects with
+an adverse event are unknown, with published Bayesian methods. The
+posterior quantities are obtained by numerical integration instead of
+Markov chain Monte Carlo (MCMC) sampling, so the results do not depend
+on a random seed and are fast enough for simulation studies.
 
 ## Models and functions
 
-| Model | Data | Function | Relative risk |
+| Model | Blinded data | Function | Tested quantity |
 |----|----|----|----|
-| BDRIBS(1) | number of subjects with the event and total exposure time | `bdribs_post()` | rate ratio |
-| BDRIBS(2) | number of subjects with the event and total time at risk | `bdribs_post()` | rate ratio |
-| EXP_BERN | event indicator and follow-up time of each subject | `expbern_post()` | rate ratio |
-| LL_BERN | event indicator and follow-up time of each subject | `llbern_post()` | ratio of the cumulative incidences at `t_star` |
+| BDRIBS(1) (Mukhopadhyay et al., 2018; Duncan, 2026) | number of subjects with the event and total exposure time | `bdribs_post()` | rate ratio |
+| BDRIBS(2) (Mukhopadhyay et al., 2018; Duncan, 2026) | number of subjects with the event and total time at risk | `bdribs_post()` | rate ratio |
+| BINBETA (Ball and Schnell, 2016) | numbers of subjects and of subjects with the event | `binbeta_post()` | study drug proportion or ratio |
+| MULTIBIN (Goren et al., 2020) | the same, for each of several studies | `multibin_post()` | common rate ratio |
+| CANARY (Gould and Wang, 2017) | total event count, with external control data | `canary_post()` | ratio, difference or odds ratio |
+| EXP_BERN (Duncan, 2026) | event indicator and follow-up time of each subject | `expbern_post()` | rate ratio |
+| LL_BERN (Duncan, 2026) | event indicator and follow-up time of each subject | `llbern_post()` | ratio of the cumulative incidences at `t_star` |
+| EXPTIME (Schnell and Ball, 2016) | number of events and follow-up time of each subject | `exptime_post()` | study drug rate or rate ratio |
+| MAPBERN (Brock et al., 2023) | event indicator and time at risk of each subject, historical control arms | `mapbern_post()`, `map_beta()` | ratio of the event probabilities |
+| BDRIBS monitoring (Waterhouse et al., 2022) | as BDRIBS, on grids of data and for pooled trials | `bdribs_grid()`, `pooled_ratio()` | rate ratio |
 
-BDRIBS is the Poisson-based model of Mukhopadhyay et al. (2018). With
-`pt_hp = Inf`, `bdribs_post()` performs their screening analysis with a
-known background rate. The results of the three functions have `print()`
-and `summary()` methods.
+BDRIBS is the Poisson-based model of Mukhopadhyay et al. (2018), with
+the total exposure time or the total time at risk as specified by Duncan
+(2026); with `pt_hp = Inf`, `bdribs_post()` performs the screening
+analysis of Mukhopadhyay et al. (2018) with a known background rate. The
+posterior functions (`*_post()`) return objects with `print()` and
+`summary()` methods.
 
 Other functions:
-
-- `time_at_risk()`: total exposure time and total time at risk from
-  subject-level data.
-- `ll_cdf()` and `ll_mu()`: cumulative incidence and location parameter
-  of the log-logistic distribution.
-- `sim_blinded()`: simulation of blinded trial data.
-- `sim_oc()`: operating characteristics of the models by simulation.
-
-## Further methods
-
-| Method | Data | Function | Tested quantity |
-|----|----|----|----|
-| Exposure-time Poisson model (Schnell and Ball, 2016) | number of events and follow-up time of each subject | `exptime_post()` | study drug rate or rate ratio |
-| Binomial model (Ball and Schnell, 2016) | numbers of subjects and of subjects with the event | `binbeta_post()` | study drug proportion or ratio |
-| Meta-analysis of several studies (Goren et al., 2020) | the same, for each study | `multibin_post()` | common rate ratio |
-| Canary in the coal mine (Gould and Wang, 2017) | total event count, with external control data | `canary_post()` | ratio, difference or odds ratio |
-| MAP prior and mixture likelihood (Brock et al., 2023) | event indicator and time at risk of each subject, historical control arms | `mapbern_post()`, `map_beta()` | ratio of the event probabilities |
-| BDRIBS monitoring (Waterhouse et al., 2022) | as BDRIBS, on grids of data and for pooled trials | `bdribs_grid()`, `pooled_ratio()` | rate ratio |
 
 - `signal_count()`: smallest event count with a signal for a number of
   subjects (decision boundaries and control charts).
@@ -50,6 +40,12 @@ Other functions:
   boundary.
 - `elicit_prior()`: parameters of a Gamma, Beta or lognormal prior from
   two quantiles.
+- `time_at_risk()`: total exposure time and total time at risk from
+  subject-level data.
+- `ll_cdf()` and `ll_mu()`: cumulative incidence and location parameter
+  of the log-logistic distribution.
+- `sim_blinded()`: simulation of blinded trial data.
+- `sim_oc()`: operating characteristics of the models by simulation.
 
 ## Installation
 
@@ -115,19 +111,20 @@ res[, c("model", "prob", "signal", "rr_median", "error")]
 #> LL_BERN   LL_BERN 0.9351465  FALSE  4.217216 3.733315e-04
 ```
 
-`vignette("bssd")` explains the models, the priors of this example and
-the simulation of the operating characteristics. The articles
-`vignette("bdribs1")`, `vignette("bdribs2")`, `vignette("expbern")` and
-`vignette("llbern")` describe each model, with examples, the accuracy of
-the numerical integration and the comparison with MCMC;
-`vignette("exptime")`, `vignette("binbeta")`, `vignette("canary")`,
-`vignette("mapbern")` and `vignette("bdribs-monitoring")` describe the
-further methods. The documentation is also available at
+`vignette("bssd")` gives an overview of the models, the priors of this
+example and the simulation of the operating characteristics. The
+articles `vignette("bdribs1")`, `vignette("bdribs2")`,
+`vignette("bdribs-monitoring")`, `vignette("binbeta")`,
+`vignette("canary")`, `vignette("expbern")`, `vignette("llbern")`,
+`vignette("exptime")` and `vignette("mapbern")` describe each model,
+with examples, the accuracy of the numerical integration, the comparison
+with MCMC and the reproduction of the published results. The
+documentation is also available at
 <https://gosukehommaex.github.io/bssd/>.
 
 ## Validation
 
-- `tests/testthat` has 39 test files with 92 `testthat::test_that()`
+- `tests/testthat` has 42 test files with 105 `testthat::test_that()`
   blocks. Their expected values were computed beforehand by independent
   Python implementations (`inst/validation/python`).
 - [`inst/reproduce`](https://github.com/gosukehommaEX/bssd/tree/main/inst/reproduce)
@@ -136,12 +133,12 @@ further methods. The documentation is also available at
   (2023), Goren et al. (2020) and Waterhouse et al. (2022): tables,
   worked examples and simulations.
 - [`inst/validation`](https://github.com/gosukehommaEX/bssd/tree/main/inst/validation)
-  compares `bdribs_post()` with the bdribs package, `expbern_post()` and
-  `llbern_post()` with MCMC in JAGS, the default integration grids with
-  finer grids and with an independent Python implementation, and
-  `sim_oc()` with an independent Python simulation. The further methods
-  are compared with independent Python computations and with MCMC in
-  JAGS.
+  compares `bdribs_post()` with the bdribs package; `expbern_post()`,
+  `llbern_post()`, `exptime_post()`, `binbeta_post()`, `canary_post()`,
+  `mapbern_post()` and `multibin_post()` with MCMC in JAGS (for
+  `canary_post()`, with the Poisson likelihood) and with independent
+  Python computations; the default integration grids with finer grids;
+  and `sim_oc()` with an independent Python simulation.
 
 Each item is judged as PASS (agreement within the tolerance), EXPLAINED
 (a difference whose reason is registered), FAIL (a difference without a
@@ -162,7 +159,7 @@ registered reason) or INFO (no value to compare with):
 | validate_gould2017_author_grid.csv  |   28 |         0 |    0 |    0 |
 | validate_jags.csv                   |   24 |         0 |    0 |    3 |
 | validate_jags_methods.csv           |   16 |         0 |    0 |    1 |
-| validate_methods_python.csv         |  110 |         0 |    0 |    0 |
+| validate_methods_python.csv         |  174 |         0 |    0 |    0 |
 | validate_sim_oc.csv                 |   29 |         0 |    0 |    0 |
 
 The reasons for the EXPLAINED items are listed in

@@ -17,7 +17,9 @@
 \code{x}, invisibly.
 }
 \description{
-Print a posterior summary for safety signal detection
+Summaries that are not available (\code{NA}), such as the posterior mean
+of \code{\link{multibin_post}} or the quantiles with
+\code{details = FALSE}, are not shown.
 }
 \examples{
 fit <- bdribs_post(y = 5, exposure = 500, k = 2, lambda_hp = 18 / 4000,
@@ -26,8 +28,8 @@ print(fit)
 
 }
 \seealso{
-\code{\link{bdribs_post}}, \code{\link{expbern_post}},
-  \code{\link{llbern_post}}, \code{\link{exptime_post}},
-  \code{\link{binbeta_post}}, \code{\link{canary_post}},
-  \code{\link{mapbern_post}}, \code{\link{multibin_post}}
+\code{\link{bdribs_post}}, \code{\link{binbeta_post}},
+  \code{\link{multibin_post}}, \code{\link{canary_post}},
+  \code{\link{expbern_post}}, \code{\link{llbern_post}},
+  \code{\link{exptime_post}}, \code{\link{mapbern_post}}
 }

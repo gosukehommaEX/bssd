@@ -57,30 +57,78 @@ class Split2D:
 
     logpost(x, Z): x vector (nx), Z matrix (nx, nz) -> matrix of log
     densities. x_edges: panel edges in x. z_lo, z_hi: range of z; z_core:
-    (lo, hi) of the dense part in z.
+    (lo, hi) of the dense part in z. z_hi_of: optional function of the x
+    nodes giving an upper limit of z for each x (the density is zero above
+    it), so that a density that ends at a limit depending on x is
+    integrated exactly up to that limit.
     """
 
     def __init__(self, logpost, x_edges, z_lo, z_hi, z_core, n_core=120,
-                 n_tail=40, q=8):
+                 n_tail=40, q=8, z_hi_of=None):
         self.logpost = logpost
         self.x, self.wx = rule(x_edges, q)
         self.z_lo, self.z_hi = z_lo, z_hi
         self.z_core = z_core
         self.n_core, self.n_tail, self.q = n_core, n_tail, q
-        z, wz = rule(graded_edges(z_lo, z_hi, z_core[0], z_core[1],
-                                  n_core, n_tail), q)
-        Z = np.broadcast_to(z, (self.x.size, z.size))
-        L = logpost(self.x, Z)
-        self.lmax = np.max(L[np.isfinite(L)])
-        D = np.exp(L - self.lmax) * self.wx[:, None] * wz[None, :]
-        D[~np.isfinite(D)] = 0.0
-        self.norm = D.sum()
-        self.D = D / self.norm
-        self.z = z
+        if z_hi_of is None:
+            self.z_top = None
+            z, wz = rule(graded_edges(z_lo, z_hi, z_core[0], z_core[1],
+                                      n_core, n_tail), q)
+            Z = np.broadcast_to(z, (self.x.size, z.size))
+            L = logpost(self.x, Z)
+            self.lmax = np.max(L[np.isfinite(L)])
+            D = np.exp(L - self.lmax) * self.wx[:, None] * wz[None, :]
+            D[~np.isfinite(D)] = 0.0
+            self.norm = D.sum()
+            self.D = D / self.norm
+            self.z = z
+            return
+        # one grid of z per x node, up to the limit of the row
+        self.z_top = np.minimum(z_hi_of(self.x), z_hi)
+        rows = []
+        for i in range(self.x.size):
+            zr, wr = self.row_rule(self.z_top[i])
+            if zr.size == 0:
+                rows.append((zr, wr, np.zeros(0)))
+                continue
+            L = self.logpost(self.x[i:i + 1], zr[None, :])[0]
+            rows.append((zr, wr, L))
+        self.lmax = max(np.max(L[np.isfinite(L)]) for _, _, L in rows
+                        if L.size and np.any(np.isfinite(L)))
+        dens = []
+        for i, (zr, wr, L) in enumerate(rows):
+            d = np.exp(L - self.lmax) * wr * self.wx[i]
+            d[~np.isfinite(d)] = 0.0
+            dens.append(d)
+        self.norm = sum(d.sum() for d in dens)
+        self.rows = [(zr, d / self.norm) for (zr, _, _), d in zip(rows, dens)]
+
+    def row_rule(self, top, split=None):
+        """Graded rule on (z_lo, min(top, split))."""
+        hi = top if split is None else min(top, split)
+        if hi <= self.z_lo:
+            return np.zeros(0), np.zeros(0)
+        e = graded_edges(self.z_lo, hi, min(self.z_core[0], hi),
+                         min(self.z_core[1], hi), self.n_core, self.n_tail)
+        e = e[np.concatenate(([True], np.diff(e) > 0))]
+        if e.size < 2:
+            return np.zeros(0), np.zeros(0)
+        return rule(e, self.q)
 
     def below(self, s):
         """P(z <= s(x)); s is a vector over the x nodes."""
         s = np.clip(np.broadcast_to(s, self.x.shape), self.z_lo, self.z_hi)
+        if self.z_top is not None:
+            total = 0.0
+            for i, si in enumerate(s):
+                z, wz = self.row_rule(self.z_top[i], si)
+                if z.size == 0:
+                    continue
+                L = self.logpost(self.x[i:i + 1], z[None, :])[0]
+                v = np.exp(L - self.lmax) * wz
+                v[~np.isfinite(v)] = 0.0
+                total += self.wx[i] * v.sum()
+            return total / self.norm
         total = 0.0
         for i, si in enumerate(s):
             if si <= self.z_lo:
@@ -101,6 +149,13 @@ class Split2D:
 
     def mean(self, f):
         """Posterior mean of f(x, Z)."""
+        if self.z_top is not None:
+            tot = 0.0
+            with np.errstate(all="ignore"):
+                for i, (zr, d) in enumerate(self.rows):
+                    if zr.size:
+                        tot += np.sum(d * f(np.full(zr.size, self.x[i]), zr))
+            return float(tot)
         Z = np.broadcast_to(self.z, (self.x.size, self.z.size))
         with np.errstate(all="ignore"):
             F = f(self.x[:, None], Z)
@@ -141,6 +196,14 @@ def make_data():
     pi = np.where(arm == 1, 0.25, 0.12)
     y = rs.binomial(1, 1 - (1 - pi) ** t)
     out["M1"] = {"y": y.tolist(), "t": t.tolist()}
+    # E3: data far in the upper tail of the informative prior of the study
+    # drug rate of Schnell and Ball (2016)
+    rs = np.random.RandomState(20261128)
+    n = 120
+    t = np.round(rs.uniform(6, 18, n), 1)
+    arm = rs.binomial(1, 2 / 3, n)
+    y = rs.poisson(np.where(arm == 1, 0.08, 0.013) * t)
+    out["E3"] = {"y": y.tolist(), "t": t.tolist()}
     return out
 
 

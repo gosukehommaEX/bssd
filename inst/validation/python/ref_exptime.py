@@ -13,6 +13,11 @@ CASES = [
      "prior_d": [2, 70], "rate0": 0.03, "rr0": 1.2},
     {"id": "E2", "data": "E2", "k": 1, "prior_c": [50, 300],
      "prior_d": [1, 5], "rate0": None, "rr0": 1.0},
+    # priors of Schnell and Ball (2016) and a study drug rate far in the
+    # upper tail of the prior of lambda_d
+    {"id": "E3", "data": "E3", "k": 2, "prior_c": [340, 26064],
+     "prior_d": [339 / 100 + 4, 26064 / 100 + 167], "rate0": 0.065,
+     "rr0": 5.0},
 ]
 
 

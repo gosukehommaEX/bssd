@@ -20,6 +20,17 @@ PY_EXPTIME_E2_q_lambda_d_upper,quantile of lambda_d upper,0.31964513335949296
 PY_EXPTIME_E2_q_r_lower,quantile of r lower,0.16317195087743558
 PY_EXPTIME_E2_q_r_median,quantile of r median,0.8693380934443319
 PY_EXPTIME_E2_q_r_upper,quantile of r upper,2.1576335854057658
+PY_EXPTIME_E3_prob_rate,P(lambda_d > rate0),0.5833139942029082
+PY_EXPTIME_E3_prob_ratio,P(r > rr0),0.5387867240969044
+PY_EXPTIME_E3_mean_lambda_c,posterior mean of lambda_c,0.013152882722575759
+PY_EXPTIME_E3_mean_lambda_d,posterior mean of lambda_d,0.06672096049812178
+PY_EXPTIME_E3_mean_r,posterior mean of r,5.088247250129221
+PY_EXPTIME_E3_q_lambda_d_lower,quantile of lambda_d lower,0.05372537361458052
+PY_EXPTIME_E3_q_lambda_d_median,quantile of lambda_d median,0.06645926303473489
+PY_EXPTIME_E3_q_lambda_d_upper,quantile of lambda_d upper,0.08120418936496594
+PY_EXPTIME_E3_q_r_lower,quantile of r lower,3.982509550512643
+PY_EXPTIME_E3_q_r_median,quantile of r median,5.058508779761729
+PY_EXPTIME_E3_q_r_upper,quantile of r upper,6.363131390416875
 PY_BINBETA_B1_prob_rate,P(theta_d > p0),0.6614733754153749
 PY_BINBETA_B1_prob_ratio,P(rr > rr0),0.8969458860909176
 PY_BINBETA_B1_mean_theta_c,posterior mean of theta_c,0.10264862816559746
@@ -41,30 +52,64 @@ PY_BINBETA_B2_q_theta_d_upper,quantile of theta_d upper,0.3139844026857442
 PY_BINBETA_B2_q_rr_lower,quantile of rr lower,0.36994837263017366
 PY_BINBETA_B2_q_rr_median,quantile of rr median,1.8189007890849602
 PY_BINBETA_B2_q_rr_upper,quantile of rr upper,6.678978679651721
-PY_CANARY_C1_prob,P(M > crit),0.8416853521605938
-PY_CANARY_C1_mean_metric,posterior mean of M,3.1557892713153413
-PY_CANARY_C1_mean_p_c,posterior mean of p_c,0.06121356291115411
-PY_CANARY_C1_q_lower,quantile of M lower,0.35212880033048716
-PY_CANARY_C1_q_median,quantile of M median,2.3890803857663077
-PY_CANARY_C1_q_upper,quantile of M upper,10.534896851962829
-PY_CANARY_C2_prob,P(M > crit),0.9924243970067982
-PY_CANARY_C2_mean_metric,posterior mean of M,0.21079059416469043
-PY_CANARY_C2_mean_p_c,posterior mean of p_c,0.019992691469975017
-PY_CANARY_C2_q_lower,quantile of M lower,0.06536359178201151
-PY_CANARY_C2_q_median,quantile of M median,0.21129425233471963
-PY_CANARY_C2_q_upper,quantile of M upper,0.35038996637360437
-PY_CANARY_C3_prob,P(M > crit),0.6197084082546314
-PY_CANARY_C3_mean_metric,posterior mean of M,1.7141786487610033
-PY_CANARY_C3_mean_p_c,posterior mean of p_c,0.12701718711647839
-PY_CANARY_C3_q_lower,quantile of M lower,0.3932327219238604
-PY_CANARY_C3_q_median,quantile of M median,1.4472301845829256
-PY_CANARY_C3_q_upper,quantile of M upper,4.597715602699213
+PY_BINBETA_B3_prob_rate,P(theta_d > p0),0.6276917768448429
+PY_BINBETA_B3_prob_ratio,P(rr > rr0),0.4999999999999998
+PY_BINBETA_B3_mean_theta_c,posterior mean of theta_c,0.06946822362449598
+PY_BINBETA_B3_mean_theta_d,posterior mean of theta_d,0.06946822362449596
+PY_BINBETA_B3_q_theta_d_lower,quantile of theta_d lower,0.003786254754949007
+PY_BINBETA_B3_q_theta_d_median,quantile of theta_d median,0.06569494928260454
+PY_BINBETA_B3_q_theta_d_upper,quantile of theta_d upper,0.16148199449070988
+PY_BINBETA_B3_q_rr_lower,quantile of rr lower,0.030763782781467165
+PY_BINBETA_B3_q_rr_median,quantile of rr median,1.0000000000005924
+PY_BINBETA_B3_q_rr_upper,quantile of rr upper,32.50575545613399
+PY_BINBETA_B4_prob_rate,P(theta_d > p0),0.7584271492339151
+PY_BINBETA_B4_prob_ratio,P(rr > rr0),0.010088886231998995
+PY_BINBETA_B4_mean_theta_c,posterior mean of theta_c,0.33779264244488255
+PY_BINBETA_B4_mean_theta_d,posterior mean of theta_d,0.33779264244488244
+PY_BINBETA_B4_q_theta_d_lower,quantile of theta_d lower,0.2292367577406037
+PY_BINBETA_B4_q_theta_d_median,quantile of theta_d median,0.3385467317214596
+PY_BINBETA_B4_q_theta_d_upper,quantile of theta_d upper,0.4420681123754414
+PY_BINBETA_B4_q_rr_lower,quantile of rr lower,0.5642235097955801
+PY_BINBETA_B4_q_rr_median,quantile of rr median,1.0000000000000002
+PY_BINBETA_B4_q_rr_upper,quantile of rr upper,1.7723472748632936
+PY_BINBETA_B5_prob_rate,P(theta_d > p0),0.6669027639364123
+PY_BINBETA_B5_prob_ratio,P(rr > rr0),0.5333887099059609
+PY_BINBETA_B5_mean_theta_c,posterior mean of theta_c,0.00552482312418776
+PY_BINBETA_B5_mean_theta_d,posterior mean of theta_d,0.04348015143768015
+PY_BINBETA_B5_mean_rr,posterior mean of rr,9.838446342922829
+PY_BINBETA_B5_q_theta_d_lower,quantile of theta_d lower,0.030225866518996645
+PY_BINBETA_B5_q_theta_d_median,quantile of theta_d median,0.0430847289956247
+PY_BINBETA_B5_q_theta_d_upper,quantile of theta_d upper,0.05898019271961948
+PY_BINBETA_B5_q_rr_lower,quantile of rr lower,3.4809226654317693
+PY_BINBETA_B5_q_rr_median,quantile of rr median,8.335877831033217
+PY_BINBETA_B5_q_rr_upper,quantile of rr upper,25.13355630126387
+PY_CANARY_C1_prob,P(M > crit),0.8416853522095863
+PY_CANARY_C1_mean_metric,posterior mean of M,3.155789271323353
+PY_CANARY_C1_mean_p_c,posterior mean of p_c,0.06121356291199672
+PY_CANARY_C1_q_lower,quantile of M lower,0.35212880018829773
+PY_CANARY_C1_q_median,quantile of M median,2.389080386845136
+PY_CANARY_C1_q_upper,quantile of M upper,10.534896855850194
+PY_CANARY_C2_prob,P(M > crit),0.992424397008213
+PY_CANARY_C2_mean_metric,posterior mean of M,0.2107905941646662
+PY_CANARY_C2_mean_p_c,posterior mean of p_c,0.019992691469983295
+PY_CANARY_C2_q_lower,quantile of M lower,0.0653635917797545
+PY_CANARY_C2_q_median,quantile of M median,0.2112942523347199
+PY_CANARY_C2_q_upper,quantile of M upper,0.3503899663736017
+PY_CANARY_C3_prob,P(M > crit),0.6197084082546305
+PY_CANARY_C3_mean_metric,posterior mean of M,1.7141786487610018
+PY_CANARY_C3_mean_p_c,posterior mean of p_c,0.1270171871164789
+PY_CANARY_C3_q_lower,quantile of M lower,0.3932327219238547
+PY_CANARY_C3_q_median,quantile of M median,1.4472301845829245
+PY_CANARY_C3_q_upper,quantile of M upper,4.597715602699209
 PY_CANARY_C4_prob,P(M > crit),0.22133664341858217
 PY_CANARY_C4_mean_metric,posterior mean of M,1.7405131865276489
 PY_CANARY_C4_mean_lambda_c,posterior mean of lambda_c,0.009160493109283355
 PY_CANARY_C4_q_lower,quantile of M lower,1.1159461907040649
 PY_CANARY_C4_q_median,quantile of M median,1.7135203692142589
 PY_CANARY_C4_q_upper,quantile of M upper,2.5190360486264805
+PY_CANARY_C5_prob,P(M > crit),0.30070256225719694
+PY_CANARY_C5_mean_metric,posterior mean of M,1.9155563213386304
+PY_CANARY_C5_mean_p_c,posterior mean of p_c,0.5163759207909249
 PY_MAPBERN_M1_prob_ratio,P(pi_d > rr0 pi_c),0.956972148630543
 PY_MAPBERN_M1_mean_pi_c,posterior mean of pi_c,0.10141842634504168
 PY_MAPBERN_M1_mean_pi_d,posterior mean of pi_d,0.2635633972184154
@@ -83,6 +128,15 @@ PY_MAPBERN_M2_q_pi_d_upper,quantile of pi_d upper,0.4366714510236672
 PY_MAPBERN_M2_q_rr_lower,quantile of rr lower,0.8211048286636914
 PY_MAPBERN_M2_q_rr_median,quantile of rr median,2.660555390969741
 PY_MAPBERN_M2_q_rr_upper,quantile of rr upper,11.177990376362308
+PY_MAPBERN_M3_prob_ratio,P(pi_d > rr0 pi_c),0.4532473341175618
+PY_MAPBERN_M3_mean_pi_c,posterior mean of pi_c,0.21092135853218738
+PY_MAPBERN_M3_mean_pi_d,posterior mean of pi_d,0.045348003438555634
+PY_MAPBERN_M3_q_pi_d_lower,quantile of pi_d lower,0.006748974569721206
+PY_MAPBERN_M3_q_pi_d_median,quantile of pi_d median,0.04194418468409068
+PY_MAPBERN_M3_q_pi_d_upper,quantile of pi_d upper,0.1035246193589002
+PY_MAPBERN_M3_q_rr_lower,quantile of rr lower,0.021033442471288227
+PY_MAPBERN_M3_q_rr_median,quantile of rr median,0.21658536461189354
+PY_MAPBERN_M3_q_rr_upper,quantile of rr upper,1.0992442478540787
 PY_MULTIBIN_G1_prob,P(delta > rr0),0.7692121710498092
 PY_MULTIBIN_G1_mean_log_delta,posterior mean of log(delta),0.369402353108627
 PY_MULTIBIN_G1_q_lower,quantile of delta lower,0.172947747423795
@@ -93,6 +147,16 @@ PY_MULTIBIN_G2_mean_log_delta,posterior mean of log(delta),0.18961941043329184
 PY_MULTIBIN_G2_q_lower,quantile of delta lower,0.16691008930051165
 PY_MULTIBIN_G2_q_median,quantile of delta median,1.3252939461633837
 PY_MULTIBIN_G2_q_upper,quantile of delta upper,4.826140568787256
+PY_MULTIBIN_G3_prob,P(delta > rr0),0.9105855687058478
+PY_MULTIBIN_G3_mean_log_delta,posterior mean of log(delta),0.5379475907817947
+PY_MULTIBIN_G3_q_lower,quantile of delta lower,1.4104418483834271
+PY_MULTIBIN_G3_q_median,quantile of delta median,1.7134029102646928
+PY_MULTIBIN_G3_q_upper,quantile of delta upper,2.072925906187109
+PY_MULTIBIN_G4_prob,P(delta > rr0),0.8888460854122495
+PY_MULTIBIN_G4_mean_log_delta,posterior mean of log(delta),-0.10755336138623892
+PY_MULTIBIN_G4_q_lower,quantile of delta lower,0.7456385355529747
+PY_MULTIBIN_G4_q_median,quantile of delta median,0.8981768850939152
+PY_MULTIBIN_G4_q_upper,quantile of delta upper,1.0805489124577783
 PY_MAP_P1_mean,MAP prior mean,0.10334757285043465
 PY_MAP_P1_sd,MAP prior SD,0.03403531432783694
 PY_MAP_P1_cdf_0.05,MAP prior distribution function at 0.05,0.03943187847234971

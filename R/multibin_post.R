@@ -18,9 +18,14 @@
 #' composite Gauss-Legendre quadrature on
 #' \eqn{\mathrm{logit}(\theta_s)}{logit(theta_s)} over the region where the
 #' integrand is not negligible, so the posterior of \eqn{\delta}{delta} is
-#' one-dimensional; it is integrated at Chebyshev points of the prior
-#' distribution function of \eqn{\log \delta}{log(delta)}. Goren et al.
-#' (2020) sample the same posterior by Hamiltonian Monte Carlo.
+#' one-dimensional. A coarse grid locates the posterior mass in
+#' \eqn{z = (\log \delta - m) / v}{z = (log(delta) - m) / v}, and the
+#' posterior is integrated at Chebyshev points of \eqn{z}{z} or of the prior
+#' distribution function \eqn{\Phi(z)}{pnorm(z)}, whichever represents the
+#' density more accurately (\code{integration$coordinate}); \eqn{z}{z} is
+#' used when the data conflict with an informative prior of
+#' \eqn{\log \delta}{log(delta)}. Goren et al. (2020) sample the same
+#' posterior by Hamiltonian Monte Carlo.
 #'
 #' A signal is declared when
 #' \eqn{P(\delta > rr_0 \mid \mathrm{data}) > }{P(delta > rr0 | data) > }
@@ -111,10 +116,9 @@ multibin_post <- function(y, n, k = 1, prior_c, lrr_prior = c(0, 5),
   r <- k / (k + 1)
   m <- lrr_prior[[1L]]
   sd <- lrr_prior[[2L]]
-  w_of <- function(v) qnorm(pmin(pmax(v, 1e-15), 1 - 1e-15), m, sd)
+  w_v <- function(v) qnorm(pmax(v, .Machine$double.xmin), m, sd)
 
-  logpost <- function(nodes) {
-    w <- w_of(nodes[[1L]])
+  loglik_w <- function(w) {
     out <- 0
     for (j in seq_len(n_s)) {
       cc <- 1 - r[j] + r[j] * exp(w)
@@ -124,10 +128,44 @@ multibin_post <- function(y, n, k = 1, prior_c, lrr_prior = c(0, 5),
     }
     out
   }
-  box <- refine_box(logpost, 0, 1, ctrl$n_coarse, ctrl$eps, ctrl$max_iter,
-                    0, 1)
+  # posterior density of the standardized log rate ratio z = (w - m) / v
+  logpost_z <- function(nodes) {
+    loglik_w(m + sd * nodes[[1L]]) + dnorm(nodes[[1L]], log = TRUE)
+  }
+  zb <- refine_box(logpost_z, -8, 8, ctrl$n_coarse, ctrl$eps, ctrl$max_iter,
+                   -Inf, Inf)
+  # coordinate of the integration: the prior distribution function
+  # v = pnorm(z) or z, whichever gives the faster decay of the Chebyshev
+  # coefficients of the density (v is used only where it is not 0 or 1 in
+  # double precision)
+  tail_share <- function(l) {
+    l[is.na(l)] <- -Inf
+    if (!any(is.finite(l))) {
+      return(Inf)
+    }
+    a <- abs(cheb_coef_matrix(length(l)) %*% exp(l - max(l)))
+    k0 <- floor(0.75 * length(l))
+    sum(a[(k0 + 1L):length(l)]) / max(sum(a), .Machine$double.xmin)
+  }
+  vb <- pnorm(c(zb$lo, zb$hi))
+  xc <- cheb_nodes(ctrl$n_v)
+  use_v <- zb$hi <= 8 && zb$lo >= -37 &&
+    tail_share(loglik_w(w_v((vb[2L] + vb[1L]) / 2 +
+                              (vb[2L] - vb[1L]) / 2 * xc))) <
+    tail_share(logpost_z(list((zb$hi + zb$lo) / 2 +
+                                (zb$hi - zb$lo) / 2 * xc)))
+  if (use_v) {
+    box <- list(lo = vb[1L], hi = vb[2L])
+    w_of <- w_v
+    logpost <- function(nodes) loglik_w(w_v(nodes[[1L]]))
+    x0 <- pnorm(log(rr0), m, sd)
+  } else {
+    box <- list(lo = zb$lo, hi = zb$hi)
+    w_of <- function(z) m + sd * z
+    logpost <- logpost_z
+    x0 <- (log(rr0) - m) / sd
+  }
   probs <- c((1 - level) / 2, 0.5, (1 + level) / 2)
-  v0 <- pnorm(log(rr0), m, sd)
 
   fine <- function(n_v, quantiles) {
     g <- post1d(logpost, box, n_v)
@@ -136,11 +174,10 @@ multibin_post <- function(y, n, k = 1, prior_c, lrr_prior = c(0, 5),
       q <- exp(w_of(inv_cdf(g$cdf, probs, box$lo, box$hi)))
     }
     # the mean of log(delta) by adaptive quadrature of the Chebyshev series
-    # of the density, because log(delta) is unbounded at the ends of the
-    # prior distribution function
+    # of the density
     lrr <- integrate(function(vv) w_of(vv) * g$dens(vv), box$lo, box$hi,
                      rel.tol = 1e-8, subdivisions = 1000L)$value
-    list(prob = 1 - g$cdf(v0), q = q, lrr = lrr)
+    list(prob = 1 - g$cdf(x0), q = q, lrr = lrr)
   }
   if (isTRUE(ctrl$check)) {
     res1 <- fine(ctrl$n_v, quantiles = FALSE)
@@ -170,6 +207,7 @@ multibin_post <- function(y, n, k = 1, prior_c, lrr_prior = c(0, 5),
     data = list(n = n, n_event = y, k = k),
     prior = list(prior_c = prior_c, lrr_prior = lrr_prior),
     integration = list(method = "Chebyshev and Gauss-Legendre quadrature",
+                       coordinate = if (use_v) "pnorm(z)" else "z",
                        nodes = c(v = n_v, theta = ctrl$n_theta),
                        box = c(lower = box$lo, upper = box$hi), error = err)
   )
