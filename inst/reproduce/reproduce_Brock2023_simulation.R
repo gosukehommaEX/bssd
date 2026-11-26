@@ -6,12 +6,18 @@
 # with map_beta() and mapbern_post() of the bssd package, for the columns
 # "None" and "High" of across-study heterogeneity.
 #
-# Run from the package root after devtools::load_all() or library(bssd):
+# Run from the package root:
+#   devtools::load_all()            # or library(bssd)
 #   source("inst/reproduce/reproduce_Brock2023_simulation.R")
+# With n_cores > 1 the settings run in parallel, which needs the installed
+# package (run devtools::install() first). n_cores and n_rep (trials per
+# setting, default 1000) can be set before sourcing this script, for example
+# n_cores <- parallel::detectCores() - 2.
 # Output: inst/reproduce/results/Brock2023_simulation.rds (read by
 #   reproduce_Brock2023.R). Do not rerun unless the model code changes.
-# Run time: about three to five hours on one core (96 settings of 1000
-#   trials; set n_rep below to a smaller value for a quicker check).
+# Run time: about six hours on one core (96 settings of 1000 trials;
+#   map_beta() and mapbern_post() take about 0.25 seconds per trial,
+#   measured on 2026-11-26), or about 20 minutes with 20 cores.
 #
 # Design (Section 2.4): constant hazards with complete follow-up of one year
 # in the historical and the ongoing studies; control hazard 0.1 (common
@@ -25,10 +31,12 @@
 # hyperpriors are a ~ Beta(1/3, 1/3) and b ~ Beta(5, 5), and the prior of the
 # study drug probability is Beta(1/3, 1/3). The quantity is
 # gamma = P(pi_d > pi_c | data) in each trial; its mean and Monte Carlo
-# standard error over the trials are saved.
+# standard error over the trials are saved. The random numbers of setting i
+# start from set.seed(20231124 + i), so the results do not depend on
+# n_cores.
 
-n_rep <- 1000
-set.seed(20231124)
+if (!exists("n_cores")) n_cores <- 1L
+if (!exists("n_rep")) n_rep <- 1000
 design <- expand.grid(hr = c(1, 2), n = c(50, 100, 200, 1000),
                       N = c(120, 300, 1050), het = c("None", "High"),
                       rate = c("Common", "Rare"),
@@ -36,31 +44,58 @@ design <- expand.grid(hr = c(1, 2), n = c(50, 100, 200, 1000),
 arm_sizes <- list("120" = rep(40, 3), "300" = rep(100, 3),
                   "1050" = rep(c(50, 100, 200), each = 3))
 mult <- list(None = c(1, 1, 1), High = c(0.5, 1, 1.5))
-design$mean_gamma <- NA_real_
-design$se_gamma <- NA_real_
-t0 <- proc.time()[["elapsed"]]
-for (i in seq_len(nrow(design))) {
+
+# mean and standard error of gamma over the trials of setting i, and the
+# number of trials whose fit failed (left out of the mean, so that one
+# failure does not stop the parallel run)
+run_setting <- function(i) {
+  set.seed(20231124L + i)
   lam_c <- if (design$rate[i] == "Common") 0.1 else 0.02
   sizes <- arm_sizes[[as.character(design$N[i])]]
   lam_h <- lam_c * rep(mult[[design$het[i]]], length.out = length(sizes))
-  gam <- numeric(n_rep)
+  gam <- rep(NA_real_, n_rep)
   for (s in seq_len(n_rep)) {
     hist_events <- rbinom(length(sizes), sizes, 1 - exp(-lam_h))
-    prior <- map_beta(events = hist_events, n = sizes,
-                      control = list(check = FALSE))
     drug <- rbinom(design$n[i], 1, 0.75)
     p <- 1 - exp(-ifelse(drug == 1, design$hr[i] * lam_c, lam_c))
     y <- rbinom(design$n[i], 1, p)
-    gam[s] <- mapbern_post(y, rep(1, design$n[i]), k = 3, prior_c = prior,
-                           details = FALSE,
-                           control = list(check = FALSE))$prob
+    gam[s] <- tryCatch({
+      prior <- bssd::map_beta(events = hist_events, n = sizes,
+                              control = list(check = FALSE))
+      bssd::mapbern_post(y, rep(1, design$n[i]), k = 3, prior_c = prior,
+                         details = FALSE, control = list(check = FALSE))$prob
+    }, error = function(e) NA_real_)
   }
-  design$mean_gamma[i] <- mean(gam)
-  design$se_gamma[i] <- stats::sd(gam) / sqrt(n_rep)
-  cat(sprintf("%d of %d done (%.0f s)\n", i, nrow(design),
-              proc.time()[["elapsed"]] - t0))
+  ok <- !is.na(gam)
+  c(mean_gamma = mean(gam[ok]),
+    se_gamma = stats::sd(gam[ok]) / sqrt(sum(ok)),
+    n_failed = sum(!ok))
 }
+
+t0 <- proc.time()[["elapsed"]]
+out <- if (n_cores > 1L) {
+  cl <- parallel::makeCluster(n_cores)
+  invisible(parallel::clusterEvalQ(cl, library(bssd)))
+  parallel::clusterExport(cl, c("design", "arm_sizes", "mult", "n_rep"))
+  res_par <- parallel::parLapplyLB(cl, seq_len(nrow(design)), run_setting)
+  parallel::stopCluster(cl)
+  res_par
+} else {
+  lapply(seq_len(nrow(design)), function(i) {
+    r <- run_setting(i)
+    cat(sprintf("%d of %d done (%.0f s)\n", i, nrow(design),
+                proc.time()[["elapsed"]] - t0))
+    r
+  })
+}
+out <- do.call(rbind, out)
+design$mean_gamma <- out[, "mean_gamma"]
+design$se_gamma <- out[, "se_gamma"]
+design$n_failed <- as.integer(out[, "n_failed"])
+run_time <- proc.time()[["elapsed"]] - t0
+cat(sprintf("all %d settings done (%.0f s)\n", nrow(design), run_time))
 dir.create("inst/reproduce/results", showWarnings = FALSE, recursive = TRUE)
-saveRDS(list(design = design, n_rep = n_rep),
+saveRDS(list(design = design, n_rep = n_rep, run_time = run_time,
+             n_cores = n_cores),
         "inst/reproduce/results/Brock2023_simulation.rds")
 print(design)

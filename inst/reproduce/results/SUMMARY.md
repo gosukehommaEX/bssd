@@ -5,17 +5,79 @@ this folder.
 
 | Results file | PASS | EXPLAINED | FAIL | INFO |
 |---|---|---|---|---|
+| reproduce_Brock2023.csv | 37 | 0 | 59 | 0 |
 | reproduce_Duncan2026.csv | 15 | 6 | 0 | 7 |
 | reproduce_Duncan2026_prior.csv | 23 | 6 | 0 | 0 |
 | reproduce_Duncan2026_simulation.csv | 14 | 4 | 0 | 113 |
 | reproduce_Goren2020.csv | 12 | 0 | 0 | 0 |
+| reproduce_Goren2020_table2.csv | 120 | 0 | 0 | 0 |
 | reproduce_Gould2017.csv | 71 | 17 | 0 | 0 |
 | reproduce_Mukhopadhyay2018.csv | 82 | 4 | 0 | 1 |
 | reproduce_Schnell2016.csv | 27 | 3 | 1 | 16 |
+| reproduce_Schnell2016_table1.csv | 2 | 4 | 0 | 0 |
 | reproduce_Waterhouse2022.csv | 11 | 0 | 1 | 2 |
 
 ## Items that are not PASS or INFO
 
+- B_C_H_N120_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.41, reproduced 0.4917. bssd Monte Carlo SE 0.0094; failed fits: 0
+- B_C_H_N120_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.7, reproduced 0.755. bssd Monte Carlo SE 0.0074; failed fits: 0
+- B_C_H_N120_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.42, reproduced 0.5005. bssd Monte Carlo SE 0.0089; failed fits: 0
+- B_C_H_N120_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.74, reproduced 0.7816. bssd Monte Carlo SE 0.0062; failed fits: 0
+- B_C_H_N120_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.42, reproduced 0.5227. bssd Monte Carlo SE 0.0090; failed fits: 0
+- B_C_H_N120_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.43, reproduced 0.5385. bssd Monte Carlo SE 0.0086; failed fits: 0
+- B_C_H_N120_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.79, reproduced 0.8398. bssd Monte Carlo SE 0.0052; failed fits: 0
+- B_C_H_N300_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.4, reproduced 0.4849. bssd Monte Carlo SE 0.0082; failed fits: 0
+- B_C_H_N300_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.79, reproduced 0.8366. bssd Monte Carlo SE 0.0055; failed fits: 0
+- B_C_H_N300_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.41, reproduced 0.4974. bssd Monte Carlo SE 0.0076; failed fits: 0
+- B_C_H_N300_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.84, reproduced 0.8906. bssd Monte Carlo SE 0.0036; failed fits: 0
+- B_C_H_N300_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.42, reproduced 0.5212. bssd Monte Carlo SE 0.0063; failed fits: 0
+- B_C_H_N300_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.89, reproduced 0.9295. bssd Monte Carlo SE 0.0025; failed fits: 0
+- B_C_H_N1050_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.37, reproduced 0.4577. bssd Monte Carlo SE 0.0091; failed fits: 0
+- B_C_H_N1050_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.74, reproduced 0.8192. bssd Monte Carlo SE 0.0068; failed fits: 0
+- B_C_H_N1050_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.39, reproduced 0.4776. bssd Monte Carlo SE 0.0090; failed fits: 0
+- B_C_H_N1050_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.85, reproduced 0.9025. bssd Monte Carlo SE 0.0043; failed fits: 0
+- B_C_H_N1050_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.38, reproduced 0.4963. bssd Monte Carlo SE 0.0082; failed fits: 0
+- B_C_H_N1050_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.91, reproduced 0.9491. bssd Monte Carlo SE 0.0027; failed fits: 0
+- B_C_H_N1050_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.33, reproduced 0.5222. bssd Monte Carlo SE 0.0067; failed fits: 0
+- B_R_N_N120_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.55, reproduced 0.8765. bssd Monte Carlo SE 0.0083; failed fits: 0
+- B_R_N_N120_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.65, reproduced 0.8997. bssd Monte Carlo SE 0.0073; failed fits: 0
+- B_R_N_N120_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.56, reproduced 0.8464. bssd Monte Carlo SE 0.0102; failed fits: 0
+- B_R_N_N120_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.69, reproduced 0.8796. bssd Monte Carlo SE 0.0087; failed fits: 0
+- B_R_N_N120_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.57, reproduced 0.8859. bssd Monte Carlo SE 0.0089; failed fits: 0
+- B_R_N_N120_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.7, reproduced 0.8936. bssd Monte Carlo SE 0.0083; failed fits: 0
+- B_R_N_N120_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.59, reproduced 0.9232. bssd Monte Carlo SE 0.0080; failed fits: 0
+- B_R_N_N120_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.73, reproduced 0.9075. bssd Monte Carlo SE 0.0083; failed fits: 0
+- B_R_N_N300_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.45, reproduced 0.5914. bssd Monte Carlo SE 0.0108; failed fits: 0
+- B_R_N_N300_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.6, reproduced 0.6825. bssd Monte Carlo SE 0.0099; failed fits: 0
+- B_R_N_N300_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.44, reproduced 0.5762. bssd Monte Carlo SE 0.0112; failed fits: 0
+- B_R_N_N300_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.62, reproduced 0.7267. bssd Monte Carlo SE 0.0095; failed fits: 0
+- B_R_N_N300_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.45, reproduced 0.5612. bssd Monte Carlo SE 0.0114; failed fits: 0
+- B_R_N_N300_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.67, reproduced 0.7491. bssd Monte Carlo SE 0.0090; failed fits: 0
+- B_R_N_N300_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.45, reproduced 0.5504. bssd Monte Carlo SE 0.0115; failed fits: 0
+- B_R_H_N120_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.51, reproduced 0.8927. bssd Monte Carlo SE 0.0079; failed fits: 0
+- B_R_H_N120_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.62, reproduced 0.9124. bssd Monte Carlo SE 0.0070; failed fits: 0
+- B_R_H_N120_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.52, reproduced 0.8429. bssd Monte Carlo SE 0.0104; failed fits: 0
+- B_R_H_N120_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.66, reproduced 0.8842. bssd Monte Carlo SE 0.0088; failed fits: 0
+- B_R_H_N120_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.53, reproduced 0.9001. bssd Monte Carlo SE 0.0085; failed fits: 0
+- B_R_H_N120_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.67, reproduced 0.9064. bssd Monte Carlo SE 0.0078; failed fits: 0
+- B_R_H_N120_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.55, reproduced 0.916. bssd Monte Carlo SE 0.0082; failed fits: 0
+- B_R_H_N120_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.7, reproduced 0.9178. bssd Monte Carlo SE 0.0080; failed fits: 0
+- B_R_H_N300_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.43, reproduced 0.6644. bssd Monte Carlo SE 0.0111; failed fits: 0
+- B_R_H_N300_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.58, reproduced 0.7333. bssd Monte Carlo SE 0.0098; failed fits: 0
+- B_R_H_N300_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.41, reproduced 0.6362. bssd Monte Carlo SE 0.0114; failed fits: 0
+- B_R_H_N300_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.59, reproduced 0.7436. bssd Monte Carlo SE 0.0096; failed fits: 0
+- B_R_H_N300_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.41, reproduced 0.6005. bssd Monte Carlo SE 0.0117; failed fits: 0
+- B_R_H_N300_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.64, reproduced 0.7627. bssd Monte Carlo SE 0.0093; failed fits: 0
+- B_R_H_N300_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.41, reproduced 0.5889. bssd Monte Carlo SE 0.0119; failed fits: 0
+- B_R_H_N300_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.69, reproduced 0.7661. bssd Monte Carlo SE 0.0082; failed fits: 0
+- B_R_H_N1050_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.38, reproduced 0.4391. bssd Monte Carlo SE 0.0081; failed fits: 0
+- B_R_H_N1050_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.55, reproduced 0.609. bssd Monte Carlo SE 0.0087; failed fits: 0
+- B_R_H_N1050_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.37, reproduced 0.4267. bssd Monte Carlo SE 0.0084; failed fits: 0
+- B_R_H_N1050_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.6, reproduced 0.655. bssd Monte Carlo SE 0.0088; failed fits: 0
+- B_R_H_N1050_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.38, reproduced 0.4414. bssd Monte Carlo SE 0.0087; failed fits: 0
+- B_R_H_N1050_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.68, reproduced 0.7324. bssd Monte Carlo SE 0.0077; failed fits: 0
+- B_R_H_N1050_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.38, reproduced 0.4858. bssd Monte Carlo SE 0.0074; failed fits: 0
+- B_R_H_N1050_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.8, reproduced 0.8699. bssd Monte Carlo SE 0.0040; failed fits: 0
 - D_T1_04P (reproduce_Duncan2026.csv, EXPLAINED): published 0.05, reproduced 0.06896. Table 1 labels the placebo incidence of scenario 4 (mu = 9.85, sigma = 2.0) as the week 104 value 5.0%, but the log-logistic distribution gives 5.0% at week 52 (item D_T1_04P52) and 6.9% at week 104.
 - D_T1_04D (reproduce_Duncan2026.csv, EXPLAINED): published 0.151, reproduced 0.2014. Table 1 labels the upper study drug incidence of scenario 4 (mu = 7.4, sigma = 2.0) as the week 104 value 15.1%, but the log-logistic distribution gives 15.1% at week 52 (item D_T1_04D52) and 20.1% at week 104.
 - D_TX_04P (reproduce_Duncan2026.csv, EXPLAINED): published 0.04, reproduced 0.06896. Section 4.2.1 describes scenario 4 as 4% for placebo at week 104, which agrees with neither the Table 1 label (5.0%) nor the week 104 value of the stated parameters (6.9%).
@@ -57,4 +119,8 @@ this folder.
 - S_T2_B_PR2 (reproduce_Schnell2016.csv, EXPLAINED): published 0.518, reproduced 0.6034. The published value is a Monte Carlo estimate from 1000 draws of the authors' Gibbs sampler, whose Metropolis step for the treatment assignments uses Poisson probabilities of the arm totals instead of the subject-level likelihood of the model. The authors' code with seed 1 reproduces the published value; with 200,000 draws the authors' sampler gives about 0.50, and a sampler with the subject-level likelihood gives about 0.60, which agrees with bssd (about 0.60) (Rpackage/tools/external/schnell2016_author_code.R; results in inst/validation/results/schnell2016_author_code.csv).
 - S_T2_B_PR3 (reproduce_Schnell2016.csv, EXPLAINED): published 0.872, reproduced 0.9318. The published value is a Monte Carlo estimate from 1000 draws of the authors' Gibbs sampler, whose Metropolis step for the treatment assignments uses Poisson probabilities of the arm totals instead of the subject-level likelihood of the model. The authors' code with seed 1 reproduces the published value; with 200,000 draws the authors' sampler gives about 0.84, and a sampler with the subject-level likelihood gives about 0.93, which agrees with bssd (about 0.93) (Rpackage/tools/external/schnell2016_author_code.R; results in inst/validation/results/schnell2016_author_code.csv).
 - S_T2_B_MD4 (reproduce_Schnell2016.csv, EXPLAINED): published 0.0179, reproduced 0.01918. The published value is a Monte Carlo estimate from 1000 draws of the authors' Gibbs sampler, whose Metropolis step for the treatment assignments uses Poisson probabilities of the arm totals instead of the subject-level likelihood of the model. The authors' code with seed 1 reproduces the published value; with 200,000 draws the authors' sampler gives about 0.0180, and a sampler with the subject-level likelihood gives about 0.0192, which agrees with bssd (about 0.0192) (Rpackage/tools/external/schnell2016_author_code.R; results in inst/validation/results/schnell2016_author_code.csv).
+- S_T1_P (reproduce_Schnell2016_table1.csv, EXPLAINED): published 0.62, reproduced 0.7218. The published values are from the authors' simulation (scripts/example/2-simulation-study.R) with 1000 draws of the authors' Gibbs sampler at each analysis, whose Metropolis step for the treatment assignments uses Poisson probabilities of the arm totals instead of the subject-level likelihood of the model (see S_T2_B_PR2). Run on the same 1000 trials per setting, the authors' code reproduces the published threshold (0.62) and the five signal rates of Table 1 exactly; its posterior probabilities are lower than those of bssd by 0.02 (month 4) to 0.07 (month 16) on average, which raises the threshold found with bssd to 0.72 (Rpackage/tools/external/schnell2016_author_simulation.R; results in inst/validation/results/schnell2016_author_simulation.csv).
+- S_T1_3 (reproduce_Schnell2016_table1.csv, EXPLAINED): published 0.275, reproduced 0.371. The published values are from the authors' simulation (scripts/example/2-simulation-study.R) with 1000 draws of the authors' Gibbs sampler at each analysis, whose Metropolis step for the treatment assignments uses Poisson probabilities of the arm totals instead of the subject-level likelihood of the model (see S_T2_B_PR2). Run on the same 1000 trials per setting, the authors' code reproduces the published threshold (0.62) and the five signal rates of Table 1 exactly; its posterior probabilities are lower than those of bssd by 0.02 (month 4) to 0.07 (month 16) on average. At the treatment rate 0.0143 the authors' code gives 0.275; bssd gives 0.371 with the threshold 0.62 and 0.252 with its own threshold 0.72 (Rpackage/tools/external/schnell2016_author_simulation.R; results in inst/validation/results/schnell2016_author_simulation.csv).
+- S_T1_4 (reproduce_Schnell2016_table1.csv, EXPLAINED): published 0.497, reproduced 0.636. The published values are from the authors' simulation (scripts/example/2-simulation-study.R) with 1000 draws of the authors' Gibbs sampler at each analysis, whose Metropolis step for the treatment assignments uses Poisson probabilities of the arm totals instead of the subject-level likelihood of the model (see S_T2_B_PR2). Run on the same 1000 trials per setting, the authors' code reproduces the published threshold (0.62) and the five signal rates of Table 1 exactly; its posterior probabilities are lower than those of bssd by 0.02 (month 4) to 0.07 (month 16) on average. At the treatment rate 0.0156 the authors' code gives 0.497; bssd gives 0.636 with the threshold 0.62 and 0.500 with its own threshold 0.72 (Rpackage/tools/external/schnell2016_author_simulation.R; results in inst/validation/results/schnell2016_author_simulation.csv).
+- S_T1_5 (reproduce_Schnell2016_table1.csv, EXPLAINED): published 0.758, reproduced 0.869. The published values are from the authors' simulation (scripts/example/2-simulation-study.R) with 1000 draws of the authors' Gibbs sampler at each analysis, whose Metropolis step for the treatment assignments uses Poisson probabilities of the arm totals instead of the subject-level likelihood of the model (see S_T2_B_PR2). Run on the same 1000 trials per setting, the authors' code reproduces the published threshold (0.62) and the five signal rates of Table 1 exactly; its posterior probabilities are lower than those of bssd by 0.02 (month 4) to 0.07 (month 16) on average. At the treatment rate 0.0169 the authors' code gives 0.758; bssd gives 0.869 with the threshold 0.62 and 0.773 with its own threshold 0.72 (Rpackage/tools/external/schnell2016_author_simulation.R; results in inst/validation/results/schnell2016_author_simulation.csv).
 - W_EX3_2 (reproduce_Waterhouse2022.csv, FAIL): published 0.9, reproduced 0.9101. 

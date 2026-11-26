@@ -73,7 +73,8 @@ for (rate in c("Common", "Rare")) {
           tolower(rate), tolower(het), grid$N[j], grid$n[j], grid$hr[j]),
         published = pub[[rate]][[het]][j],
         reproduced = sim$mean_gamma[sel], tolerance = tol,
-        note = sprintf("bssd Monte Carlo SE %.4f", sim$se_gamma[sel]),
+        note = sprintf("bssd Monte Carlo SE %.4f; failed fits: %d",
+                       sim$se_gamma[sel], sim$n_failed[sel]),
         stringsAsFactors = FALSE)
     }
   }

@@ -1,0 +1,16 @@
+"quantity","published","author","bssd"
+"threshold",0.62,0.62,0.721765004281254
+"signal rate at 0.62, treatment rate 0.0117",0.077,0.077,0.096
+"signal rate at 0.62, treatment rate 0.0130",0.144,0.144,0.186
+"signal rate at 0.62, treatment rate 0.0143",0.275,0.275,0.371
+"signal rate at 0.62, treatment rate 0.0156",0.497,0.497,0.636
+"signal rate at 0.62, treatment rate 0.0169",0.758,0.758,0.869
+"signal rate at own threshold, treatment rate 0.0117",NA,0.077,0.052
+"signal rate at own threshold, treatment rate 0.0130",NA,0.144,0.11
+"signal rate at own threshold, treatment rate 0.0143",NA,0.275,0.252
+"signal rate at own threshold, treatment rate 0.0156",NA,0.497,0.5
+"signal rate at own threshold, treatment rate 0.0169",NA,0.758,0.773
+"mean of bssd minus author probability, month 4",NA,NA,0.0208329441794361
+"mean of bssd minus author probability, month 8",NA,NA,0.0490958816907135
+"mean of bssd minus author probability, month 12",NA,NA,0.0633708093205324
+"mean of bssd minus author probability, month 16",NA,NA,0.0732756403756755
