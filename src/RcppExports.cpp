@@ -42,6 +42,18 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
+// fast_exp_cpp
+Rcpp::NumericVector fast_exp_cpp(const Rcpp::NumericVector& x, const bool m1);
+RcppExport SEXP _bssd_fast_exp_cpp(SEXP xSEXP, SEXP m1SEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type x(xSEXP);
+    Rcpp::traits::input_parameter< const bool >::type m1(m1SEXP);
+    rcpp_result_gen = Rcpp::wrap(fast_exp_cpp(x, m1));
+    return rcpp_result_gen;
+END_RCPP
+}
 // llbern_loglik_cpp
 Rcpp::NumericMatrix llbern_loglik_cpp(const Rcpp::NumericVector& t, const Rcpp::NumericVector& y, const Rcpp::NumericVector& w, const double wp, const Rcpp::NumericVector& mu_p, const Rcpp::NumericVector& sigma_p, const Rcpp::NumericVector& mu_d, const Rcpp::NumericVector& sigma_d);
 RcppExport SEXP _bssd_llbern_loglik_cpp(SEXP tSEXP, SEXP ySEXP, SEXP wSEXP, SEXP wpSEXP, SEXP mu_pSEXP, SEXP sigma_pSEXP, SEXP mu_dSEXP, SEXP sigma_dSEXP) {
@@ -80,6 +92,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_bssd_bernmix_loglik_cpp", (DL_FUNC) &_bssd_bernmix_loglik_cpp, 6},
     {"_bssd_expbern_loglik_cpp", (DL_FUNC) &_bssd_expbern_loglik_cpp, 6},
+    {"_bssd_fast_exp_cpp", (DL_FUNC) &_bssd_fast_exp_cpp, 2},
     {"_bssd_llbern_loglik_cpp", (DL_FUNC) &_bssd_llbern_loglik_cpp, 8},
     {"_bssd_mixpois_loglik_cpp", (DL_FUNC) &_bssd_mixpois_loglik_cpp, 6},
     {NULL, NULL, 0}

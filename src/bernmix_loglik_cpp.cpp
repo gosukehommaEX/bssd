@@ -2,12 +2,13 @@
 #include <cmath>
 #include <limits>
 #include <vector>
+#include "fast_exp.h"
 
 // Log of the Bernoulli probability of y (0 or 1) when the event
 // probability over time t is 1 - exp(-h * t).
 static inline double bern_kernel(const double y, const double h,
                                  const double t) {
-  return (y > 0.5) ? std::log(-std::expm1(-h * t)) : -h * t;
+  return (y > 0.5) ? std::log(-kernel_expm1(-h * t)) : -h * t;
 }
 
 // Log-likelihood of a blinded Bernoulli mixture with constant hazards on a
@@ -52,7 +53,7 @@ Rcpp::NumericMatrix bernmix_loglik_cpp(const Rcpp::NumericVector& t,
           s = ninf;
           break;
         }
-        s += w[i] * (m + std::log1p(std::exp(-std::fabs(a - b))));
+        s += w[i] * (m + std::log1p(kernel_exp(-std::fabs(a - b))));
       }
       out(l, j) = s;
     }

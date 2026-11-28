@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 #include <cmath>
 #include <vector>
+#include "fast_exp.h"
 
 // Factor x of a single subject: multiplied into q, or its logarithm added
 // to s if x is below 1e-20.
@@ -66,14 +67,14 @@ Rcpp::NumericMatrix llbern_loglik_cpp(const Rcpp::NumericVector& t,
   for (int p = 0; p < np; ++p) {
     for (int k = 0; k < n; ++k) {
       const double z = (lt[k] - mu_p[p]) / sigma_p[p];
-      const double f = ev[k] ? 1.0 / (1.0 + std::exp(-z)) : 1.0 / (1.0 + std::exp(z));
+      const double f = ev[k] ? 1.0 / (1.0 + kernel_exp(-z)) : 1.0 / (1.0 + kernel_exp(z));
       a[static_cast<size_t>(p) * n + k] = wp * f;
     }
   }
   for (int d = 0; d < nd; ++d) {
     for (int k = 0; k < n; ++k) {
       const double z = (lt[k] - mu_d[d]) / sigma_d[d];
-      const double f = ev[k] ? 1.0 / (1.0 + std::exp(-z)) : 1.0 / (1.0 + std::exp(z));
+      const double f = ev[k] ? 1.0 / (1.0 + kernel_exp(-z)) : 1.0 / (1.0 + kernel_exp(z));
       b[static_cast<size_t>(d) * n + k] = wd * f;
     }
   }

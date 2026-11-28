@@ -1,6 +1,7 @@
 #include <Rcpp.h>
 #include <cmath>
 #include <vector>
+#include "fast_exp.h"
 
 // Adds w * log(x) to s. The factors of single subjects (w = 1) are
 // multiplied into prod, and the logarithm is taken only when needed.
@@ -52,20 +53,21 @@ Rcpp::NumericMatrix expbern_loglik_cpp(const Rcpp::NumericVector& t,
   for (int l = 0; l < nl; ++l) {
     // placebo parts of the probabilities of the observed outcomes
     for (int i = 0; i < n0; ++i) {
-      a0[i] = wp * std::exp(-lambda[l] * t0[i]);
+      a0[i] = wp * kernel_exp(-lambda[l] * t0[i]);
     }
     for (int i = 0; i < n1; ++i) {
-      a1[i] = wp * -std::expm1(-lambda[l] * t1[i]);
+      a1[i] = wp * -kernel_expm1(-lambda[l] * t1[i]);
     }
     for (int j = 0; j < nr; ++j) {
       const double rl = r[j] * lambda[l];
       double s = 0.0;
       double prod = 1.0;
       for (int i = 0; i < n0; ++i) {
-        add_log_term(a0[i] + wd * std::exp(-rl * t0[i]), w0[i], s, prod);
+        add_log_term(a0[i] + wd * kernel_exp(-rl * t0[i]), w0[i], s, prod);
       }
       for (int i = 0; i < n1; ++i) {
-        add_log_term(a1[i] + wd * -std::expm1(-rl * t1[i]), w1[i], s, prod);
+        add_log_term(a1[i] + wd * -kernel_expm1(-rl * t1[i]), w1[i], s,
+                     prod);
       }
       out(l, j) = s + std::log(prod);
     }

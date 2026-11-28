@@ -66,7 +66,10 @@
   second coordinate once per column, the summaries of `llbern_post()`
   compute the cumulative incidence of the study drug once for each pair of
   its parameters, and the normal quantile coordinate of `mapbern_post()` and
-  `binbeta_post()` needs fewer Newton steps.
+  `binbeta_post()` needs fewer Newton steps. On Windows, where the
+  exponential functions of the C library are slow, the C++ likelihoods use
+  their own exp and expm1 (errors of about two units in the last place); on
+  other systems they use those of the C library.
 * `print()` shows the tested quantity of the new models and, for
   `exptime_post()`, `binbeta_post()` and `mapbern_post()`, the posterior of
   the study drug rate or proportion. Summaries that are not available, such

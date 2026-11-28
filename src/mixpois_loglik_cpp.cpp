@@ -2,6 +2,7 @@
 #include <cmath>
 #include <limits>
 #include <vector>
+#include "fast_exp.h"
 
 // Log of the Poisson kernel lambda^y * exp(-lambda * t) (the factor
 // t^y / y! is the same for both arms and is omitted).
@@ -50,7 +51,7 @@ Rcpp::NumericMatrix mixpois_loglik_cpp(const Rcpp::NumericVector& t,
           s = ninf;
           break;
         }
-        s += w[i] * (m + std::log1p(std::exp(-std::fabs(a - b))));
+        s += w[i] * (m + std::log1p(kernel_exp(-std::fabs(a - b))));
       }
       out(l, j) = s;
     }

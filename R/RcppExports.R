@@ -9,6 +9,10 @@ expbern_loglik_cpp <- function(t, y, w, wp, lambda, r) {
     .Call(`_bssd_expbern_loglik_cpp`, t, y, w, wp, lambda, r)
 }
 
+fast_exp_cpp <- function(x, m1) {
+    .Call(`_bssd_fast_exp_cpp`, x, m1)
+}
+
 llbern_loglik_cpp <- function(t, y, w, wp, mu_p, sigma_p, mu_d, sigma_d) {
     .Call(`_bssd_llbern_loglik_cpp`, t, y, w, wp, mu_p, sigma_p, mu_d, sigma_d)
 }
