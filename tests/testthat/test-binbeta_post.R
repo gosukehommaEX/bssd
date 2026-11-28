@@ -63,6 +63,28 @@ test_that("binbeta_post is accurate when the data conflict with the priors", {
                tolerance = 1e-5)
 })
 
+test_that("binbeta_post is accurate with a control prior shape below 1", {
+  # case BS1 of inst/validation/python/ref_shape_below1.py (exact finite
+  # mixture of products of Beta distributions)
+  fit <- binbeta_post(y = 12, n = 100, k = 1, prior_c = c(0.5, 5),
+                      prior_d = c(1, 1), p0 = 0.15, details = FALSE)
+  expect_identical(fit$integration$coordinate, "normal")
+  expect_equal(unname(fit$probs), c(0.7117667148324871, 0.8234809625922909),
+               tolerance = 1e-6)
+  expect_failure(expect_equal(fit$probs[["ratio"]],
+                              0.8234809625922909 * (1 + 1e-4),
+                              tolerance = 1e-6))
+  expect_equal(unname(fit$estimates[c("theta_c", "theta_d")]),
+               c(0.06158654927598209, 0.19698035646229917), tolerance = 1e-6)
+  # the posterior density of theta_c near 0 is proportional to the prior
+  # density, so the posterior mean of the ratio is infinite
+  expect_identical(fit$rr[["mean"]], Inf)
+  # the logit is kept for shape parameters of at least 1
+  f2 <- binbeta_post(y = 12, n = 100, k = 1, prior_c = c(1, 49),
+                     prior_d = c(1, 49), details = FALSE)
+  expect_identical(f2$integration$coordinate, "logit")
+})
+
 test_that("binbeta_post handles no events and all events", {
   f0 <- binbeta_post(y = 0, n = 50, prior_c = c(5, 45), prior_d = c(1, 1),
                      p0 = 0.2, details = FALSE)

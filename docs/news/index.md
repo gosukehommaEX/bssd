@@ -54,6 +54,45 @@
   [`canary_post()`](https://gosukehommaex.github.io/bssd/reference/canary_post.md),
   when the event probabilities are large (all subjects with the event,
   for example).
+- [`expbern_post()`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md)
+  integrates in the same way: for each Gauss-Legendre node of the log
+  placebo rate, the interval of the second coordinate is located
+  separately, and each row is interpolated in the prior distribution
+  function of `p` or in its normal quantile, whichever gives the faster
+  decay of the Chebyshev coefficients of its density. Before, one
+  interval on the prior distribution function scale of `p` was used for
+  all nodes, which lost accuracy when the data conflicted with an
+  informative prior of `p` (cases X1 to X3 of
+  `inst/validation/validate_methods_python.R`).
+- [`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md)
+  integrates over the normal quantile of an envelope of the prior of
+  `pi_c` when the prior has components with a shape parameter below 1
+  (total weight above `control$eps`), as the MAP prior from few
+  historical events has. Before, the integration over the logit of
+  `pi_c` missed the posterior when the logit densities of such
+  components were nearly flat over a wide range, and `prob` could be
+  wrong with a small error estimate (cases MS1 to MS7 of
+  `inst/validation/validate_methods_python.R`).
+  [`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md)
+  and
+  [`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md)
+  integrate over the normal quantile of the prior of the control
+  parameter when its shape parameter is below 1. The coordinate is shown
+  in `integration$coordinate`; with other priors the results are
+  unchanged.
+- The posterior mean of the ratio of
+  [`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md),
+  [`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md)
+  and
+  [`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md)
+  is `Inf` when the shape parameter of the control prior (the smallest
+  `shape1` of a mixture) is at most 1, because the posterior density of
+  the control parameter near 0 is then proportional to that of the
+  prior.
+- The documentation of
+  [`llbern_post()`](https://gosukehommaex.github.io/bssd/reference/llbern_post.md)
+  says that `control$n_outer` limits the accuracy when there are many
+  events, and that the error estimate refers to `prob`.
 - [`print()`](https://rdrr.io/r/base/print.html) shows the tested
   quantity of the new models and, for
   [`exptime_post()`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md),

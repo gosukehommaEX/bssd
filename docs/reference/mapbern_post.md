@@ -109,6 +109,18 @@ and the prior distribution function of \\\pi_d\\, as in
 [`exptime_post`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md)
 and
 [`binbeta_post`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md).
+A MAP prior from few historical events has components with a shape
+parameter far below 1, whose densities of \\\mathrm{logit}(\pi_c)\\ are
+nearly flat over a wide range. When the total weight of the components
+with a shape parameter below 1 exceeds `control$eps`, the first
+coordinate is therefore \\z_c = \Phi^{-1}(F_e(\pi_c))\\, where \\F_e\\
+is the distribution function of an envelope of the prior: a mixture of
+fewer Beta distributions, each with the smallest shape parameters of a
+group of components. The prior density of \\z_c\\ is that of the
+standard normal distribution times the ratio of the densities of the
+prior and the envelope, which is bounded. When a component has \\shape1
+\le 1\\, the posterior mean of the ratio \\\pi_d / \pi_c\\ is infinite
+(`Inf`).
 
 A prior derived with the RBesT package can be used: the rows `w`, `a`
 and `b` of a `mixbeta` object are the columns `w`, `shape1` and `shape2`
@@ -140,6 +152,6 @@ mapbern_post(y, t = rep(1, n), k = 3, prior_c = prior)
 #> Tested quantity: ratio rr = pi_d / pi_c
 #> P(rr > 1 | data) = 0.8602
 #> Signal (posterior probability > 0.95): no
-#> Posterior of rr: mean 1.84, median 1.627, 95% interval (0.6569, 4.263)
+#> Posterior of rr: mean Inf, median 1.627, 95% interval (0.6569, 4.263)
 #> Posterior of pi_d: mean 0.166, median 0.1648, 95% interval (0.09953, 0.2396)
 ```

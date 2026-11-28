@@ -27,7 +27,19 @@
 #' is integrated numerically on the coordinates
 #' \eqn{\mathrm{logit}(\pi_c)}{logit(pi_c)} and the prior distribution
 #' function of \eqn{\pi_d}{pi_d}, as in \code{\link{exptime_post}} and
-#' \code{\link{binbeta_post}}.
+#' \code{\link{binbeta_post}}. A MAP prior from few historical events has
+#' components with a shape parameter far below 1, whose densities of
+#' \eqn{\mathrm{logit}(\pi_c)}{logit(pi_c)} are nearly flat over a wide
+#' range. When the total weight of the components with a shape parameter
+#' below 1 exceeds \code{control$eps}, the first coordinate is therefore
+#' \eqn{z_c = \Phi^{-1}(F_e(\pi_c))}{z_c = qnorm(F_e(pi_c))}, where
+#' \eqn{F_e}{F_e} is the distribution function of an envelope of the prior:
+#' a mixture of fewer Beta distributions, each with the smallest shape
+#' parameters of a group of components. The prior density of
+#' \eqn{z_c}{z_c} is that of the standard normal distribution times the
+#' ratio of the densities of the prior and the envelope, which is bounded.
+#' When a component has \eqn{shape1 \le 1}{shape1 <= 1}, the posterior mean
+#' of the ratio \eqn{\pi_d / \pi_c}{pi_d / pi_c} is infinite (\code{Inf}).
 #'
 #' A prior derived with the \pkg{RBesT} package can be used: the rows
 #' \code{w}, \code{a} and \code{b} of a \code{mixbeta} object are the
@@ -97,20 +109,8 @@ mapbern_post <- function(y, t, k = 1, prior_c, prior_d = c(1 / 3, 1 / 3),
   wc <- 1 / (k + 1)
   ad <- prior_d[[1L]]
   bd <- prior_d[[2L]]
-  lw <- log(mix$w)
-  lb <- lbeta(mix$shape1, mix$shape2)
-
-  # log prior density of logit(pi_c) (mixture times the Jacobian)
-  lprior_u <- function(u) {
-    l1 <- plogis(u, log.p = TRUE)
-    l0 <- plogis(-u, log.p = TRUE)
-    L <- outer(l1, mix$shape1) + outer(l0, mix$shape2) +
-      rep(lw - lb, each = length(u))
-    m <- apply(L, 1L, max)
-    m + log(rowSums(exp(L - m)))
-  }
-  lo_u <- max(min(qlogis(qbeta(1e-10, mix$shape1, mix$shape2))), -40)
-  hi_u <- min(max(qlogis(qbeta(1 - 1e-10, mix$shape1, mix$shape2))), 40)
+  # logit(pi_c), or a normal quantile when the prior has heavy tails
+  coord <- beta_coord(mix, ctrl$eps)
 
   res <- mix2_post(
     loglik = function(pc, PD) {
@@ -124,16 +124,22 @@ mapbern_post <- function(y, t, k = 1, prior_c, prior_d = c(1 / 3, 1 / 3),
       }
       out
     },
-    c_of = plogis, u_of = qlogis, lprior_u = lprior_u,
+    c_of = coord$c_of, u_of = coord$u_of, lprior_u = coord$lprior_u,
     pfun = function(x, lower.tail = TRUE, log.p = FALSE) {
       pbeta(x, ad, bd, lower.tail = lower.tail, log.p = log.p)
     },
     qfun = function(p, lower.tail = TRUE, log.p = FALSE) {
       qbeta(p, ad, bd, lower.tail = lower.tail, log.p = log.p)
     },
-    lo_u = lo_u, hi_u = hi_u, d_max = 1,
-    u_split = if (rr0 > 1) qlogis(1 / rr0) else numeric(0), rate0 = rate0,
-    rr0 = rr0, level = level, details = details, ctrl = ctrl)
+    lo_u = coord$lo_u, hi_u = coord$hi_u, d_max = 1,
+    u_split = if (rr0 > 1) coord$u_of(1 / rr0) else numeric(0),
+    rate0 = rate0, rr0 = rr0, level = level, details = details, ctrl = ctrl)
+  # the posterior density of pi_c near 0 is proportional to that of the
+  # prior, so E(pi_d / pi_c) is infinite if a shape1 is at most 1
+  if (min(mix$shape1) <= 1) {
+    res$means[["ratio"]] <- Inf
+  }
+  res$coordinate <- coord$coordinate
 
   mix2_output(
     res, model = "MAPBERN", rate0 = rate0, rr0 = rr0, cutoff = cutoff,

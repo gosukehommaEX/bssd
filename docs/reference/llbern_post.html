@@ -221,7 +221,11 @@ factor 2 in the error estimate. The default number of Chebyshev points is
 large for the same reason, and the error estimate is not reliable when
 <code>control$n_inner</code> is much smaller than the default. If the reported
 error estimate is too large for the purpose, increase
-<code>control$n_inner</code>.</p>
+<code>control$n_inner</code> when there are few events and
+<code>control$n_outer</code> when there are many; with many events, the
+Gauss-Legendre rule of the three outer coordinates limits the accuracy.
+The error estimate refers to <code>prob</code>; the error of the quantiles of
+\(RR(t^*)\) can be larger.</p>
 <p>The posterior mean of \(RR(t^*)\) can be unstable because
 its posterior distribution may have a heavy right tail; the posterior
 median is a more stable summary.</p>

@@ -169,13 +169,17 @@ more accurately. The first scale keeps the far tails of an informative
 prior, which matters when the data put <span class="math inline">\(\lambda_d\)</span> many prior standard deviations
 above its prior mean; the second keeps a vague prior from creating long
 tails. The posterior probability of a threshold that depends on <span class="math inline">\(\lambda_c\)</span> (such as the rate ratio) is
-obtained from the Chebyshev series of each row. Compared with
-independent Python computations on dense grids split exactly at the
-thresholds (<code>inst/validation/validate_methods_python.R</code>,
-three data sets including one with a study drug rate far in the upper
-tail of the prior of Schnell and Ball, 2016), the largest absolute
-difference of the 5 posterior probabilities is 2.9e-09, and all 32
-compared quantities are PASS.</p>
+obtained from the Chebyshev series of each row. When the shape parameter
+of the prior of <span class="math inline">\(\lambda_c\)</span> is below
+1, its density decreases slowly on the scale of <span class="math inline">\(\log \lambda_c\)</span> as <span class="math inline">\(\lambda_c \to 0\)</span>, where the blinded data
+do not bound the posterior, and <span class="math inline">\(\Phi^{-1}(F_c(\lambda_c))\)</span> with the prior
+distribution function <span class="math inline">\(F_c\)</span> of <span class="math inline">\(\lambda_c\)</span> is used instead of <span class="math inline">\(\log \lambda_c\)</span>. Compared with independent
+Python computations on dense grids split exactly at the thresholds
+(<code>inst/validation/validate_methods_python.R</code>, three data sets
+including one with a study drug rate far in the upper tail of the prior
+of Schnell and Ball, 2016, and a prior of <span class="math inline">\(\lambda_c\)</span> with shape parameter 0.7), the
+largest absolute difference of the 7 posterior probabilities is 2.9e-09,
+and all 36 compared quantities are PASS.</p>
 </div>
 <div class="section level2">
 <h2 id="comparison-with-mcmc">Comparison with MCMC<a class="anchor" aria-label="anchor" href="#comparison-with-mcmc"></a>
@@ -294,9 +298,10 @@ exceeds 0.0156.</p>
 </tr>
 </tbody>
 </table>
-<p>The simulation of Table 1
-(<code>inst/reproduce/reproduce_Schnell2016_simulation.R</code>) has not
-been run for this installation.</p>
+<p>The simulation of Table 1 (control rate 0.0130, 1000 trials per
+setting with the authors’ seeds;
+<code>inst/reproduce/reproduce_Schnell2016_simulation.R</code>) gives 2
+PASS, 4 EXPLAINED and 0 FAIL items.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

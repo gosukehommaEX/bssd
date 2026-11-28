@@ -20,7 +20,14 @@
 #' the coordinates \eqn{\log \lambda_c}{log(lambda_c)} and
 #' \eqn{z = \Phi^{-1}(F_d(\lambda_d))}{z = qnorm(F_d(lambda_d))}, where
 #' \eqn{F_d}{F_d} is the prior distribution function of
-#' \eqn{\lambda_d}{lambda_d}. \eqn{\log \lambda_c}{log(lambda_c)} is
+#' \eqn{\lambda_d}{lambda_d}. When \eqn{\alpha_c < 1}{alpha_c < 1}, the
+#' prior density of \eqn{\log \lambda_c}{log(lambda_c)} decreases slowly as
+#' \eqn{\lambda_c \to 0}{lambda_c -> 0}, where the blinded data do not
+#' bound the posterior, and
+#' \eqn{z_c = \Phi^{-1}(F_c(\lambda_c))}{z_c = qnorm(F_c(lambda_c))}, where
+#' \eqn{F_c}{F_c} is the prior distribution function of
+#' \eqn{\lambda_c}{lambda_c}, is used instead of
+#' \eqn{\log \lambda_c}{log(lambda_c)}. The first coordinate is
 #' integrated by Gauss-Legendre quadrature. For each of its nodes, the
 #' interval of \eqn{z}{z} that holds the conditional posterior mass is
 #' located separately, and the density is interpolated at Chebyshev points
@@ -34,7 +41,13 @@
 #'
 #' The prior of the control rate is expected to be informative (for example,
 #' a posterior from historical control data); without it the blinded data do
-#' not separate the two rates.
+#' not separate the two rates. With a vague prior of the control rate, the
+#' posterior can have features that are narrow compared with its spread, and
+#' the integration error estimate shows when more nodes (\code{control$n_u})
+#' are needed. When \eqn{\alpha_c \le 1}{alpha_c <= 1}, the posterior
+#' density of \eqn{\lambda_c}{lambda_c} near 0 is proportional to the prior
+#' density, and the posterior mean of the rate ratio is infinite
+#' (\code{Inf}).
 #'
 #' When \code{rate0} is given, a signal is declared when
 #' \eqn{P(\lambda_d > rate_0 \mid \mathrm{data}) > }{P(lambda_d > rate0 | data) > }
@@ -88,7 +101,11 @@
 #'     \code{description}, \code{cutoff}, \code{level}}{Labels and settings
 #'     used by \code{print}.}
 #'   \item{\code{data}, \code{prior}}{Data summary and prior parameters.}
-#'   \item{\code{integration}}{Description of the numerical integration.}
+#'   \item{\code{integration}}{Description of the numerical integration:
+#'     the first coordinate (\code{coordinate}: \code{"log"},
+#'     \code{"logit"} or \code{"normal"}), the numbers of nodes, the
+#'     integration box in the first coordinate and \eqn{z}{z}, and the
+#'     error estimate.}
 #' }
 #'
 #' @references
@@ -136,6 +153,7 @@ exptime_post <- function(y, t, k = 1, prior_c, prior_d, rate0 = NULL,
   ad <- prior_d[[1L]]
   bd <- prior_d[[2L]]
 
+  coord <- gamma_coord(ac, bc)
   res <- mix2_post(
     loglik = function(lc, LD) {
       # one row of study drug rates per control rate
@@ -146,18 +164,22 @@ exptime_post <- function(y, t, k = 1, prior_c, prior_d, rate0 = NULL,
       }
       out
     },
-    c_of = exp, u_of = log,
-    lprior_u = function(u) ac * log(bc) - lgamma(ac) + ac * u - bc * exp(u),
+    c_of = coord$c_of, u_of = coord$u_of, lprior_u = coord$lprior_u,
     pfun = function(x, lower.tail = TRUE, log.p = FALSE) {
       pgamma(x, ad, bd, lower.tail = lower.tail, log.p = log.p)
     },
     qfun = function(p, lower.tail = TRUE, log.p = FALSE) {
       qgamma(p, ad, bd, lower.tail = lower.tail, log.p = log.p)
     },
-    lo_u = log(max(qgamma(1e-10, ac, bc), .Machine$double.xmin)),
-    hi_u = log(qgamma(1 - 1e-10, ac, bc)),
+    lo_u = coord$lo_u, hi_u = coord$hi_u,
     d_max = Inf, u_split = numeric(0), rate0 = rate0, rr0 = rr0,
     level = level, details = details, ctrl = ctrl)
+  # the posterior density of lambda_c near 0 is proportional to that of the
+  # prior, so E(lambda_d / lambda_c) is infinite if alpha_c <= 1
+  if (ac <= 1) {
+    res$means[["ratio"]] <- Inf
+  }
+  res$coordinate <- coord$coordinate
 
   mix2_output(
     res, model = "EXPTIME", rate0 = rate0, rr0 = rr0, cutoff = cutoff,

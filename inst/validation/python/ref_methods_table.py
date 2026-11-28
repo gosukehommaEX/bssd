@@ -1,6 +1,7 @@
 """Collect the reference values of ref_exptime.json, ref_binbeta.json,
-ref_canary.json, ref_mapbern.json and ref_multibin.json into
-ref_methods.csv (columns id, quantity, reference), which
+ref_canary.json, ref_mapbern.json, ref_multibin.json,
+ref_mapbern_sparse.json, ref_shape_below1.json and ref_expbern_rows.json
+into ref_methods.csv (columns id, quantity, reference), which
 inst/validation/validate_methods_python.R reads.
 """
 import csv
@@ -51,6 +52,23 @@ rows += rows_of("ref_multibin.json", "PY_MULTIBIN", [
     ("prob", "P(delta > rr0)"),
     ("mean_log_delta", "posterior mean of log(delta)"),
     ("q", "quantile of delta")])
+rows += rows_of("ref_mapbern_sparse.json", "PY_MAPBERN", [
+    ("prob_ratio_1", "P(pi_d > pi_c)"), ("prob_ratio_2", "P(pi_d > 2 pi_c)"),
+    ("prob_rate", "P(pi_d > 0.05)"), ("mean_pc", "posterior mean of pi_c"),
+    ("mean_pd", "posterior mean of pi_d")])
+for r in json.load(open("ref_shape_below1.json"))["results"]:
+    if r["id"].startswith("BS"):
+        keys = [("prob_rate", "P(theta_d > p0)"), ("prob_ratio", "P(rr > rr0)"),
+                ("mean_theta_c", "posterior mean of theta_c"),
+                ("mean_theta_d", "posterior mean of theta_d")]
+        pre = "PY_BINBETA"
+    else:
+        keys = [("prob_rate", "P(lambda_d > rate0)"), ("prob_ratio", "P(r > rr0)"),
+                ("mean_lambda_c", "posterior mean of lambda_c"),
+                ("mean_lambda_d", "posterior mean of lambda_d")]
+        pre = "PY_EXPTIME"
+    for key, label in keys:
+        rows.append(["%s_%s_%s" % (pre, r["id"], key), label, r[key]])
 mb = json.load(open("ref_mapbern.json"))
 for r in mb["map_results"]:
     rows.append(["PY_MAP_%s_mean" % r["id"], "MAP prior mean", r["mean"]])
@@ -62,6 +80,14 @@ rows.append(["PY_MAP_SUBJ_mean", "MAP prior mean, subject-level data",
              mb["map_subject"]["mean"]])
 rows.append(["PY_MAP_SUBJ_sd", "MAP prior SD, subject-level data",
              mb["map_subject"]["sd"]])
+rows += rows_of("ref_expbern_rows.json", "PY_EXPBERN", [
+    ("prob", "P(r > rr0)"), ("mean_p", "posterior mean of p"),
+    ("mean_r", "posterior mean of r"),
+    ("mean_lambda_p", "posterior mean of lambda_p"),
+    ("mean_lambda_d", "posterior mean of lambda_d"),
+    ("ip_placebo", "placebo incidence at t_star"),
+    ("ip_drug", "study drug incidence at t_star"),
+    ("q", "quantile of r")])
 with open("ref_methods.csv", "w", newline="") as f:
     w = csv.writer(f, lineterminator="\n")
     w.writerow(["id", "quantity", "reference"])
@@ -81,4 +107,8 @@ with open("data_methods.csv", "w", newline="") as f:
     d = mb["map_subject_data"]
     for yy, tt, ss in zip(d["y"], d["t"], d["study"]):
         w.writerow(["MAP_SUBJ", int(yy), repr(float(tt)), int(ss)])
+    xd = json.load(open("ref_expbern_rows.json"))["data"]
+    for name in ("X1", "X3"):
+        for yy, tt in zip(xd[name]["y"], xd[name]["t"]):
+            w.writerow([name, int(yy), repr(float(tt)), 1])
 print("data_methods.csv written")

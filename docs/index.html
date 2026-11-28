@@ -226,7 +226,7 @@
 <span><span class="co">#&gt;             model      prob signal rr_median        error</span></span>
 <span><span class="co">#&gt; BDRIBS1   BDRIBS1 0.7909268  FALSE  2.879204           NA</span></span>
 <span><span class="co">#&gt; BDRIBS2   BDRIBS2 0.8049487  FALSE  3.030938           NA</span></span>
-<span><span class="co">#&gt; EXP_BERN EXP_BERN 0.8202780  FALSE  3.242503 1.814905e-07</span></span>
+<span><span class="co">#&gt; EXP_BERN EXP_BERN 0.8202782  FALSE  3.242507 1.180896e-07</span></span>
 <span><span class="co">#&gt; LL_BERN   LL_BERN 0.9351465  FALSE  4.217216 3.733315e-04</span></span></code></pre></div>
 <p><code><a href="articles/bssd.html">vignette("bssd")</a></code> gives an overview of the models, the priors of this example and the simulation of the operating characteristics. The articles <code><a href="articles/bdribs1.html">vignette("bdribs1")</a></code>, <code><a href="articles/bdribs2.html">vignette("bdribs2")</a></code>, <code><a href="articles/bdribs-monitoring.html">vignette("bdribs-monitoring")</a></code>, <code><a href="articles/binbeta.html">vignette("binbeta")</a></code>, <code><a href="articles/canary.html">vignette("canary")</a></code>, <code><a href="articles/expbern.html">vignette("expbern")</a></code>, <code><a href="articles/llbern.html">vignette("llbern")</a></code>, <code><a href="articles/exptime.html">vignette("exptime")</a></code> and <code><a href="articles/mapbern.html">vignette("mapbern")</a></code> describe each model, with examples, the accuracy of the numerical integration, the comparison with MCMC and the reproduction of the published results. The documentation is also available at <a href="https://gosukehommaex.github.io/bssd/" class="uri">https://gosukehommaex.github.io/bssd/</a>.</p>
 </div>
@@ -235,7 +235,7 @@
 </h2>
 <ul>
 <li>
-<code>tests/testthat</code> has 42 test files with 105 <code><a href="https://testthat.r-lib.org/reference/test_that.html" class="external-link">testthat::test_that()</a></code> blocks. Their expected values were computed beforehand by independent Python implementations (<code>inst/validation/python</code>).</li>
+<code>tests/testthat</code> has 49 test files with 123 <code><a href="https://testthat.r-lib.org/reference/test_that.html" class="external-link">testthat::test_that()</a></code> blocks. Their expected values were computed beforehand by independent Python implementations (<code>inst/validation/python</code>).</li>
 <li>
 <a href="https://github.com/gosukehommaEX/bssd/tree/main/inst/reproduce" class="external-link"><code>inst/reproduce</code></a> reproduces the numerical results of Mukhopadhyay et al. (2018), Duncan (2026), Schnell and Ball (2016), Gould and Wang (2017), Brock et al. (2023), Goren et al. (2020) and Waterhouse et al. (2022): tables, worked examples and simulations.</li>
 <li>
@@ -251,6 +251,13 @@
 <th align="right">INFO</th>
 </tr></thead>
 <tbody>
+<tr>
+<td align="left">reproduce_Brock2023.csv</td>
+<td align="right">55</td>
+<td align="right">0</td>
+<td align="right">41</td>
+<td align="right">0</td>
+</tr>
 <tr>
 <td align="left">reproduce_Duncan2026.csv</td>
 <td align="right">15</td>
@@ -280,6 +287,13 @@
 <td align="right">0</td>
 </tr>
 <tr>
+<td align="left">reproduce_Goren2020_table2.csv</td>
+<td align="right">120</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr>
 <td align="left">reproduce_Gould2017.csv</td>
 <td align="right">71</td>
 <td align="right">17</td>
@@ -299,6 +313,13 @@
 <td align="right">3</td>
 <td align="right">1</td>
 <td align="right">16</td>
+</tr>
+<tr>
+<td align="left">reproduce_Schnell2016_table1.csv</td>
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">0</td>
 </tr>
 <tr>
 <td align="left">reproduce_Waterhouse2022.csv</td>
@@ -344,7 +365,7 @@
 </tr>
 <tr>
 <td align="left">validate_methods_python.csv</td>
-<td align="right">174</td>
+<td align="right">247</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>

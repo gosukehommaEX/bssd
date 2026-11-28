@@ -136,7 +136,7 @@ differ.</p>
 <span><span class="co">#&gt; Tested quantity: ratio rr = pi_d / pi_c</span></span>
 <span><span class="co">#&gt; P(rr &gt; 1 | data) = 0.8602</span></span>
 <span><span class="co">#&gt; Signal (posterior probability &gt; 0.95): no</span></span>
-<span><span class="co">#&gt; Posterior of rr: mean 1.84, median 1.627, 95% interval (0.6569, 4.263)</span></span>
+<span><span class="co">#&gt; Posterior of rr: mean Inf, median 1.627, 95% interval (0.6569, 4.263)</span></span>
 <span><span class="co">#&gt; Posterior of pi_d: mean 0.166, median 0.1648, 95% interval (0.09953, 0.2396)</span></span></code></pre></div>
 <p>A prior derived with the RBesT package can be used as well: the rows
 <code>w</code>, <code>a</code> and <code>b</code> of a
@@ -150,13 +150,23 @@ differ.</p>
 <div class="section level2">
 <h2 id="numerical-integration-and-comparison-with-mcmc">Numerical integration and comparison with MCMC<a class="anchor" aria-label="anchor" href="#numerical-integration-and-comparison-with-mcmc"></a>
 </h2>
+<p>A MAP prior from few historical events has components with a shape
+parameter far below 1, whose densities are nearly flat over a wide range
+of <span class="math inline">\(\mathrm{logit}(\pi_c)\)</span>.
+<code><a href="../reference/mapbern_post.html">mapbern_post()</a></code> then integrates over the normal quantile of
+an envelope of the prior, a mixture of fewer Beta distributions whose
+tails are at least as heavy, so that the tails of the posterior on the
+integration scale are like those of the normal distribution
+(<code><a href="../reference/mapbern_post.html">?mapbern_post</a></code>).</p>
 <p>Against independent Python computations (dense composite
 Gauss-Legendre rules split exactly at <span class="math inline">\(\pi_d
-= rr_0 \pi_c\)</span> for <code><a href="../reference/mapbern_post.html">mapbern_post()</a></code>, and a dense grid
-over <span class="math inline">\((a, b)\)</span> for
-<code><a href="../reference/map_beta.html">map_beta()</a></code>), the largest absolute difference of the 43
-compared quantities is 1.1e-06. A JAGS model with the mixture prior and
-latent treatment assignments gives:</p>
+= rr_0 \pi_c\)</span> for <code><a href="../reference/mapbern_post.html">mapbern_post()</a></code>, a dense grid over
+<span class="math inline">\((a, b)\)</span> for <code><a href="../reference/map_beta.html">map_beta()</a></code>,
+and, for historical arms with few events, the MAP model integrated over
+<span class="math inline">\((a, b, \pi_c, \pi_d)\)</span> without the
+mixture of <code><a href="../reference/map_beta.html">map_beta()</a></code>), the largest absolute difference of
+the 78 compared quantities is 1.2e-06. A JAGS model with the mixture
+prior and latent treatment assignments gives:</p>
 <table class="table">
 <colgroup>
 <col width="66%">
@@ -195,9 +205,12 @@ latent treatment assignments gives:</p>
 <div class="section level2">
 <h2 id="reproduction-of-brock-et-al--2023">Reproduction of Brock et al. (2023)<a class="anchor" aria-label="anchor" href="#reproduction-of-brock-et-al--2023"></a>
 </h2>
-<p>The simulation of Tables 1 and 3
-(<code>inst/reproduce/reproduce_Brock2023_simulation.R</code>) has not
-been run for this installation.</p>
+<p><code>inst/reproduce/reproduce_Brock2023_simulation.R</code> repeats
+the simulation of Tables 1 (common events) and 3 (rare events) for the
+heterogeneity levels None and High (1000 trials per setting), and
+<code>inst/reproduce/reproduce_Brock2023.R</code> compares the mean of
+the posterior probability: 55 PASS, 0 EXPLAINED and 41 FAIL of 96
+settings.</p>
 </div>
 <div class="section level2">
 <h2 id="references">References<a class="anchor" aria-label="anchor" href="#references"></a>

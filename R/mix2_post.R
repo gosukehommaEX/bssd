@@ -81,21 +81,6 @@ mix2_post <- function(loglik, c_of, u_of, lprior_u, pfun, qfun, lo_u, hi_u,
   }, c(lo_u, -8), c(hi_u, 8), ctrl$n_coarse, ctrl$eps, ctrl$max_iter,
   lim_lo = c(-Inf, -Inf), lim_hi = c(Inf, Inf))
   probs <- c((1 - level) / 2, 0.5, (1 + level) / 2)
-  # share of the Chebyshev coefficients of the highest quarter of degrees in
-  # the density of each row (small when the interpolation is accurate)
-  tail_share <- function(L) {
-    L[is.na(L)] <- -Inf
-    m <- apply(L, 1L, max)
-    f <- exp(L - m)
-    f[!is.finite(m), ] <- 0
-    a <- abs(f %*% t(cheb_coef_matrix(ncol(L))))
-    k0 <- floor(0.75 * ncol(L))
-    out <- rowSums(a[, (k0 + 1L):ncol(L), drop = FALSE]) /
-      pmax(rowSums(a), .Machine$double.xmin)
-    out[!is.finite(m)] <- Inf
-    out
-  }
-
   # grid with the Gauss-Legendre rule of the first coordinate split at
   # 'splits'
   build <- function(n_u, n_v, splits) {
@@ -119,7 +104,7 @@ mix2_post <- function(loglik, c_of, u_of, lprior_u, pfun, qfun, lo_u, hi_u,
     Lz <- loglik(tc, DZ) + dnorm(Zn, log = TRUE)
     Lv <- loglik(tc, DV)
     # v is used only where it is not 0 or 1 in double precision
-    vrow <- zh <= 8 & zl >= -37 & tail_share(Lv) < tail_share(Lz)
+    vrow <- zh <= 8 & zl >= -37 & row_tail_share(Lv) < row_tail_share(Lz)
     L <- Lz
     L[vrow, ] <- Lv[vrow, ]
     TD <- DZ

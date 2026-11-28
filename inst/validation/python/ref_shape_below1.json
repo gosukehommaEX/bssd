@@ -1,0 +1,46 @@
+{
+ "note": "binbeta_post() and exptime_post() with a control prior shape below 1",
+ "results": [
+  {
+   "id": "BS1",
+   "k": 1,
+   "mean_theta_c": 0.06158654927598209,
+   "mean_theta_d": 0.19698035646229917,
+   "n": 100,
+   "n_terms": 1027,
+   "p0": 0.15,
+   "prior_c": [
+    0.5,
+    5.0
+   ],
+   "prior_d": [
+    1.0,
+    1.0
+   ],
+   "prob_rate": 0.7117667148324871,
+   "prob_ratio": 0.8234809625922909,
+   "rr0": 1.0,
+   "y": 12
+  },
+  {
+   "change": 1.1102230246251565e-16,
+   "data": "E1",
+   "id": "ES1",
+   "k": 2,
+   "mean_lambda_c": 0.022179090114955228,
+   "mean_lambda_d": 0.028480153947061018,
+   "prior_c": [
+    0.7,
+    30.0
+   ],
+   "prior_d": [
+    2.0,
+    70.0
+   ],
+   "prob_rate": 0.11664340474647406,
+   "prob_ratio": 0.6377937902090893,
+   "rate0": 0.04,
+   "rr0": 1.0
+  }
+ ]
+}

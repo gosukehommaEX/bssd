@@ -96,10 +96,16 @@ two-dimensional. It is integrated numerically on the coordinates
 \\\mathrm{logit}(\theta_c)\\ and the prior distribution function of
 \\\theta_d\\ as in
 [`exptime_post`](https://gosukehommaex.github.io/bssd/reference/exptime_post.md).
-For \\rr_0 \> 1\\, the Gauss-Legendre rule over
-\\\mathrm{logit}(\theta_c)\\ is split at \\\theta_c = 1 / rr_0\\, where
-the posterior probability of the ratio has a kink because \\\theta_d \le
-1\\.
+When \\a \< 1\\ or \\b \< 1\\, the prior density of
+\\\mathrm{logit}(\theta_c)\\ decreases slowly in a tail, which the
+blinded data do not bound, and \\z_c = \Phi^{-1}(F_c(\theta_c))\\, where
+\\F_c\\ is the prior distribution function of \\\theta_c\\, is used
+instead. For \\rr_0 \> 1\\, the Gauss-Legendre rule over the first
+coordinate is split at \\\theta_c = 1 / rr_0\\, where the posterior
+probability of the ratio has a kink because \\\theta_d \le 1\\. When \\a
+\le 1\\, the posterior density of \\\theta_c\\ near 0 is proportional to
+the prior density, and the posterior mean of the ratio is infinite
+(`Inf`).
 
 When `p0` is given, a signal is declared when \\P(\theta_d \> p_0 \mid
 Z) \> \\ `cutoff` (the rule of Ball and Schnell, 2016); otherwise the

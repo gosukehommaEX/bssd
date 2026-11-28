@@ -94,9 +94,9 @@ fit
 #> Cumulative incidence at t_star = 52: placebo 0.1094, study drug 0.1638, difference 0.05434
 summary(fit)
 #>      model      prob signal rr_mean rr_median  rr_lower rr_upper ip_placebo
-#> 1 EXP_BERN 0.7510482  FALSE     Inf  1.625838 0.2321424 5.326324  0.1094196
+#> 1 EXP_BERN 0.7510482  FALSE     Inf  1.625838 0.2321424 5.326323  0.1094196
 #>     ip_drug ip_difference        error
-#> 1 0.1637567    0.05433711 5.669898e-11
+#> 1 0.1637567    0.05433711 1.163647e-10
 ```
 
 The posterior probabilities for other critical values of \\r\\ are
@@ -115,16 +115,20 @@ vapply(c(1, 1.5, 2), function(q) {
 ## Numerical integration
 
 [`expbern_post()`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md)
-integrates the two-dimensional posterior numerically on the coordinates
-\\\log \lambda_p\\ and the prior distribution function of \\p\\. A
-coarse grid locates the region that holds almost all posterior mass;
-Gauss-Legendre quadrature is used for \\\log \lambda_p\\ and Chebyshev
-interpolation for the second coordinate (see
+integrates the two-dimensional posterior numerically. A coarse grid
+locates the region that holds almost all posterior mass, and
+Gauss-Legendre quadrature is used for \\\log \lambda_p\\ on that region.
+For each Gauss-Legendre node, the interval of the second coordinate that
+holds almost all conditional posterior mass is located separately, and
+the row is interpolated at Chebyshev points in the prior distribution
+function of \\p\\ or in its normal quantile, whichever gives the faster
+decay of the Chebyshev coefficients of its density (see
 [`?expbern_post`](https://gosukehommaex.github.io/bssd/reference/expbern_post.md)).
-With `control$check = TRUE`, the default, the computation is repeated on
-a finer grid, the finer result is returned, and the absolute difference
-in `prob` is reported as the error estimate (`fit$integration$error`,
-here 5.7e-11).
+The intervals therefore follow the posterior also when the data conflict
+with an informative prior of \\p\\. With `control$check = TRUE`, the
+default, the computation is repeated on a finer grid, the finer result
+is returned, and the absolute difference in `prob` is reported as the
+error estimate (`fit$integration$error`, here 1.2e-10).
 
 The script `inst/validation/validate_convergence.R` compares the default
 grid with a much finer grid for the following data sets. The column
@@ -132,16 +136,16 @@ Error estimate is the error estimate reported with the default grid.
 
 | Data | Comparison | Quantity | Reference | bssd | Difference | Error estimate |
 |:---|:---|:---|---:|---:|---:|---:|
-| E1: n = 150, events = 15 | finer grid vs default | P(r \> 1) | 0.541398 | 0.541398 | 2.4e-09 | 2.0e-11 |
-| E1: n = 150, events = 15 | finer grid vs default | study drug incidence | 0.126419 | 0.126419 | 6.2e-10 |  |
-| E2: n = 300, events = 101 | finer grid vs default | P(r \> 1) | 0.714322 | 0.714322 | 1.1e-10 | 5.7e-12 |
-| E2: n = 300, events = 101 | finer grid vs default | study drug incidence | 0.365416 | 0.365416 | 3.3e-10 |  |
-| E3: n = 200, events = 4 | finer grid vs default | P(r \> 1.5) | 0.121202 | 0.121202 | 5.5e-10 | 1.2e-09 |
-| E3: n = 200, events = 4 | finer grid vs default | study drug incidence | 0.026955 | 0.026955 | 3.8e-11 |  |
-| E4: n = 60, events = 0 | finer grid vs default | P(r \> 1) | 0.396049 | 0.396050 | 2.1e-07 | 5.7e-06 |
-| E4: n = 60, events = 0 | finer grid vs default | study drug incidence | 0.008988 | 0.008988 | 9.9e-09 |  |
+| E1: n = 150, events = 15 | finer grid vs default | P(r \> 1) | 0.541399 | 0.541398 | 4.3e-09 | 2.2e-08 |
+| E1: n = 150, events = 15 | finer grid vs default | study drug incidence | 0.126419 | 0.126419 | 1.0e-09 |  |
+| E2: n = 300, events = 101 | finer grid vs default | P(r \> 1) | 0.714322 | 0.714322 | 4.7e-09 | 1.1e-10 |
+| E2: n = 300, events = 101 | finer grid vs default | study drug incidence | 0.365416 | 0.365416 | 1.3e-09 |  |
+| E3: n = 200, events = 4 | finer grid vs default | P(r \> 1.5) | 0.121202 | 0.121202 | 3.1e-09 | 1.8e-08 |
+| E3: n = 200, events = 4 | finer grid vs default | study drug incidence | 0.026955 | 0.026955 | 4.7e-11 |  |
+| E4: n = 60, events = 0 | finer grid vs default | P(r \> 1) | 0.396049 | 0.396049 | 7.7e-09 | 6.4e-06 |
+| E4: n = 60, events = 0 | finer grid vs default | study drug incidence | 0.008988 | 0.008988 | 2.7e-10 |  |
 
-The largest difference is 2.1e-07, and all 8 items are PASS.
+The largest difference is 7.7e-09, and all 8 items are PASS.
 
 ## Comparison with MCMC
 

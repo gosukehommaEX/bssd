@@ -57,17 +57,20 @@ ratio.}
 not computed (faster; used in \code{\link{sim_oc}}).}
 
 \item{control}{List of settings for the numerical integration:
-\code{n_coarse} (cells per coordinate of the coarse grid, default 41),
-\code{n_lambda} (Gauss-Legendre nodes, default 48), \code{n_p}
-(Chebyshev points, default 49), \code{check} (default \code{TRUE}),
-\code{eps} (default \code{1e-8}) and \code{max_iter} (default 12).}
+\code{n_coarse} (cells per coordinate of the coarse grid and per row,
+default 41), \code{n_lambda} (Gauss-Legendre nodes, default 48),
+\code{n_p} (Chebyshev points per row, default 49), \code{check}
+(default \code{TRUE}), \code{eps} (default \code{1e-8}) and
+\code{max_iter} (default 12).}
 }
 \value{
 An object of class \code{bssd_post}; see \code{\link{bdribs_post}}.
   The element \code{model} is \code{"EXP_BERN"}, \code{estimates} contains
   the posterior means of \eqn{p}{p}, \eqn{r}{r}, \eqn{\lambda_p}{lambda_p}
   and \eqn{r \lambda_p}{r * lambda_p} (\code{lambda_d}), and
-  \code{integration} contains the nodes used and the error estimate.
+  \code{integration} contains the nodes used, the region of
+  \eqn{(\log \lambda_p, z)}{(log(lambda_p), z)} located by the coarse
+  grid and the error estimate.
 }
 \description{
 Computes the posterior distribution of the rate ratio under the
@@ -84,26 +87,41 @@ with \eqn{w_p = 1 / (k + 1)}{w_p = 1 / (k + 1)} and
 \deqn{\lambda_p \sim \mathrm{Gamma}(\lambda_{HP} PT_{HP} / DF, PT_{HP} / DF), \quad r = p / [k (1 - p)], \quad p \sim \mathrm{Beta}(a, b).}{lambda_p ~ Gamma(lambda_hp * pt_hp / df, pt_hp / df), r = p / (k * (1 - p)), p ~ Beta(a, b).}
 The Gamma distribution is parameterized by shape and rate.
 
-The two-dimensional posterior is integrated numerically on the
-coordinates \eqn{\log \lambda_p}{log(lambda_p)} and the prior
-distribution function of \eqn{p}{p}. The latter keeps the tails of the
-posterior of \eqn{p}{p} under control: the likelihood does not vanish as
-\eqn{r \to 0}{r -> 0} or \eqn{r \to \infty}{r -> Inf}, so these tails
-follow the prior. A coarse grid first locates the region that holds all but
-\code{control$eps} of the posterior mass in each marginal. On that region,
-Gauss-Legendre quadrature is used for \eqn{\log \lambda_p}{log(lambda_p)},
-and the marginal density of the second coordinate is interpolated at
-Chebyshev points, which gives its distribution function at any point (used
-for \code{prob} and the quantiles of \eqn{r}{r}). When
-\code{control$check} is \code{TRUE}, the computation is repeated with about
-1.5 times as many nodes, the finer result is returned, and the absolute
-difference in \code{prob} is reported as the integration error estimate.
+The two-dimensional posterior is integrated numerically. The first
+coordinate is \eqn{\log \lambda_p}{log(lambda_p)}, integrated by
+Gauss-Legendre quadrature on the region that a coarse grid locates. The
+second coordinate describes \eqn{p}{p} through its prior distribution
+function \eqn{F}{F}: either \eqn{v = F(p)}{v = F(p)}, in which the
+posterior density is the likelihood times the prior density of
+\eqn{\lambda_p}{lambda_p}, or
+\eqn{z = \Phi^{-1}(F(p))}{z = qnorm(F(p))}, computed on the logarithmic
+scale, which also represents the far tails of an informative prior of
+\eqn{p}{p}. The likelihood does not vanish as \eqn{r \to 0}{r -> 0} or
+\eqn{r \to \infty}{r -> Inf}, so the tails of the posterior of
+\eqn{p}{p} follow the prior. For each Gauss-Legendre node, the interval of
+\eqn{z}{z} that holds all but \code{control$eps} of the conditional
+posterior mass on each side is located separately, so the intervals follow
+the posterior when it lies on a ridge of the blinded likelihood or in a
+tail of the prior of \eqn{p}{p} (for example, when the data conflict with
+an informative prior of \eqn{p}{p}). Each row is interpolated at Chebyshev
+points in \eqn{v}{v} or in \eqn{z}{z}, whichever gives the faster decay of
+the Chebyshev coefficients of its density, which gives the distribution
+function of \eqn{p}{p}, and hence of \eqn{r}{r}, at any point (used for
+\code{prob} and the quantiles of \eqn{r}{r}). When \code{control$check}
+is \code{TRUE}, the computation is repeated with about 1.5 times as many
+nodes, the finer result is returned, and the absolute difference in
+\code{prob} is reported as the integration error estimate.
 
 Because the likelihood stays positive as \eqn{r \to \infty}{r -> Inf},
 the posterior means of \eqn{r}{r} and \eqn{r \lambda_p}{r * lambda_p} are
 infinite when the second shape parameter of the Beta prior is 1 or less,
 as for the default \code{c(0.5, 0.5)}. They are then returned as
 \code{Inf}, and the posterior median of \eqn{r}{r} is the summary to use.
+Otherwise the means are integrated over the intervals of the rows, which
+leave out a posterior mass of at most \code{control$eps} on each side;
+when the second shape parameter is close to 1, the part of the means that
+comes from the far right tail of \eqn{r}{r} is not negligible, and the
+posterior median is again the summary to use.
 
 A signal is declared when \eqn{P(r > rr_0 \mid \mathrm{data}) > }{P(r > rr0 | data) > }
 \code{cutoff}.

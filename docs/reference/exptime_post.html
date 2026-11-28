@@ -180,7 +180,11 @@ of the study drug rate.</p></dd>
 <dd><p>Data summary and prior parameters.</p></dd>
 
   <dt><code>integration</code></dt>
-<dd><p>Description of the numerical integration.</p></dd>
+<dd><p>Description of the numerical integration:
+    the first coordinate (<code>coordinate</code>: <code>"log"</code>,
+    <code>"logit"</code> or <code>"normal"</code>), the numbers of nodes, the
+    integration box in the first coordinate and \(z\), and the
+    error estimate.</p></dd>
 
 
 </dl></div>
@@ -200,7 +204,14 @@ the region that holds all but <code>control$eps</code> of the posterior mass in
 the coordinates \(\log \lambda_c\) and
 \(z = \Phi^{-1}(F_d(\lambda_d))\), where
 \(F_d\) is the prior distribution function of
-\(\lambda_d\). \(\log \lambda_c\) is
+\(\lambda_d\). When \(\alpha_c &lt; 1\), the
+prior density of \(\log \lambda_c\) decreases slowly as
+\(\lambda_c \to 0\), where the blinded data do not
+bound the posterior, and
+\(z_c = \Phi^{-1}(F_c(\lambda_c))\), where
+\(F_c\) is the prior distribution function of
+\(\lambda_c\), is used instead of
+\(\log \lambda_c\). The first coordinate is
 integrated by Gauss-Legendre quadrature. For each of its nodes, the
 interval of \(z\) that holds the conditional posterior mass is
 located separately, and the density is interpolated at Chebyshev points
@@ -213,7 +224,13 @@ largest absolute difference in the posterior probabilities is reported as
 the integration error estimate.</p>
 <p>The prior of the control rate is expected to be informative (for example,
 a posterior from historical control data); without it the blinded data do
-not separate the two rates.</p>
+not separate the two rates. With a vague prior of the control rate, the
+posterior can have features that are narrow compared with its spread, and
+the integration error estimate shows when more nodes (<code>control$n_u</code>)
+are needed. When \(\alpha_c \le 1\), the posterior
+density of \(\lambda_c\) near 0 is proportional to the prior
+density, and the posterior mean of the rate ratio is infinite
+(<code>Inf</code>).</p>
 <p>When <code>rate0</code> is given, a signal is declared when
 \(P(\lambda_d &gt; rate_0 \mid \mathrm{data}) &gt; \)
 <code>cutoff</code>, which is the rule of Schnell and Ball (2016); otherwise

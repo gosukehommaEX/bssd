@@ -115,7 +115,7 @@ res[, c("model", "prob", "signal", "rr_median", "error")]
 #>             model      prob signal rr_median        error
 #> BDRIBS1   BDRIBS1 0.7909268  FALSE  2.879204           NA
 #> BDRIBS2   BDRIBS2 0.8049487  FALSE  3.030938           NA
-#> EXP_BERN EXP_BERN 0.8202780  FALSE  3.242503 1.814905e-07
+#> EXP_BERN EXP_BERN 0.8202782  FALSE  3.242507 1.180896e-07
 #> LL_BERN   LL_BERN 0.9351465  FALSE  4.217216 3.733315e-04
 ```
 
@@ -139,7 +139,7 @@ published results. The documentation is also available at
 
 ## Validation
 
-- `tests/testthat` has 42 test files with 105
+- `tests/testthat` has 49 test files with 123
   [`testthat::test_that()`](https://testthat.r-lib.org/reference/test_that.html)
   blocks. Their expected values were computed beforehand by independent
   Python implementations (`inst/validation/python`).
@@ -173,20 +173,23 @@ registered reason) or INFO (no value to compare with):
 
 | file                                | PASS | EXPLAINED | FAIL | INFO |
 |:------------------------------------|-----:|----------:|-----:|-----:|
+| reproduce_Brock2023.csv             |   55 |         0 |   41 |    0 |
 | reproduce_Duncan2026.csv            |   15 |         6 |    0 |    7 |
 | reproduce_Duncan2026_prior.csv      |   23 |         6 |    0 |    0 |
 | reproduce_Duncan2026_simulation.csv |   14 |         4 |    0 |  113 |
 | reproduce_Goren2020.csv             |   12 |         0 |    0 |    0 |
+| reproduce_Goren2020_table2.csv      |  120 |         0 |    0 |    0 |
 | reproduce_Gould2017.csv             |   71 |        17 |    0 |    0 |
 | reproduce_Mukhopadhyay2018.csv      |   82 |         4 |    0 |    1 |
 | reproduce_Schnell2016.csv           |   27 |         3 |    1 |   16 |
+| reproduce_Schnell2016_table1.csv    |    2 |         4 |    0 |    0 |
 | reproduce_Waterhouse2022.csv        |   11 |         0 |    1 |    2 |
 | validate_bdribs_package.csv         |   35 |         0 |    0 |    0 |
 | validate_convergence.csv            |   19 |         0 |    0 |    0 |
 | validate_gould2017_author_grid.csv  |   28 |         0 |    0 |    0 |
 | validate_jags.csv                   |   24 |         0 |    0 |    3 |
 | validate_jags_methods.csv           |   16 |         0 |    0 |    1 |
-| validate_methods_python.csv         |  174 |         0 |    0 |    0 |
+| validate_methods_python.csv         |  247 |         0 |    0 |    0 |
 | validate_sim_oc.csv                 |   29 |         0 |    0 |    0 |
 
 The reasons for the EXPLAINED items are listed in

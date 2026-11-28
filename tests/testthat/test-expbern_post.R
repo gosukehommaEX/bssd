@@ -63,20 +63,52 @@ test_that("expbern_post matches the reference values with Beta(1, 3) prior", {
   fit <- expbern_post(d$y, d$t, k = 1, lambda_hp = 0.004, pt_hp = 1000,
                       df = 1, p_prior = c(1, 3), rr0 = 1, t_star = 52)
   expect_s3_class(fit, "bssd_post")
-  expect_equal(fit$prob, 0.29560487790378887, tolerance = 1e-4)
+  expect_equal(fit$prob, 0.29560487790378887, tolerance = 1e-6)
   expect_equal(unname(fit$rr[c("median", "lower", "upper")]),
                c(0.5934364836828607, 0.026881672076536658,
-                 3.2104777171292267), tolerance = 1e-4)
+                 3.2104777171292267), tolerance = 1e-5)
   expect_equal(unname(fit$estimates[c("p", "lambda_p")]),
                c(0.3752890244665631, 0.005920649289616942),
-               tolerance = 1e-4)
+               tolerance = 1e-6)
   expect_equal(unname(fit$incidence),
                c(0.2608934271794771, 0.17993734650825244,
-                 -0.08095608067122467), tolerance = 1e-4)
+                 -0.08095608067122467), tolerance = 1e-6)
   expect_equal(unname(fit$estimates[c("r", "lambda_d")]),
                c(0.8530456928091014, 0.0040438138780992785),
-               tolerance = 1e-3)
+               tolerance = 1e-5)
   expect_lt(fit$integration$error, 1e-4)
+})
+
+test_that("expbern_post is accurate when the data conflict with p_prior", {
+  # data sets X1 and X3 of inst/validation/python/ref_expbern_rows.py, whose
+  # event rates are about 2.7 times and half the historical placebo rate;
+  # the reference values are from that script
+  t <- rep(4:52, 8)
+  i <- seq_along(t)
+  y1 <- as.integer((i * 37) %% 100 < 15)
+  y3 <- as.integer((i * 37) %% 100 < 3)
+  lam <- -log(0.9) / 52
+  f1 <- expbern_post(y1, t, k = 1, lambda_hp = lam, pt_hp = 392 / 2 * 52,
+                     df = 2, p_prior = c(10, 10), rr0 = 1, t_star = 52)
+  expect_equal(f1$prob, 0.9925542962879245, tolerance = 1e-6)
+  # the comparison is not vacuous: a shifted reference value fails
+  expect_failure(expect_equal(f1$prob, 0.9925542962879245 * (1 + 1e-4),
+                              tolerance = 1e-6))
+  expect_equal(unname(f1$rr[c("median", "lower", "upper")]),
+               c(2.4431701696234844, 1.2002240921912506,
+                 4.840484548171423), tolerance = 1e-5)
+  expect_equal(unname(f1$estimates),
+               c(0.7036902786285846, 2.591892852618485,
+                 0.0031348442646069795, 0.007624253721786386),
+               tolerance = 1e-6)
+  expect_equal(unname(f1$incidence[c("placebo", "drug")]),
+               c(0.14989609551381883, 0.32498587784836636), tolerance = 1e-6)
+  f3 <- expbern_post(y3, t, k = 2, lambda_hp = lam, pt_hp = 392 / 2 * 52,
+                     df = 2, p_prior = c(10, 10), rr0 = 1)
+  expect_equal(f3$prob, 0.01568195899263869, tolerance = 1e-6)
+  expect_equal(unname(f3$rr[c("median", "lower", "upper")]),
+               c(0.43593860953853886, 0.19156465171407833,
+                 0.9297460557052647), tolerance = 1e-5)
 })
 
 test_that("expbern_post works without the convergence check", {

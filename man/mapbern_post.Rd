@@ -85,7 +85,19 @@ The likelihood is that of the exponential Bernoulli mixture model
 is integrated numerically on the coordinates
 \eqn{\mathrm{logit}(\pi_c)}{logit(pi_c)} and the prior distribution
 function of \eqn{\pi_d}{pi_d}, as in \code{\link{exptime_post}} and
-\code{\link{binbeta_post}}.
+\code{\link{binbeta_post}}. A MAP prior from few historical events has
+components with a shape parameter far below 1, whose densities of
+\eqn{\mathrm{logit}(\pi_c)}{logit(pi_c)} are nearly flat over a wide
+range. When the total weight of the components with a shape parameter
+below 1 exceeds \code{control$eps}, the first coordinate is therefore
+\eqn{z_c = \Phi^{-1}(F_e(\pi_c))}{z_c = qnorm(F_e(pi_c))}, where
+\eqn{F_e}{F_e} is the distribution function of an envelope of the prior:
+a mixture of fewer Beta distributions, each with the smallest shape
+parameters of a group of components. The prior density of
+\eqn{z_c}{z_c} is that of the standard normal distribution times the
+ratio of the densities of the prior and the envelope, which is bounded.
+When a component has \eqn{shape1 \le 1}{shape1 <= 1}, the posterior mean
+of the ratio \eqn{\pi_d / \pi_c}{pi_d / pi_c} is infinite (\code{Inf}).
 
 A prior derived with the \pkg{RBesT} package can be used: the rows
 \code{w}, \code{a} and \code{b} of a \code{mixbeta} object are the

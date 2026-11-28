@@ -14,26 +14,41 @@
 #' \deqn{\lambda_p \sim \mathrm{Gamma}(\lambda_{HP} PT_{HP} / DF, PT_{HP} / DF), \quad r = p / [k (1 - p)], \quad p \sim \mathrm{Beta}(a, b).}{lambda_p ~ Gamma(lambda_hp * pt_hp / df, pt_hp / df), r = p / (k * (1 - p)), p ~ Beta(a, b).}
 #' The Gamma distribution is parameterized by shape and rate.
 #'
-#' The two-dimensional posterior is integrated numerically on the
-#' coordinates \eqn{\log \lambda_p}{log(lambda_p)} and the prior
-#' distribution function of \eqn{p}{p}. The latter keeps the tails of the
-#' posterior of \eqn{p}{p} under control: the likelihood does not vanish as
-#' \eqn{r \to 0}{r -> 0} or \eqn{r \to \infty}{r -> Inf}, so these tails
-#' follow the prior. A coarse grid first locates the region that holds all but
-#' \code{control$eps} of the posterior mass in each marginal. On that region,
-#' Gauss-Legendre quadrature is used for \eqn{\log \lambda_p}{log(lambda_p)},
-#' and the marginal density of the second coordinate is interpolated at
-#' Chebyshev points, which gives its distribution function at any point (used
-#' for \code{prob} and the quantiles of \eqn{r}{r}). When
-#' \code{control$check} is \code{TRUE}, the computation is repeated with about
-#' 1.5 times as many nodes, the finer result is returned, and the absolute
-#' difference in \code{prob} is reported as the integration error estimate.
+#' The two-dimensional posterior is integrated numerically. The first
+#' coordinate is \eqn{\log \lambda_p}{log(lambda_p)}, integrated by
+#' Gauss-Legendre quadrature on the region that a coarse grid locates. The
+#' second coordinate describes \eqn{p}{p} through its prior distribution
+#' function \eqn{F}{F}: either \eqn{v = F(p)}{v = F(p)}, in which the
+#' posterior density is the likelihood times the prior density of
+#' \eqn{\lambda_p}{lambda_p}, or
+#' \eqn{z = \Phi^{-1}(F(p))}{z = qnorm(F(p))}, computed on the logarithmic
+#' scale, which also represents the far tails of an informative prior of
+#' \eqn{p}{p}. The likelihood does not vanish as \eqn{r \to 0}{r -> 0} or
+#' \eqn{r \to \infty}{r -> Inf}, so the tails of the posterior of
+#' \eqn{p}{p} follow the prior. For each Gauss-Legendre node, the interval of
+#' \eqn{z}{z} that holds all but \code{control$eps} of the conditional
+#' posterior mass on each side is located separately, so the intervals follow
+#' the posterior when it lies on a ridge of the blinded likelihood or in a
+#' tail of the prior of \eqn{p}{p} (for example, when the data conflict with
+#' an informative prior of \eqn{p}{p}). Each row is interpolated at Chebyshev
+#' points in \eqn{v}{v} or in \eqn{z}{z}, whichever gives the faster decay of
+#' the Chebyshev coefficients of its density, which gives the distribution
+#' function of \eqn{p}{p}, and hence of \eqn{r}{r}, at any point (used for
+#' \code{prob} and the quantiles of \eqn{r}{r}). When \code{control$check}
+#' is \code{TRUE}, the computation is repeated with about 1.5 times as many
+#' nodes, the finer result is returned, and the absolute difference in
+#' \code{prob} is reported as the integration error estimate.
 #'
 #' Because the likelihood stays positive as \eqn{r \to \infty}{r -> Inf},
 #' the posterior means of \eqn{r}{r} and \eqn{r \lambda_p}{r * lambda_p} are
 #' infinite when the second shape parameter of the Beta prior is 1 or less,
 #' as for the default \code{c(0.5, 0.5)}. They are then returned as
 #' \code{Inf}, and the posterior median of \eqn{r}{r} is the summary to use.
+#' Otherwise the means are integrated over the intervals of the rows, which
+#' leave out a posterior mass of at most \code{control$eps} on each side;
+#' when the second shape parameter is close to 1, the part of the means that
+#' comes from the far right tail of \eqn{r}{r} is not negligible, and the
+#' posterior median is again the summary to use.
 #'
 #' A signal is declared when \eqn{P(r > rr_0 \mid \mathrm{data}) > }{P(r > rr0 | data) > }
 #' \code{cutoff}.
@@ -48,16 +63,19 @@
 #' @param details Logical; if \code{FALSE}, the quantiles of \eqn{r}{r} are
 #'   not computed (faster; used in \code{\link{sim_oc}}).
 #' @param control List of settings for the numerical integration:
-#'   \code{n_coarse} (cells per coordinate of the coarse grid, default 41),
-#'   \code{n_lambda} (Gauss-Legendre nodes, default 48), \code{n_p}
-#'   (Chebyshev points, default 49), \code{check} (default \code{TRUE}),
-#'   \code{eps} (default \code{1e-8}) and \code{max_iter} (default 12).
+#'   \code{n_coarse} (cells per coordinate of the coarse grid and per row,
+#'   default 41), \code{n_lambda} (Gauss-Legendre nodes, default 48),
+#'   \code{n_p} (Chebyshev points per row, default 49), \code{check}
+#'   (default \code{TRUE}), \code{eps} (default \code{1e-8}) and
+#'   \code{max_iter} (default 12).
 #'
 #' @return An object of class \code{bssd_post}; see \code{\link{bdribs_post}}.
 #'   The element \code{model} is \code{"EXP_BERN"}, \code{estimates} contains
 #'   the posterior means of \eqn{p}{p}, \eqn{r}{r}, \eqn{\lambda_p}{lambda_p}
 #'   and \eqn{r \lambda_p}{r * lambda_p} (\code{lambda_d}), and
-#'   \code{integration} contains the nodes used and the error estimate.
+#'   \code{integration} contains the nodes used, the region of
+#'   \eqn{(\log \lambda_p, z)}{(log(lambda_p), z)} located by the coarse
+#'   grid and the error estimate.
 #'
 #' @references
 #' Duncan, B. (2026). Robust safety monitoring and signal detection using
@@ -104,75 +122,121 @@ expbern_post <- function(y, t, k = 1, lambda_hp, pt_hp, df = 1,
 
   alpha <- lambda_hp * pt_hp / df
   beta <- pt_hp / df
-  a <- p_prior[1L]
-  b <- p_prior[2L]
+  a <- p_prior[[1L]]
+  b <- p_prior[[2L]]
   wp <- 1 / (k + 1)
 
   # log prior density of exp(u) times the Jacobian exp(u)
   lw_lambda <- function(u) {
     alpha * log(beta) - lgamma(alpha) + alpha * u - beta * exp(u)
   }
-  # rate ratio from the prior distribution function v of p; 1 - p is
-  # computed from the Beta(b, a) distribution for accuracy near p = 1
-  r_of <- function(v) {
-    qbeta(v, a, b) / (k * pmax(qbeta(1 - v, b, a), 1e-300))
+  # p and 1 - p at z = qnorm(F(p)), from the logarithm of the smaller tail
+  # probability, so that both are accurate in the far tails of the prior
+  pq_of_z <- function(z) {
+    p <- z
+    q <- z
+    lt <- pnorm(-abs(z), log.p = TRUE)
+    neg <- !is.na(z) & z <= 0
+    pos <- !is.na(z) & z > 0
+    p[neg] <- qbeta(lt[neg], a, b, log.p = TRUE)
+    q[neg] <- 1 - p[neg]
+    q[pos] <- qbeta(lt[pos], b, a, log.p = TRUE)
+    p[pos] <- 1 - q[pos]
+    list(p = p, q = q)
   }
-  logpost <- function(nodes) {
-    ll <- expbern_loglik_cpp(dat$t, dat$y, wp, exp(nodes[[1L]]),
-                             r_of(nodes[[2L]]))
-    ll + lw_lambda(nodes[[1L]])
+  # p and 1 - p at v = F(p); 1 - p is computed from the Beta(b, a)
+  # distribution for accuracy near p = 1
+  pq_of_v <- function(v) {
+    p <- v
+    q <- v
+    low <- v <= 0.5
+    p[low] <- qbeta(v[low], a, b)
+    q[low] <- 1 - p[low]
+    q[!low] <- qbeta(1 - v[!low], b, a)
+    p[!low] <- 1 - q[!low]
+    list(p = p, q = q)
+  }
+  # log-likelihood of each row: placebo rate lam[i] with the rate ratios
+  # P[i, ] / (k * Q[i, ])
+  loglik <- function(lam, P, Q) {
+    R <- P / (k * pmax(Q, 1e-300))
+    out <- matrix(0, nrow(R), ncol(R))
+    for (i in seq_len(nrow(R))) {
+      out[i, ] <- expbern_loglik_cpp(dat$t, dat$y, wp, lam[i], R[i, ])
+    }
+    out
+  }
+  logpost_z <- function(u, Z) {
+    pq <- pq_of_z(Z)
+    loglik(exp(u), pq$p, pq$q) + lw_lambda(u) + dnorm(Z, log = TRUE)
   }
 
-  lo <- c(log(max(qgamma(1e-10, alpha, beta), .Machine$double.xmin)), 0)
-  hi <- c(log(qgamma(1 - 1e-10, alpha, beta)), 1)
-  box <- refine_box(logpost, lo, hi, ctrl$n_coarse, ctrl$eps, ctrl$max_iter,
-                    lim_lo = c(-Inf, 0), lim_hi = c(Inf, 1))
+  lo_u <- log(max(qgamma(1e-10, alpha, beta), .Machine$double.xmin))
+  hi_u <- log(qgamma(1 - 1e-10, alpha, beta))
+  box <- refine_box(function(nodes) {
+    logpost_z(nodes[[1L]], matrix(nodes[[2L]], length(nodes[[1L]]),
+                                  length(nodes[[2L]]), byrow = TRUE))
+  }, c(lo_u, -8), c(hi_u, 8), ctrl$n_coarse, ctrl$eps, ctrl$max_iter,
+  lim_lo = c(-Inf, -Inf), lim_hi = c(Inf, Inf))
 
-  v0 <- pbeta(k * rr0 / (k * rr0 + 1), a, b)
+  # threshold p0 = k * rr0 / (k * rr0 + 1) of p on both scales, with
+  # 1 - p0 = 1 / (k * rr0 + 1)
+  lf0 <- pbeta(k * rr0 / (k * rr0 + 1), a, b, log.p = TRUE)
+  ls0 <- pbeta(1 / (k * rr0 + 1), b, a, log.p = TRUE)
+  v0 <- exp(lf0)
+  z0 <- if (lf0 <= log(0.5)) {
+    qnorm(lf0, log.p = TRUE)
+  } else {
+    -qnorm(ls0, log.p = TRUE)
+  }
   probs <- c((1 - level) / 2, 0.5, (1 + level) / 2)
 
-  fine <- function(n_lambda, n_p, quantiles) {
-    g <- gl_nodes(n_lambda)
-    u <- (box$hi[1L] - box$lo[1L]) / 2 * g$x + (box$hi[1L] + box$lo[1L]) / 2
-    gw <- g$w * (box$hi[1L] - box$lo[1L]) / 2
-    half <- (box$hi[2L] - box$lo[2L]) / 2
-    mid <- (box$hi[2L] + box$lo[2L]) / 2
-    v <- half * cheb_nodes(n_p) + mid
-    L <- logpost(list(u, v)) + log(gw)
-    L[is.na(L)] <- -Inf
-    W <- exp(L - max(L))
-    mv <- colSums(W)
-    ccw <- cc_weights(n_p) * half
-    norm <- sum(ccw * mv)
-    anti <- cheb_antideriv(cheb_coef_matrix(n_p) %*% mv)
-    cdf_v <- function(vq) {
-      cheb_cumint(anti, (vq - mid) / half) * half / norm
-    }
-    prob <- min(max(1 - cdf_v(v0), 0), 1)
-
-    wq <- W * rep(ccw, each = n_lambda) / norm
+  # grid with an interval of z located for each Gauss-Legendre node
+  build <- function(n_l, n_p) {
+    gq <- gl_panels(box$lo[1L], box$hi[1L], n_l)
+    u <- gq$x
+    rb <- row_refine(logpost_z, u, rep(box$lo[2L], n_l),
+                     rep(box$hi[2L], n_l), ctrl$n_coarse, ctrl$eps,
+                     ctrl$max_iter, rep(-Inf, n_l), rep(Inf, n_l))
+    zl <- rb$lo
+    zh <- rb$hi
+    vl <- pnorm(zl)
+    vh <- pnorm(zh)
     lam <- exp(u)
-    r <- r_of(v)
-    lam_d <- outer(lam, r)
-    est <- c(p = sum(wq * rep(qbeta(v, a, b), each = n_lambda)),
-             r = Inf,
-             lambda_p = sum(wq * lam),
+    # densities of each row at Chebyshev points in z and in v = pnorm(z)
+    Zn <- row_nodes(zl, zh, n_p)
+    # (rounding could move the end points out of [0, 1])
+    Vn <- pmin(pmax(row_nodes(vl, vh, n_p), 0), 1)
+    PZ <- pq_of_z(Zn)
+    PV <- pq_of_v(Vn)
+    Lz <- loglik(lam, PZ$p, PZ$q) + dnorm(Zn, log = TRUE)
+    Lv <- loglik(lam, PV$p, PV$q)
+    # v is used only where it is not 0 or 1 in double precision
+    vrow <- zh <= 8 & zl >= -37 & row_tail_share(Lv) < row_tail_share(Lz)
+    L <- Lz
+    L[vrow, ] <- Lv[vrow, ]
+    P <- PZ$p
+    P[vrow, ] <- PV$p[vrow, ]
+    Q <- PZ$q
+    Q[vrow, ] <- PV$q[vrow, ]
+    g <- post2d(L + lw_lambda(u), u, gq$w, ifelse(vrow, vl, zl),
+                ifelse(vrow, vh, zh))
+    list(g = g, lam = lam, P = P, Q = Q, vrow = vrow, zl = zl, zh = zh)
+  }
+
+  fine <- function(n_l, n_p, quantiles) {
+    bg <- build(n_l, n_p)
+    g <- bg$g
+    prob <- 1 - g$cdf_rows(ifelse(bg$vrow, v0, z0))
+    wq <- g$wq
+    lam <- bg$lam
+    R <- bg$P / (k * pmax(bg$Q, 1e-300))
+    lam_d <- R * lam
+    est <- c(p = sum(wq * bg$P), r = Inf, lambda_p = sum(wq * lam),
              lambda_d = Inf)
     if (b > 1) {
-      # r is unbounded as v -> 1 (integrable when b > 1); integrate the
-      # Chebyshev series of the marginal densities with stats::integrate,
-      # which avoids evaluating r at the end point
-      coef_m <- cheb_coef_matrix(n_p) %*% cbind(mv, colSums(W * lam))
-      series <- function(vv, j) {
-        x <- pmin(pmax((vv - mid) / half, -1), 1)
-        drop(cos(outer(acos(x), 0:(n_p - 1L))) %*% coef_m[, j])
-      }
-      mean_r <- function(j) {
-        integrate(function(vv) r_of(vv) * series(vv, j), box$lo[2L],
-                  box$hi[2L], rel.tol = 1e-8, subdivisions = 1000L)$value / norm
-      }
-      est["r"] <- mean_r(1L)
-      est["lambda_d"] <- mean_r(2L)
+      est["r"] <- sum(wq * R)
+      est["lambda_d"] <- sum(wq * lam_d)
     }
     inc <- NULL
     if (!is.null(t_star)) {
@@ -183,12 +247,10 @@ expbern_post <- function(y, t, k = 1, lambda_hp, pt_hp, df = 1,
     }
     rq <- rep(NA_real_, 3L)
     if (quantiles) {
-      q_v <- function(q) {
-        tryCatch(uniroot(function(vv) cdf_v(vv) - q, c(box$lo[2L], box$hi[2L]),
-                         tol = 1e-12)$root,
-                 error = function(e) NA_real_)
-      }
-      rq <- r_of(vapply(probs, q_v, numeric(1)))
+      # P(z <= x) with the coordinate of each row
+      cdf_z <- function(x) g$cdf_rows(ifelse(bg$vrow, pnorm(x), x))
+      pq <- pq_of_z(inv_cdf(cdf_z, probs, min(bg$zl), max(bg$zh)))
+      rq <- pq$p / (k * pmax(pq$q, 1e-300))
     }
     list(prob = prob, est = est, inc = inc, rq = rq)
   }

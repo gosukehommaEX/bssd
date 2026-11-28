@@ -54,7 +54,11 @@
 #' large for the same reason, and the error estimate is not reliable when
 #' \code{control$n_inner} is much smaller than the default. If the reported
 #' error estimate is too large for the purpose, increase
-#' \code{control$n_inner}.
+#' \code{control$n_inner} when there are few events and
+#' \code{control$n_outer} when there are many; with many events, the
+#' Gauss-Legendre rule of the three outer coordinates limits the accuracy.
+#' The error estimate refers to \code{prob}; the error of the quantiles of
+#' \eqn{RR(t^*)}{RR(t_star)} can be larger.
 #'
 #' The posterior mean of \eqn{RR(t^*)}{RR(t_star)} can be unstable because
 #' its posterior distribution may have a heavy right tail; the posterior

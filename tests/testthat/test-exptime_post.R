@@ -94,6 +94,28 @@ test_that("the posterior probability of exptime_post increases with events", {
   expect_gt(f1$prob, f0$prob)
 })
 
+test_that("exptime_post is accurate with a control prior shape below 1", {
+  # case ES1 of inst/validation/python/ref_shape_below1.py (composite
+  # Gauss-Legendre rules on the normal quantiles of both priors)
+  d <- data_e1()
+  fit <- exptime_post(d$y, d$t, k = 2, prior_c = c(0.7, 30),
+                      prior_d = c(2, 70), rate0 = 0.04, details = FALSE)
+  expect_identical(fit$integration$coordinate, "normal")
+  expect_equal(unname(fit$probs), c(0.11664340474647406, 0.6377937902090893),
+               tolerance = 1e-6)
+  expect_failure(expect_equal(fit$probs[["ratio"]],
+                              0.6377937902090893 * (1 + 1e-4),
+                              tolerance = 1e-6))
+  expect_equal(unname(fit$estimates[c("lambda_c", "lambda_d")]),
+               c(0.022179090114955228, 0.028480153947061018),
+               tolerance = 1e-6)
+  expect_identical(fit$rr[["mean"]], Inf)
+  f2 <- exptime_post(d$y, d$t, k = 2, prior_c = c(30, 1500),
+                     prior_d = c(2, 70), details = FALSE)
+  expect_identical(f2$integration$coordinate, "log")
+  expect_true(is.finite(f2$rr[["mean"]]))
+})
+
 test_that("exptime_post checks its input", {
   d <- data_e1()
   expect_error(exptime_post(d$y, d$t[-1], prior_c = c(1, 1),

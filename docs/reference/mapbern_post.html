@@ -170,7 +170,19 @@ Brock et al. (2023) use \(rr_0 = 1\) and mention larger values.</p>
 is integrated numerically on the coordinates
 \(\mathrm{logit}(\pi_c)\) and the prior distribution
 function of \(\pi_d\), as in <code><a href="exptime_post.html">exptime_post</a></code> and
-<code><a href="binbeta_post.html">binbeta_post</a></code>.</p>
+<code><a href="binbeta_post.html">binbeta_post</a></code>. A MAP prior from few historical events has
+components with a shape parameter far below 1, whose densities of
+\(\mathrm{logit}(\pi_c)\) are nearly flat over a wide
+range. When the total weight of the components with a shape parameter
+below 1 exceeds <code>control$eps</code>, the first coordinate is therefore
+\(z_c = \Phi^{-1}(F_e(\pi_c))\), where
+\(F_e\) is the distribution function of an envelope of the prior:
+a mixture of fewer Beta distributions, each with the smallest shape
+parameters of a group of components. The prior density of
+\(z_c\) is that of the standard normal distribution times the
+ratio of the densities of the prior and the envelope, which is bounded.
+When a component has \(shape1 \le 1\), the posterior mean
+of the ratio \(\pi_d / \pi_c\) is infinite (<code>Inf</code>).</p>
 <p>A prior derived with the <span class="pkg">RBesT</span> package can be used: the rows
 <code>w</code>, <code>a</code> and <code>b</code> of a <code>mixbeta</code> object are the
 columns <code>w</code>, <code>shape1</code> and <code>shape2</code> of <code>prior_c</code>.</p>
@@ -200,7 +212,7 @@ Statistics</em>, 22(2), 378–395. <a href="https://doi.org/10.1002/pst.2278" cl
 <span class="r-out co"><span class="r-pr">#&gt;</span> Tested quantity: ratio rr = pi_d / pi_c</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> P(rr &gt; 1 | data) = 0.8602</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Signal (posterior probability &gt; 0.95): no</span>
-<span class="r-out co"><span class="r-pr">#&gt;</span> Posterior of rr: mean 1.84, median 1.627, 95% interval (0.6569, 4.263)</span>
+<span class="r-out co"><span class="r-pr">#&gt;</span> Posterior of rr: mean Inf, median 1.627, 95% interval (0.6569, 4.263)</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> Posterior of pi_d: mean 0.166, median 0.1648, 95% interval (0.09953, 0.2396)</span>
 <span class="r-in"><span></span></span>
 </code></pre></div>

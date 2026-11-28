@@ -157,6 +157,49 @@ PY_MULTIBIN_G4_mean_log_delta,posterior mean of log(delta),-0.10755336138623892
 PY_MULTIBIN_G4_q_lower,quantile of delta lower,0.7456385355529747
 PY_MULTIBIN_G4_q_median,quantile of delta median,0.8981768850939152
 PY_MULTIBIN_G4_q_upper,quantile of delta upper,1.0805489124577783
+PY_MAPBERN_MS1_prob_ratio_1,P(pi_d > pi_c),0.455129699067226
+PY_MAPBERN_MS1_prob_ratio_2,P(pi_d > 2 pi_c),0.3329443454839206
+PY_MAPBERN_MS1_prob_rate,P(pi_d > 0.05),0.15251502100928105
+PY_MAPBERN_MS1_mean_pc,posterior mean of pi_c,0.027514844627387337
+PY_MAPBERN_MS1_mean_pd,posterior mean of pi_d,0.024355657206042686
+PY_MAPBERN_MS2_prob_ratio_1,P(pi_d > pi_c),0.886336996714734
+PY_MAPBERN_MS2_prob_ratio_2,P(pi_d > 2 pi_c),0.8474612729212776
+PY_MAPBERN_MS2_prob_rate,P(pi_d > 0.05),0.22069314966962927
+PY_MAPBERN_MS2_mean_pc,posterior mean of pi_c,0.004697483089816495
+PY_MAPBERN_MS2_mean_pd,posterior mean of pi_d,0.032861074503133685
+PY_MAPBERN_MS3_prob_ratio_1,P(pi_d > pi_c),0.2320607346434214
+PY_MAPBERN_MS3_prob_ratio_2,P(pi_d > 2 pi_c),0.13055944618449533
+PY_MAPBERN_MS3_prob_rate,P(pi_d > 0.05),0.05756745759182297
+PY_MAPBERN_MS3_mean_pc,posterior mean of pi_c,0.044702820593507414
+PY_MAPBERN_MS3_mean_pd,posterior mean of pi_d,0.015722749424118634
+PY_MAPBERN_MS4_prob_ratio_1,P(pi_d > pi_c),0.9998418105392963
+PY_MAPBERN_MS4_prob_ratio_2,P(pi_d > 2 pi_c),0.9986046375716285
+PY_MAPBERN_MS4_prob_rate,P(pi_d > 0.05),0.999984583176513
+PY_MAPBERN_MS4_mean_pc,posterior mean of pi_c,0.003753741667132864
+PY_MAPBERN_MS4_mean_pd,posterior mean of pi_d,0.2723158789116174
+PY_MAPBERN_MS5_prob_ratio_1,P(pi_d > pi_c),0.5036593177181924
+PY_MAPBERN_MS5_prob_ratio_2,P(pi_d > 2 pi_c),0.009037969366526347
+PY_MAPBERN_MS5_prob_rate,P(pi_d > 0.05),0.9996111935041835
+PY_MAPBERN_MS5_mean_pc,posterior mean of pi_c,0.09552981178650592
+PY_MAPBERN_MS5_mean_pd,posterior mean of pi_d,0.09493180690605399
+PY_MAPBERN_MS6_prob_ratio_1,P(pi_d > pi_c),0.2710751432081024
+PY_MAPBERN_MS6_prob_ratio_2,P(pi_d > 2 pi_c),0.1387980479325549
+PY_MAPBERN_MS6_prob_rate,P(pi_d > 0.05),0.009073071892759665
+PY_MAPBERN_MS6_mean_pc,posterior mean of pi_c,0.02652851978964608
+PY_MAPBERN_MS6_mean_pd,posterior mean of pi_d,0.011801206139770334
+PY_MAPBERN_MS7_prob_ratio_1,P(pi_d > pi_c),0.8601817195502355
+PY_MAPBERN_MS7_prob_ratio_2,P(pi_d > 2 pi_c),0.3245801788490693
+PY_MAPBERN_MS7_prob_rate,P(pi_d > 0.05),0.9998229517492427
+PY_MAPBERN_MS7_mean_pc,posterior mean of pi_c,0.10472553302766412
+PY_MAPBERN_MS7_mean_pd,posterior mean of pi_d,0.16602204295881504
+PY_BINBETA_BS1_prob_rate,P(theta_d > p0),0.7117667148324871
+PY_BINBETA_BS1_prob_ratio,P(rr > rr0),0.8234809625922909
+PY_BINBETA_BS1_mean_theta_c,posterior mean of theta_c,0.06158654927598209
+PY_BINBETA_BS1_mean_theta_d,posterior mean of theta_d,0.19698035646229917
+PY_EXPTIME_ES1_prob_rate,P(lambda_d > rate0),0.11664340474647406
+PY_EXPTIME_ES1_prob_ratio,P(r > rr0),0.6377937902090893
+PY_EXPTIME_ES1_mean_lambda_c,posterior mean of lambda_c,0.022179090114955228
+PY_EXPTIME_ES1_mean_lambda_d,posterior mean of lambda_d,0.028480153947061018
 PY_MAP_P1_mean,MAP prior mean,0.10334757285043465
 PY_MAP_P1_sd,MAP prior SD,0.03403531432783694
 PY_MAP_P1_cdf_0.05,MAP prior distribution function at 0.05,0.03943187847234971
@@ -173,3 +216,33 @@ PY_MAP_P2_cdf_0.12,MAP prior distribution function at 0.12,0.789461375605715
 PY_MAP_P2_cdf_0.15,MAP prior distribution function at 0.15,0.925162704048845
 PY_MAP_SUBJ_mean,"MAP prior mean, subject-level data",0.1403765506737122
 PY_MAP_SUBJ_sd,"MAP prior SD, subject-level data",0.055414999422045655
+PY_EXPBERN_X1_prob,P(r > rr0),0.9925542962879245
+PY_EXPBERN_X1_mean_p,posterior mean of p,0.7036902786285846
+PY_EXPBERN_X1_mean_r,posterior mean of r,2.591892852618485
+PY_EXPBERN_X1_mean_lambda_p,posterior mean of lambda_p,0.0031348442646069795
+PY_EXPBERN_X1_mean_lambda_d,posterior mean of lambda_d,0.007624253721786386
+PY_EXPBERN_X1_ip_placebo,placebo incidence at t_star,0.14989609551381883
+PY_EXPBERN_X1_ip_drug,study drug incidence at t_star,0.32498587784836636
+PY_EXPBERN_X1_q_lower,quantile of r lower,1.2002240921912506
+PY_EXPBERN_X1_q_median,quantile of r median,2.4431701696234844
+PY_EXPBERN_X1_q_upper,quantile of r upper,4.840484548171423
+PY_EXPBERN_X2_prob,P(r > rr0),0.4808767000562013
+PY_EXPBERN_X2_mean_p,posterior mean of p,0.5955932229425658
+PY_EXPBERN_X2_mean_r,posterior mean of r,1.5267758848472102
+PY_EXPBERN_X2_mean_lambda_p,posterior mean of lambda_p,0.003923929839491943
+PY_EXPBERN_X2_mean_lambda_d,posterior mean of lambda_d,0.005843224079373065
+PY_EXPBERN_X2_ip_placebo,placebo incidence at t_star,0.18415600926834974
+PY_EXPBERN_X2_ip_drug,study drug incidence at t_star,0.2608277453552132
+PY_EXPBERN_X2_q_lower,quantile of r lower,0.9110947515510638
+PY_EXPBERN_X2_q_median,quantile of r median,1.4824409573301554
+PY_EXPBERN_X2_q_upper,quantile of r upper,2.396242173353411
+PY_EXPBERN_X3_prob,P(r > rr0),0.01568195899263869
+PY_EXPBERN_X3_mean_p,posterior mean of p,0.4651841024196348
+PY_EXPBERN_X3_mean_r,posterior mean of r,0.4680859381798928
+PY_EXPBERN_X3_mean_lambda_p,posterior mean of lambda_p,0.0017902793678940992
+PY_EXPBERN_X3_mean_lambda_d,posterior mean of lambda_d,0.0008017084776985993
+PY_EXPBERN_X3_ip_placebo,placebo incidence at t_star,0.08865954704149205
+PY_EXPBERN_X3_ip_drug,study drug incidence at t_star,0.04072391204239285
+PY_EXPBERN_X3_q_lower,quantile of r lower,0.19156465171407833
+PY_EXPBERN_X3_q_median,quantile of r median,0.43593860953853886
+PY_EXPBERN_X3_q_upper,quantile of r upper,0.9297460557052647

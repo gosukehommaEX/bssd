@@ -1,6 +1,7 @@
 #' Result object of the two-arm models with independent priors
 #'
-#' @param res Result of \code{mix2_post()}.
+#' @param res Result of \code{mix2_post()}, with the name of the first
+#'   coordinate of the integration in \code{coordinate}.
 #' @param model Model name.
 #' @param rate0 Critical value of the study drug parameter, or \code{NULL}.
 #' @param rr0 Critical value of the ratio.
@@ -46,7 +47,7 @@ mix2_output <- function(res, model, rate0, rr0, cutoff, level, labels, data,
     data = data,
     prior = prior,
     integration = list(method = "Gauss-Legendre and Chebyshev quadrature",
-                       nodes = res$nodes,
+                       coordinate = res$coordinate, nodes = res$nodes,
                        box = rbind(lower = res$box$lo, upper = res$box$hi),
                        error = res$error)
   )

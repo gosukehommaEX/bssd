@@ -34,11 +34,20 @@
 # Run from the package root:
 #   devtools::load_all()            # or library(bssd)
 #   source("inst/reproduce/reproduce_Duncan2026_prior_simulation.R")
+# With n_cores > 1 the seven scenarios run in parallel, which needs the
+# installed package (run devtools::install() first); each scenario has its
+# own seed, so the results do not depend on n_cores.
 # Output: inst/reproduce/results/Duncan2026_prior.rds
-# Run time with n_sim_prior = 2000: about 30 minutes on one core (EXP_BERN
-# takes most of it). n_sim_prior can be set before sourcing this script.
+# Run time with n_sim_prior = 2000: about 35 minutes with n_cores >= 7
+# (measured on 2026-11-27), or about 100 minutes on one core (extrapolated
+# from a run with n_sim_prior = 40); EXP_BERN takes most of it.
+# n_sim_prior and n_cores can be set before sourcing this script, and
+# out_dir (default inst/reproduce/results) can be set to a temporary
+# directory for a short run that measures the run time.
 
 if (!exists("n_sim_prior")) n_sim_prior <- 2000L
+if (!exists("n_cores")) n_cores <- 1L
+if (!exists("out_dir")) out_dir <- "inst/reproduce/results"
 
 accrual <- 26
 rate_of <- function(ip, t) -log(1 - ip) / t
@@ -70,18 +79,33 @@ for (i in 1:3) {
                                 pt_hp = 375 / 2 * 52, df = 2)))
 }
 
-out <- vector("list", length(tasks))
-for (j in seq_along(tasks)) {
+run_prior_task <- function(j) {
   tk <- tasks[[j]]
-  t0 <- proc.time()[["elapsed"]]
-  out[[j]] <- sim_oc(n_sim_prior, tk$design, models = tk$models,
-                     priors = tk$priors, rr0 = 1, cutoff = cutoff,
-                     t_star = 52, seed = 20271105L + j, keep = TRUE)$results
-  message(sprintf("[%d/%d] Figure %s, point %d: %.0f seconds", j,
-                  length(tasks), tk$figure, tk$point,
-                  proc.time()[["elapsed"]] - t0))
+  bssd::sim_oc(n_sim_prior, tk$design, models = tk$models,
+               priors = tk$priors, rr0 = 1, cutoff = cutoff, t_star = 52,
+               seed = 20271105L + j, keep = TRUE)$results
 }
 
-dir.create("inst/reproduce/results", showWarnings = FALSE, recursive = TRUE)
+t_wall <- proc.time()[["elapsed"]]
+if (n_cores > 1L) {
+  cl <- parallel::makeCluster(min(n_cores, length(tasks)))
+  invisible(parallel::clusterEvalQ(cl, library(bssd)))
+  parallel::clusterExport(cl, c("tasks", "n_sim_prior", "cutoff"))
+  out <- parallel::parLapplyLB(cl, seq_along(tasks), run_prior_task)
+  parallel::stopCluster(cl)
+} else {
+  out <- vector("list", length(tasks))
+  for (j in seq_along(tasks)) {
+    t0 <- proc.time()[["elapsed"]]
+    out[[j]] <- run_prior_task(j)
+    message(sprintf("[%d/%d] Figure %s, point %d: %.0f seconds", j,
+                    length(tasks), tasks[[j]]$figure, tasks[[j]]$point,
+                    proc.time()[["elapsed"]] - t0))
+  }
+}
+message(sprintf("Total: %.0f minutes elapsed",
+                (proc.time()[["elapsed"]] - t_wall) / 60))
+
+dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 saveRDS(list(n_sim = n_sim_prior, tasks = tasks, out = out),
-        "inst/reproduce/results/Duncan2026_prior.rds")
+        file.path(out_dir, "Duncan2026_prior.rds"))

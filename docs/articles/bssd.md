@@ -245,7 +245,7 @@ example for the data above:
 vapply(fits[c("EXP_BERN", "LL_BERN")], function(f) f$integration$error,
        numeric(1))
 #>     EXP_BERN      LL_BERN 
-#> 1.814905e-07 3.733315e-04
+#> 1.180896e-07 3.733315e-04
 ```
 
 The number of nodes can be changed with `control`.
@@ -314,20 +314,23 @@ items are
 
 | file                                | PASS | EXPLAINED | FAIL | INFO |
 |:------------------------------------|-----:|----------:|-----:|-----:|
+| reproduce_Brock2023.csv             |   55 |         0 |   41 |    0 |
 | reproduce_Duncan2026.csv            |   15 |         6 |    0 |    7 |
 | reproduce_Duncan2026_prior.csv      |   23 |         6 |    0 |    0 |
 | reproduce_Duncan2026_simulation.csv |   14 |         4 |    0 |  113 |
 | reproduce_Goren2020.csv             |   12 |         0 |    0 |    0 |
+| reproduce_Goren2020_table2.csv      |  120 |         0 |    0 |    0 |
 | reproduce_Gould2017.csv             |   71 |        17 |    0 |    0 |
 | reproduce_Mukhopadhyay2018.csv      |   82 |         4 |    0 |    1 |
 | reproduce_Schnell2016.csv           |   27 |         3 |    1 |   16 |
+| reproduce_Schnell2016_table1.csv    |    2 |         4 |    0 |    0 |
 | reproduce_Waterhouse2022.csv        |   11 |         0 |    1 |    2 |
 | validate_bdribs_package.csv         |   35 |         0 |    0 |    0 |
 | validate_convergence.csv            |   19 |         0 |    0 |    0 |
 | validate_gould2017_author_grid.csv  |   28 |         0 |    0 |    0 |
 | validate_jags.csv                   |   24 |         0 |    0 |    3 |
 | validate_jags_methods.csv           |   16 |         0 |    0 |    1 |
-| validate_methods_python.csv         |  174 |         0 |    0 |    0 |
+| validate_methods_python.csv         |  246 |         0 |    1 |    0 |
 | validate_sim_oc.csv                 |   29 |         0 |    0 |    0 |
 
 The reproduction covers Table 1, the hypothetical examples and the
@@ -347,7 +350,7 @@ with the Poisson likelihood) and with independent Python computations
 [`binbeta_post()`](https://gosukehommaex.github.io/bssd/reference/binbeta_post.md));
 the default integration grids with finer grids; and
 [`sim_oc()`](https://gosukehommaex.github.io/bssd/reference/sim_oc.md)
-with an independent Python simulation. The number of FAIL items is 2.
+with an independent Python simulation. The number of FAIL items is 44.
 The files `README.md` and `results/SUMMARY.md` in each folder describe
 the scripts, the tolerances and the reasons for the EXPLAINED items.
 

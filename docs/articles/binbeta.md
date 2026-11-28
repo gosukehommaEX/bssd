@@ -53,7 +53,7 @@ signal_count(n = c(50, 100, 200, 300), method = "binbeta",
 
 The binomial expansion of the likelihood makes the posterior a finite
 mixture of products of Beta distributions, which gives exact values. The
-largest absolute difference of the 52 compared quantities from these
+largest absolute difference of the 56 compared quantities from these
 exact values (`inst/validation/validate_methods_python.R`, relative
 tolerance 1e-5) is 8.2e-06.
 
@@ -107,9 +107,9 @@ Monte Carlo:
 | P(delta \> 2), sensitivity analysis, heterogeneous priors | 0.486 | 0.485 | 0.0125 | PASS |
 | P(delta \> 3), sensitivity analysis, heterogeneous priors | 0.031 | 0.031 | 0.0035 | PASS |
 
-The simulation of Table 2
-(`inst/reproduce/reproduce_Goren2020_simulation.R`) has not been run for
-this installation.
+The coverage of the 95% credible intervals in the simulation of Table 2
+(`inst/reproduce/reproduce_Goren2020_simulation.R`) gives 120 PASS, 0
+EXPLAINED and 0 FAIL items.
 
 Against nested adaptive quadrature in Python, the largest absolute
 difference of the 20 compared quantities is 2.5e-07.

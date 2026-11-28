@@ -29,6 +29,33 @@
   stay accurate when the data conflict with an informative prior of the
   study drug parameter, and, in `canary_post()`, when the event
   probabilities are large (all subjects with the event, for example).
+* `expbern_post()` integrates in the same way: for each Gauss-Legendre node
+  of the log placebo rate, the interval of the second coordinate is located
+  separately, and each row is interpolated in the prior distribution
+  function of `p` or in its normal quantile, whichever gives the faster
+  decay of the Chebyshev coefficients of its density. Before, one interval
+  on the prior distribution function scale of `p` was used for all nodes,
+  which lost accuracy when the data conflicted with an informative prior of
+  `p` (cases X1 to X3 of `inst/validation/validate_methods_python.R`).
+* `mapbern_post()` integrates over the normal quantile of an envelope of
+  the prior of `pi_c` when the prior has components with a shape parameter
+  below 1 (total weight above `control$eps`), as the MAP prior from few
+  historical events has. Before, the integration over the logit of `pi_c`
+  missed the posterior when the logit densities of such components were nearly
+  flat over a wide range, and `prob` could be wrong with a small error
+  estimate (cases MS1 to MS7 of `inst/validation/validate_methods_python.R`).
+  `binbeta_post()` and `exptime_post()` integrate over the normal quantile
+  of the prior of the control parameter when its shape parameter is below 1.
+  The coordinate is shown in `integration$coordinate`; with other priors
+  the results are unchanged.
+* The posterior mean of the ratio of `exptime_post()`, `binbeta_post()` and
+  `mapbern_post()` is `Inf` when the shape parameter of the control prior
+  (the smallest `shape1` of a mixture) is at most 1, because the posterior
+  density of the control parameter near 0 is then proportional to that of
+  the prior.
+* The documentation of `llbern_post()` says that `control$n_outer` limits
+  the accuracy when there are many events, and that the error estimate
+  refers to `prob`.
 * `print()` shows the tested quantity of the new models and, for
   `exptime_post()`, `binbeta_post()` and `mapbern_post()`, the posterior of
   the study drug rate or proportion. Summaries that are not available, such

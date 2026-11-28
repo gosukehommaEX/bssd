@@ -86,9 +86,10 @@ expbern_post(
 - control:
 
   List of settings for the numerical integration: `n_coarse` (cells per
-  coordinate of the coarse grid, default 41), `n_lambda` (Gauss-Legendre
-  nodes, default 48), `n_p` (Chebyshev points, default 49), `check`
-  (default `TRUE`), `eps` (default `1e-8`) and `max_iter` (default 12).
+  coordinate of the coarse grid and per row, default 41), `n_lambda`
+  (Gauss-Legendre nodes, default 48), `n_p` (Chebyshev points per row,
+  default 49), `check` (default `TRUE`), `eps` (default `1e-8`) and
+  `max_iter` (default 12).
 
 ## Value
 
@@ -96,7 +97,8 @@ An object of class `bssd_post`; see
 [`bdribs_post`](https://gosukehommaex.github.io/bssd/reference/bdribs_post.md).
 The element `model` is `"EXP_BERN"`, `estimates` contains the posterior
 means of \\p\\, \\r\\, \\\lambda_p\\ and \\r \lambda_p\\ (`lambda_d`),
-and `integration` contains the nodes used and the error estimate.
+and `integration` contains the nodes used, the region of \\(\log
+\lambda_p, z)\\ located by the coarse grid and the error estimate.
 
 ## Details
 
@@ -107,16 +109,25 @@ t_i)\],\$\$ with \\w_p = 1 / (k + 1)\\ and \\w_d = k / (k + 1)\\, and
 / DF), \quad r = p / \[k (1 - p)\], \quad p \sim \mathrm{Beta}(a,
 b).\$\$ The Gamma distribution is parameterized by shape and rate.
 
-The two-dimensional posterior is integrated numerically on the
-coordinates \\\log \lambda_p\\ and the prior distribution function of
-\\p\\. The latter keeps the tails of the posterior of \\p\\ under
-control: the likelihood does not vanish as \\r \to 0\\ or \\r \to
-\infty\\, so these tails follow the prior. A coarse grid first locates
-the region that holds all but `control$eps` of the posterior mass in
-each marginal. On that region, Gauss-Legendre quadrature is used for
-\\\log \lambda_p\\, and the marginal density of the second coordinate is
-interpolated at Chebyshev points, which gives its distribution function
-at any point (used for `prob` and the quantiles of \\r\\). When
+The two-dimensional posterior is integrated numerically. The first
+coordinate is \\\log \lambda_p\\, integrated by Gauss-Legendre
+quadrature on the region that a coarse grid locates. The second
+coordinate describes \\p\\ through its prior distribution function
+\\F\\: either \\v = F(p)\\, in which the posterior density is the
+likelihood times the prior density of \\\lambda_p\\, or \\z =
+\Phi^{-1}(F(p))\\, computed on the logarithmic scale, which also
+represents the far tails of an informative prior of \\p\\. The
+likelihood does not vanish as \\r \to 0\\ or \\r \to \infty\\, so the
+tails of the posterior of \\p\\ follow the prior. For each
+Gauss-Legendre node, the interval of \\z\\ that holds all but
+`control$eps` of the conditional posterior mass on each side is located
+separately, so the intervals follow the posterior when it lies on a
+ridge of the blinded likelihood or in a tail of the prior of \\p\\ (for
+example, when the data conflict with an informative prior of \\p\\).
+Each row is interpolated at Chebyshev points in \\v\\ or in \\z\\,
+whichever gives the faster decay of the Chebyshev coefficients of its
+density, which gives the distribution function of \\p\\, and hence of
+\\r\\, at any point (used for `prob` and the quantiles of \\r\\). When
 `control$check` is `TRUE`, the computation is repeated with about 1.5
 times as many nodes, the finer result is returned, and the absolute
 difference in `prob` is reported as the integration error estimate.
@@ -125,7 +136,11 @@ Because the likelihood stays positive as \\r \to \infty\\, the posterior
 means of \\r\\ and \\r \lambda_p\\ are infinite when the second shape
 parameter of the Beta prior is 1 or less, as for the default
 `c(0.5, 0.5)`. They are then returned as `Inf`, and the posterior median
-of \\r\\ is the summary to use.
+of \\r\\ is the summary to use. Otherwise the means are integrated over
+the intervals of the rows, which leave out a posterior mass of at most
+`control$eps` on each side; when the second shape parameter is close to
+1, the part of the means that comes from the far right tail of \\r\\ is
+not negligible, and the posterior median is again the summary to use.
 
 A signal is declared when \\P(r \> rr_0 \mid \mathrm{data}) \> \\
 `cutoff`.

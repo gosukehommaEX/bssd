@@ -172,11 +172,16 @@ vapply(c(1, 1.5, 2), function(q) {
 
 ## Numerical integration
 
-`expbern_post()` integrates the two-dimensional posterior numerically on the
-coordinates $\log \lambda_p$ and the prior distribution function of $p$. A
-coarse grid locates the region that holds almost all posterior mass;
-Gauss-Legendre quadrature is used for $\log \lambda_p$ and Chebyshev
-interpolation for the second coordinate (see `?expbern_post`). With
+`expbern_post()` integrates the two-dimensional posterior numerically. A
+coarse grid locates the region that holds almost all posterior mass, and
+Gauss-Legendre quadrature is used for $\log \lambda_p$ on that region. For
+each Gauss-Legendre node, the interval of the second coordinate that holds
+almost all conditional posterior mass is located separately, and the row is
+interpolated at Chebyshev points in the prior distribution function of $p$
+or in its normal quantile, whichever gives the faster decay of the
+Chebyshev coefficients of its density (see `?expbern_post`).
+The intervals therefore follow the posterior also when the data conflict
+with an informative prior of $p$. With
 `control$check = TRUE`, the default, the computation is repeated on a finer
 grid, the finer result is returned, and the absolute difference in `prob` is
 reported as the error estimate (`fit$integration$error`, here

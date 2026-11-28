@@ -458,7 +458,7 @@ the data above:</p>
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">vapply</a></span><span class="op">(</span><span class="va">fits</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"EXP_BERN"</span>, <span class="st">"LL_BERN"</span><span class="op">)</span><span class="op">]</span>, <span class="kw">function</span><span class="op">(</span><span class="va">f</span><span class="op">)</span> <span class="va">f</span><span class="op">$</span><span class="va">integration</span><span class="op">$</span><span class="va">error</span>,</span>
 <span>       <span class="fu"><a href="https://rdrr.io/r/base/numeric.html" class="external-link">numeric</a></span><span class="op">(</span><span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="co">#&gt;     EXP_BERN      LL_BERN </span></span>
-<span><span class="co">#&gt; 1.814905e-07 3.733315e-04</span></span></code></pre></div>
+<span><span class="co">#&gt; 1.180896e-07 3.733315e-04</span></span></code></pre></div>
 <p>The number of nodes can be changed with <code>control</code>.
 <code><a href="../reference/llbern_post.html">?llbern_post</a></code> explains why the error estimate of LL_BERN is
 twice the difference between the two grids. <code><a href="../reference/sim_oc.html">sim_oc()</a></code> turns
@@ -587,29 +587,43 @@ compare with). The numbers of items are</p>
 </tr></thead>
 <tbody>
 <tr class="odd">
+<td align="left">reproduce_Brock2023.csv</td>
+<td align="right">55</td>
+<td align="right">0</td>
+<td align="right">41</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
 <td align="left">reproduce_Duncan2026.csv</td>
 <td align="right">15</td>
 <td align="right">6</td>
 <td align="right">0</td>
 <td align="right">7</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">reproduce_Duncan2026_prior.csv</td>
 <td align="right">23</td>
 <td align="right">6</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">reproduce_Duncan2026_simulation.csv</td>
 <td align="right">14</td>
 <td align="right">4</td>
 <td align="right">0</td>
 <td align="right">113</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">reproduce_Goren2020.csv</td>
 <td align="right">12</td>
+<td align="right">0</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">reproduce_Goren2020_table2.csv</td>
+<td align="right">120</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
@@ -636,55 +650,62 @@ compare with). The numbers of items are</p>
 <td align="right">16</td>
 </tr>
 <tr class="even">
+<td align="left">reproduce_Schnell2016_table1.csv</td>
+<td align="right">2</td>
+<td align="right">4</td>
+<td align="right">0</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
 <td align="left">reproduce_Waterhouse2022.csv</td>
 <td align="right">11</td>
 <td align="right">0</td>
 <td align="right">1</td>
 <td align="right">2</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">validate_bdribs_package.csv</td>
 <td align="right">35</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">validate_convergence.csv</td>
 <td align="right">19</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">validate_gould2017_author_grid.csv</td>
 <td align="right">28</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">0</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">validate_jags.csv</td>
 <td align="right">24</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">3</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">validate_jags_methods.csv</td>
 <td align="right">16</td>
 <td align="right">0</td>
 <td align="right">0</td>
 <td align="right">1</td>
 </tr>
-<tr class="even">
+<tr class="odd">
 <td align="left">validate_methods_python.csv</td>
-<td align="right">174</td>
+<td align="right">246</td>
 <td align="right">0</td>
-<td align="right">0</td>
+<td align="right">1</td>
 <td align="right">0</td>
 </tr>
-<tr class="odd">
+<tr class="even">
 <td align="left">validate_sim_oc.csv</td>
 <td align="right">29</td>
 <td align="right">0</td>
@@ -706,7 +727,7 @@ bdribs package; the other posterior functions with MCMC in JAGS (for
 independent Python computations (an exact finite mixture for
 <code><a href="../reference/binbeta_post.html">binbeta_post()</a></code>); the default integration grids with finer
 grids; and <code><a href="../reference/sim_oc.html">sim_oc()</a></code> with an independent Python simulation.
-The number of FAIL items is 2. The files <code>README.md</code> and
+The number of FAIL items is 44. The files <code>README.md</code> and
 <code>results/SUMMARY.md</code> in each folder describe the scripts, the
 tolerances and the reasons for the EXPLAINED items.</p>
 </div>

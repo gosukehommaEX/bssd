@@ -13,10 +13,13 @@
 # With n_cores > 1 the scenarios run in parallel, which needs the installed
 # package (run devtools::install() first).
 #
-# Output (inst/reproduce/results/):
-#   Duncan2026_simulation.rds         results of every simulated trial
-#   Duncan2026_simulation_design.csv  settings of every scenario
-# Run time with n_sim = 1000: about 2 to 3 hours on one core.
+# Output (in out_dir, by default inst/reproduce/results/):
+#   inst/reproduce/results/Duncan2026_simulation.rds
+#     results of every simulated trial
+#   inst/reproduce/results/Duncan2026_simulation_design.csv
+#     settings of every scenario
+# Run time with n_sim = 1000: about 2 hours with 20 cores (about 22 hours
+# of computation; measured on 2026-11-27).
 #
 # The article does not report the accrual, the times of the interim analyses,
 # the historical patient time, the discount factors or the number of
@@ -49,8 +52,11 @@
 # n_sim and n_cores can be set before sourcing this script, for example
 #   n_sim <- 20; n_cores <- 1   (a quick run of a few minutes to check)
 #   n_sim <- 1000; n_cores <- 8 (needs devtools::install() first)
+# out_dir (default inst/reproduce/results) can be set to a temporary
+# directory for a short run that measures the run time.
 if (!exists("n_sim")) n_sim <- 1000L
 if (!exists("n_cores")) n_cores <- 1L
+if (!exists("out_dir")) out_dir <- "inst/reproduce/results"
 
 accrual <- 26
 step_52 <- 52 / 3
@@ -158,6 +164,7 @@ run_task <- function(task, n_sim) {
        results = oc$results, seconds = proc.time()[["elapsed"]] - t0)
 }
 
+t_wall <- proc.time()[["elapsed"]]
 if (n_cores > 1L) {
   cl <- parallel::makeCluster(n_cores)
   invisible(parallel::clusterEvalQ(cl, library(bssd)))
@@ -172,9 +179,10 @@ if (n_cores > 1L) {
   }
 }
 
-dir.create("inst/reproduce/results", showWarnings = FALSE, recursive = TRUE)
+t_wall <- proc.time()[["elapsed"]] - t_wall
+dir.create(out_dir, showWarnings = FALSE, recursive = TRUE)
 saveRDS(list(n_sim = n_sim, tasks = tasks, out = out),
-        "inst/reproduce/results/Duncan2026_simulation.rds")
+        file.path(out_dir, "Duncan2026_simulation.rds"))
 design <- do.call(rbind, lapply(tasks, function(tk) {
   data.frame(id = tk$id, figure = tk$figure, scenario = tk$scenario,
              point = tk$point, label = tk$label, n = tk$design$n,
@@ -198,7 +206,8 @@ design <- do.call(rbind, lapply(tasks, function(tk) {
              stringsAsFactors = FALSE)
 }))
 utils::write.csv(design,
-                 "inst/reproduce/results/Duncan2026_simulation_design.csv",
+                 file.path(out_dir, "Duncan2026_simulation_design.csv"),
                  row.names = FALSE)
-message(sprintf("Total: %.0f minutes",
-                sum(vapply(out, function(o) o$seconds, numeric(1))) / 60))
+message(sprintf("Total: %.0f minutes of computation, %.0f minutes elapsed",
+                sum(vapply(out, function(o) o$seconds, numeric(1))) / 60,
+                t_wall / 60))

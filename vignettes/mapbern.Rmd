@@ -89,10 +89,20 @@ j <- read_results("validation", "validate_jags_methods.csv")
 jm <- j[grepl("^J2_MAPBERN", j$id), ]
 ```
 
+A MAP prior from few historical events has components with a shape
+parameter far below 1, whose densities are nearly flat over a wide range of
+\(\mathrm{logit}(\pi_c)\). `mapbern_post()` then integrates over the normal
+quantile of an envelope of the prior, a mixture of fewer Beta distributions
+whose tails are at least as heavy, so that the tails of the posterior on
+the integration scale are like those of the normal distribution
+(`?mapbern_post`).
+
 Against independent Python computations (dense composite Gauss-Legendre
-rules split exactly at \(\pi_d = rr_0 \pi_c\) for `mapbern_post()`, and a
-dense grid over \((a, b)\) for `map_beta()`), the largest absolute
-difference of the `r nrow(vm)` compared quantities is
+rules split exactly at \(\pi_d = rr_0 \pi_c\) for `mapbern_post()`, a
+dense grid over \((a, b)\) for `map_beta()`, and, for historical arms with
+few events, the MAP model integrated over \((a, b, \pi_c, \pi_d)\) without
+the mixture of `map_beta()`), the largest absolute difference of the
+`r nrow(vm)` compared quantities is
 `r fmt_e(max(vm$abs_diff))`. A JAGS model with the mixture prior and latent
 treatment assignments gives:
 

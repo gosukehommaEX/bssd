@@ -71,7 +71,11 @@ An object of class \code{bssd_post}, a list with elements
     \code{description}, \code{cutoff}, \code{level}}{Labels and settings
     used by \code{print}.}
   \item{\code{data}, \code{prior}}{Data summary and prior parameters.}
-  \item{\code{integration}}{Description of the numerical integration.}
+  \item{\code{integration}}{Description of the numerical integration:
+    the first coordinate (\code{coordinate}: \code{"log"},
+    \code{"logit"} or \code{"normal"}), the numbers of nodes, the
+    integration box in the first coordinate and \eqn{z}{z}, and the
+    error estimate.}
 }
 }
 \description{
@@ -95,7 +99,14 @@ the region that holds all but \code{control$eps} of the posterior mass in
 the coordinates \eqn{\log \lambda_c}{log(lambda_c)} and
 \eqn{z = \Phi^{-1}(F_d(\lambda_d))}{z = qnorm(F_d(lambda_d))}, where
 \eqn{F_d}{F_d} is the prior distribution function of
-\eqn{\lambda_d}{lambda_d}. \eqn{\log \lambda_c}{log(lambda_c)} is
+\eqn{\lambda_d}{lambda_d}. When \eqn{\alpha_c < 1}{alpha_c < 1}, the
+prior density of \eqn{\log \lambda_c}{log(lambda_c)} decreases slowly as
+\eqn{\lambda_c \to 0}{lambda_c -> 0}, where the blinded data do not
+bound the posterior, and
+\eqn{z_c = \Phi^{-1}(F_c(\lambda_c))}{z_c = qnorm(F_c(lambda_c))}, where
+\eqn{F_c}{F_c} is the prior distribution function of
+\eqn{\lambda_c}{lambda_c}, is used instead of
+\eqn{\log \lambda_c}{log(lambda_c)}. The first coordinate is
 integrated by Gauss-Legendre quadrature. For each of its nodes, the
 interval of \eqn{z}{z} that holds the conditional posterior mass is
 located separately, and the density is interpolated at Chebyshev points
@@ -109,7 +120,13 @@ the integration error estimate.
 
 The prior of the control rate is expected to be informative (for example,
 a posterior from historical control data); without it the blinded data do
-not separate the two rates.
+not separate the two rates. With a vague prior of the control rate, the
+posterior can have features that are narrow compared with its spread, and
+the integration error estimate shows when more nodes (\code{control$n_u})
+are needed. When \eqn{\alpha_c \le 1}{alpha_c <= 1}, the posterior
+density of \eqn{\lambda_c}{lambda_c} near 0 is proportional to the prior
+density, and the posterior mean of the rate ratio is infinite
+(\code{Inf}).
 
 When \code{rate0} is given, a signal is declared when
 \eqn{P(\lambda_d > rate_0 \mid \mathrm{data}) > }{P(lambda_d > rate0 | data) > }

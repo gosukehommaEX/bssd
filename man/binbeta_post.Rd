@@ -72,11 +72,20 @@ Under simple randomization each subject is on control with probability
 and the posterior is two-dimensional. It is integrated numerically on the
 coordinates \eqn{\mathrm{logit}(\theta_c)}{logit(theta_c)} and the prior
 distribution function of \eqn{\theta_d}{theta_d} as in
-\code{\link{exptime_post}}. For \eqn{rr_0 > 1}{rr0 > 1}, the
-Gauss-Legendre rule over \eqn{\mathrm{logit}(\theta_c)}{logit(theta_c)}
-is split at \eqn{\theta_c = 1 / rr_0}{theta_c = 1 / rr0}, where the
-posterior probability of the ratio has a kink because
-\eqn{\theta_d \le 1}{theta_d <= 1}.
+\code{\link{exptime_post}}. When \eqn{a < 1}{a < 1} or
+\eqn{b < 1}{b < 1}, the prior density of
+\eqn{\mathrm{logit}(\theta_c)}{logit(theta_c)} decreases slowly in a
+tail, which the blinded data do not bound, and
+\eqn{z_c = \Phi^{-1}(F_c(\theta_c))}{z_c = qnorm(F_c(theta_c))}, where
+\eqn{F_c}{F_c} is the prior distribution function of
+\eqn{\theta_c}{theta_c}, is used instead. For
+\eqn{rr_0 > 1}{rr0 > 1}, the Gauss-Legendre rule over the first
+coordinate is split at \eqn{\theta_c = 1 / rr_0}{theta_c = 1 / rr0},
+where the posterior probability of the ratio has a kink because
+\eqn{\theta_d \le 1}{theta_d <= 1}. When \eqn{a \le 1}{a <= 1}, the
+posterior density of \eqn{\theta_c}{theta_c} near 0 is proportional to
+the prior density, and the posterior mean of the ratio is infinite
+(\code{Inf}).
 
 When \code{p0} is given, a signal is declared when
 \eqn{P(\theta_d > p_0 \mid Z) > }{P(theta_d > p0 | Z) > } \code{cutoff}

@@ -5,7 +5,7 @@ this folder.
 
 | Results file | PASS | EXPLAINED | FAIL | INFO |
 |---|---|---|---|---|
-| reproduce_Brock2023.csv | 37 | 0 | 59 | 0 |
+| reproduce_Brock2023.csv | 55 | 0 | 41 | 0 |
 | reproduce_Duncan2026.csv | 15 | 6 | 0 | 7 |
 | reproduce_Duncan2026_prior.csv | 23 | 6 | 0 | 0 |
 | reproduce_Duncan2026_simulation.csv | 14 | 4 | 0 | 113 |
@@ -19,65 +19,47 @@ this folder.
 
 ## Items that are not PASS or INFO
 
-- B_C_H_N120_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.41, reproduced 0.4917. bssd Monte Carlo SE 0.0094; failed fits: 0
-- B_C_H_N120_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.7, reproduced 0.755. bssd Monte Carlo SE 0.0074; failed fits: 0
-- B_C_H_N120_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.42, reproduced 0.5005. bssd Monte Carlo SE 0.0089; failed fits: 0
-- B_C_H_N120_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.74, reproduced 0.7816. bssd Monte Carlo SE 0.0062; failed fits: 0
-- B_C_H_N120_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.42, reproduced 0.5227. bssd Monte Carlo SE 0.0090; failed fits: 0
-- B_C_H_N120_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.43, reproduced 0.5385. bssd Monte Carlo SE 0.0086; failed fits: 0
-- B_C_H_N120_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.79, reproduced 0.8398. bssd Monte Carlo SE 0.0052; failed fits: 0
-- B_C_H_N300_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.4, reproduced 0.4849. bssd Monte Carlo SE 0.0082; failed fits: 0
-- B_C_H_N300_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.79, reproduced 0.8366. bssd Monte Carlo SE 0.0055; failed fits: 0
-- B_C_H_N300_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.41, reproduced 0.4974. bssd Monte Carlo SE 0.0076; failed fits: 0
-- B_C_H_N300_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.84, reproduced 0.8906. bssd Monte Carlo SE 0.0036; failed fits: 0
-- B_C_H_N300_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.42, reproduced 0.5212. bssd Monte Carlo SE 0.0063; failed fits: 0
-- B_C_H_N300_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.89, reproduced 0.9295. bssd Monte Carlo SE 0.0025; failed fits: 0
+- B_C_H_N120_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.7, reproduced 0.7432. bssd Monte Carlo SE 0.0070; failed fits: 0
+- B_C_H_N120_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.42, reproduced 0.4695. bssd Monte Carlo SE 0.0075; failed fits: 0
+- B_C_H_N120_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.42, reproduced 0.471. bssd Monte Carlo SE 0.0070; failed fits: 0
+- B_C_H_N120_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.43, reproduced 0.5027. bssd Monte Carlo SE 0.0061; failed fits: 0
+- B_C_H_N120_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.79, reproduced 0.833. bssd Monte Carlo SE 0.0039; failed fits: 0
+- B_C_H_N300_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.4, reproduced 0.4837. bssd Monte Carlo SE 0.0082; failed fits: 0
+- B_C_H_N300_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.79, reproduced 0.837. bssd Monte Carlo SE 0.0055; failed fits: 0
+- B_C_H_N300_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.41, reproduced 0.4959. bssd Monte Carlo SE 0.0075; failed fits: 0
+- B_C_H_N300_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.84, reproduced 0.8902. bssd Monte Carlo SE 0.0036; failed fits: 0
+- B_C_H_N300_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.42, reproduced 0.5231. bssd Monte Carlo SE 0.0060; failed fits: 0
+- B_C_H_N300_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.89, reproduced 0.9307. bssd Monte Carlo SE 0.0022; failed fits: 0
 - B_C_H_N1050_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.37, reproduced 0.4577. bssd Monte Carlo SE 0.0091; failed fits: 0
 - B_C_H_N1050_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.74, reproduced 0.8192. bssd Monte Carlo SE 0.0068; failed fits: 0
 - B_C_H_N1050_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.39, reproduced 0.4776. bssd Monte Carlo SE 0.0090; failed fits: 0
 - B_C_H_N1050_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.85, reproduced 0.9025. bssd Monte Carlo SE 0.0043; failed fits: 0
 - B_C_H_N1050_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.38, reproduced 0.4963. bssd Monte Carlo SE 0.0082; failed fits: 0
-- B_C_H_N1050_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.91, reproduced 0.9491. bssd Monte Carlo SE 0.0027; failed fits: 0
+- B_C_H_N1050_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.91, reproduced 0.949. bssd Monte Carlo SE 0.0027; failed fits: 0
 - B_C_H_N1050_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.33, reproduced 0.5222. bssd Monte Carlo SE 0.0067; failed fits: 0
-- B_R_N_N120_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.55, reproduced 0.8765. bssd Monte Carlo SE 0.0083; failed fits: 0
-- B_R_N_N120_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.65, reproduced 0.8997. bssd Monte Carlo SE 0.0073; failed fits: 0
-- B_R_N_N120_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.56, reproduced 0.8464. bssd Monte Carlo SE 0.0102; failed fits: 0
-- B_R_N_N120_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.69, reproduced 0.8796. bssd Monte Carlo SE 0.0087; failed fits: 0
-- B_R_N_N120_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.57, reproduced 0.8859. bssd Monte Carlo SE 0.0089; failed fits: 0
-- B_R_N_N120_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.7, reproduced 0.8936. bssd Monte Carlo SE 0.0083; failed fits: 0
-- B_R_N_N120_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.59, reproduced 0.9232. bssd Monte Carlo SE 0.0080; failed fits: 0
-- B_R_N_N120_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.73, reproduced 0.9075. bssd Monte Carlo SE 0.0083; failed fits: 0
-- B_R_N_N300_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.45, reproduced 0.5914. bssd Monte Carlo SE 0.0108; failed fits: 0
-- B_R_N_N300_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.6, reproduced 0.6825. bssd Monte Carlo SE 0.0099; failed fits: 0
-- B_R_N_N300_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.44, reproduced 0.5762. bssd Monte Carlo SE 0.0112; failed fits: 0
-- B_R_N_N300_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.62, reproduced 0.7267. bssd Monte Carlo SE 0.0095; failed fits: 0
-- B_R_N_N300_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.45, reproduced 0.5612. bssd Monte Carlo SE 0.0114; failed fits: 0
-- B_R_N_N300_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.67, reproduced 0.7491. bssd Monte Carlo SE 0.0090; failed fits: 0
-- B_R_N_N300_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.45, reproduced 0.5504. bssd Monte Carlo SE 0.0115; failed fits: 0
-- B_R_H_N120_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.51, reproduced 0.8927. bssd Monte Carlo SE 0.0079; failed fits: 0
-- B_R_H_N120_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.62, reproduced 0.9124. bssd Monte Carlo SE 0.0070; failed fits: 0
-- B_R_H_N120_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.52, reproduced 0.8429. bssd Monte Carlo SE 0.0104; failed fits: 0
-- B_R_H_N120_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.66, reproduced 0.8842. bssd Monte Carlo SE 0.0088; failed fits: 0
-- B_R_H_N120_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.53, reproduced 0.9001. bssd Monte Carlo SE 0.0085; failed fits: 0
-- B_R_H_N120_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.67, reproduced 0.9064. bssd Monte Carlo SE 0.0078; failed fits: 0
-- B_R_H_N120_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.55, reproduced 0.916. bssd Monte Carlo SE 0.0082; failed fits: 0
-- B_R_H_N120_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.7, reproduced 0.9178. bssd Monte Carlo SE 0.0080; failed fits: 0
-- B_R_H_N300_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.43, reproduced 0.6644. bssd Monte Carlo SE 0.0111; failed fits: 0
-- B_R_H_N300_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.58, reproduced 0.7333. bssd Monte Carlo SE 0.0098; failed fits: 0
-- B_R_H_N300_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.41, reproduced 0.6362. bssd Monte Carlo SE 0.0114; failed fits: 0
-- B_R_H_N300_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.59, reproduced 0.7436. bssd Monte Carlo SE 0.0096; failed fits: 0
-- B_R_H_N300_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.41, reproduced 0.6005. bssd Monte Carlo SE 0.0117; failed fits: 0
-- B_R_H_N300_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.64, reproduced 0.7627. bssd Monte Carlo SE 0.0093; failed fits: 0
-- B_R_H_N300_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.41, reproduced 0.5889. bssd Monte Carlo SE 0.0119; failed fits: 0
-- B_R_H_N300_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.69, reproduced 0.7661. bssd Monte Carlo SE 0.0082; failed fits: 0
-- B_R_H_N1050_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.38, reproduced 0.4391. bssd Monte Carlo SE 0.0081; failed fits: 0
+- B_R_N_N120_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.55, reproduced 0.4835. bssd Monte Carlo SE 0.0073; failed fits: 0
+- B_R_N_N120_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.65, reproduced 0.5852. bssd Monte Carlo SE 0.0074; failed fits: 0
+- B_R_N_N120_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.56, reproduced 0.48. bssd Monte Carlo SE 0.0073; failed fits: 0
+- B_R_N_N120_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.69, reproduced 0.5933. bssd Monte Carlo SE 0.0072; failed fits: 0
+- B_R_N_N120_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.57, reproduced 0.4531. bssd Monte Carlo SE 0.0071; failed fits: 0
+- B_R_N_N120_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.7, reproduced 0.6019. bssd Monte Carlo SE 0.0070; failed fits: 0
+- B_R_N_N120_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.59, reproduced 0.4437. bssd Monte Carlo SE 0.0070; failed fits: 0
+- B_R_N_N120_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.73, reproduced 0.6203. bssd Monte Carlo SE 0.0068; failed fits: 0
+- B_R_H_N120_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.52, reproduced 0.462. bssd Monte Carlo SE 0.0071; failed fits: 0
+- B_R_H_N120_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.66, reproduced 0.5955. bssd Monte Carlo SE 0.0073; failed fits: 0
+- B_R_H_N120_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.53, reproduced 0.4552. bssd Monte Carlo SE 0.0070; failed fits: 0
+- B_R_H_N120_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.67, reproduced 0.6086. bssd Monte Carlo SE 0.0070; failed fits: 0
+- B_R_H_N120_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.55, reproduced 0.4334. bssd Monte Carlo SE 0.0068; failed fits: 0
+- B_R_H_N120_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.7, reproduced 0.6303. bssd Monte Carlo SE 0.0065; failed fits: 0
+- B_R_H_N300_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.69, reproduced 0.7408. bssd Monte Carlo SE 0.0053; failed fits: 0
+- B_R_H_N1050_n50_HR1 (reproduce_Brock2023.csv, FAIL): published 0.38, reproduced 0.4389. bssd Monte Carlo SE 0.0081; failed fits: 0
 - B_R_H_N1050_n50_HR2 (reproduce_Brock2023.csv, FAIL): published 0.55, reproduced 0.609. bssd Monte Carlo SE 0.0087; failed fits: 0
-- B_R_H_N1050_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.37, reproduced 0.4267. bssd Monte Carlo SE 0.0084; failed fits: 0
-- B_R_H_N1050_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.6, reproduced 0.655. bssd Monte Carlo SE 0.0088; failed fits: 0
+- B_R_H_N1050_n100_HR1 (reproduce_Brock2023.csv, FAIL): published 0.37, reproduced 0.4265. bssd Monte Carlo SE 0.0084; failed fits: 0
+- B_R_H_N1050_n100_HR2 (reproduce_Brock2023.csv, FAIL): published 0.6, reproduced 0.6552. bssd Monte Carlo SE 0.0088; failed fits: 0
 - B_R_H_N1050_n200_HR1 (reproduce_Brock2023.csv, FAIL): published 0.38, reproduced 0.4414. bssd Monte Carlo SE 0.0087; failed fits: 0
-- B_R_H_N1050_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.68, reproduced 0.7324. bssd Monte Carlo SE 0.0077; failed fits: 0
+- B_R_H_N1050_n200_HR2 (reproduce_Brock2023.csv, FAIL): published 0.68, reproduced 0.7322. bssd Monte Carlo SE 0.0077; failed fits: 0
 - B_R_H_N1050_n1000_HR1 (reproduce_Brock2023.csv, FAIL): published 0.38, reproduced 0.4858. bssd Monte Carlo SE 0.0074; failed fits: 0
-- B_R_H_N1050_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.8, reproduced 0.8699. bssd Monte Carlo SE 0.0040; failed fits: 0
+- B_R_H_N1050_n1000_HR2 (reproduce_Brock2023.csv, FAIL): published 0.8, reproduced 0.8697. bssd Monte Carlo SE 0.0040; failed fits: 0
 - D_T1_04P (reproduce_Duncan2026.csv, EXPLAINED): published 0.05, reproduced 0.06896. Table 1 labels the placebo incidence of scenario 4 (mu = 9.85, sigma = 2.0) as the week 104 value 5.0%, but the log-logistic distribution gives 5.0% at week 52 (item D_T1_04P52) and 6.9% at week 104.
 - D_T1_04D (reproduce_Duncan2026.csv, EXPLAINED): published 0.151, reproduced 0.2014. Table 1 labels the upper study drug incidence of scenario 4 (mu = 7.4, sigma = 2.0) as the week 104 value 15.1%, but the log-logistic distribution gives 15.1% at week 52 (item D_T1_04D52) and 20.1% at week 104.
 - D_TX_04P (reproduce_Duncan2026.csv, EXPLAINED): published 0.04, reproduced 0.06896. Section 4.2.1 describes scenario 4 as 4% for placebo at week 104, which agrees with neither the Table 1 label (5.0%) nor the week 104 value of the stated parameters (6.9%).

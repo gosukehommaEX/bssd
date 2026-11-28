@@ -101,12 +101,18 @@ which matters when the data put \\\lambda_d\\ many prior standard
 deviations above its prior mean; the second keeps a vague prior from
 creating long tails. The posterior probability of a threshold that
 depends on \\\lambda_c\\ (such as the rate ratio) is obtained from the
-Chebyshev series of each row. Compared with independent Python
-computations on dense grids split exactly at the thresholds
+Chebyshev series of each row. When the shape parameter of the prior of
+\\\lambda_c\\ is below 1, its density decreases slowly on the scale of
+\\\log \lambda_c\\ as \\\lambda_c \to 0\\, where the blinded data do not
+bound the posterior, and \\\Phi^{-1}(F_c(\lambda_c))\\ with the prior
+distribution function \\F_c\\ of \\\lambda_c\\ is used instead of \\\log
+\lambda_c\\. Compared with independent Python computations on dense
+grids split exactly at the thresholds
 (`inst/validation/validate_methods_python.R`, three data sets including
 one with a study drug rate far in the upper tail of the prior of Schnell
-and Ball, 2016), the largest absolute difference of the 5 posterior
-probabilities is 2.9e-09, and all 32 compared quantities are PASS.
+and Ball, 2016, and a prior of \\\lambda_c\\ with shape parameter 0.7),
+the largest absolute difference of the 7 posterior probabilities is
+2.9e-09, and all 36 compared quantities are PASS.
 
 ## Comparison with MCMC
 
@@ -145,9 +151,10 @@ exceeds 0.0156.
 |    12 |     0.872 |        0.872 |           0.839 |                 0.931 | 0.932 |
 |    16 |     0.968 |        0.968 |           0.973 |                 0.996 | 0.996 |
 
-The simulation of Table 1
-(`inst/reproduce/reproduce_Schnell2016_simulation.R`) has not been run
-for this installation.
+The simulation of Table 1 (control rate 0.0130, 1000 trials per setting
+with the authors’ seeds;
+`inst/reproduce/reproduce_Schnell2016_simulation.R`) gives 2 PASS, 4
+EXPLAINED and 0 FAIL items.
 
 ## References
 

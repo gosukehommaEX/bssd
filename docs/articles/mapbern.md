@@ -60,7 +60,7 @@ fit
 #> Tested quantity: ratio rr = pi_d / pi_c
 #> P(rr > 1 | data) = 0.8602
 #> Signal (posterior probability > 0.95): no
-#> Posterior of rr: mean 1.84, median 1.627, 95% interval (0.6569, 4.263)
+#> Posterior of rr: mean Inf, median 1.627, 95% interval (0.6569, 4.263)
 #> Posterior of pi_d: mean 0.166, median 0.1648, 95% interval (0.09953, 0.2396)
 ```
 
@@ -77,13 +77,26 @@ prior_c <- data.frame(w = mix["w", ], shape1 = mix["a", ],
 
 ## Numerical integration and comparison with MCMC
 
+A MAP prior from few historical events has components with a shape
+parameter far below 1, whose densities are nearly flat over a wide range
+of \\\mathrm{logit}(\pi_c)\\.
+[`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md)
+then integrates over the normal quantile of an envelope of the prior, a
+mixture of fewer Beta distributions whose tails are at least as heavy,
+so that the tails of the posterior on the integration scale are like
+those of the normal distribution
+([`?mapbern_post`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md)).
+
 Against independent Python computations (dense composite Gauss-Legendre
 rules split exactly at \\\pi_d = rr_0 \pi_c\\ for
 [`mapbern_post()`](https://gosukehommaex.github.io/bssd/reference/mapbern_post.md),
-and a dense grid over \\(a, b)\\ for
+a dense grid over \\(a, b)\\ for
+[`map_beta()`](https://gosukehommaex.github.io/bssd/reference/map_beta.md),
+and, for historical arms with few events, the MAP model integrated over
+\\(a, b, \pi_c, \pi_d)\\ without the mixture of
 [`map_beta()`](https://gosukehommaex.github.io/bssd/reference/map_beta.md)),
-the largest absolute difference of the 43 compared quantities is
-1.1e-06. A JAGS model with the mixture prior and latent treatment
+the largest absolute difference of the 78 compared quantities is
+1.2e-06. A JAGS model with the mixture prior and latent treatment
 assignments gives:
 
 | quantity                                        |   MCMC |   bssd | judgement |
@@ -94,9 +107,11 @@ assignments gives:
 
 ## Reproduction of Brock et al. (2023)
 
-The simulation of Tables 1 and 3
-(`inst/reproduce/reproduce_Brock2023_simulation.R`) has not been run for
-this installation.
+`inst/reproduce/reproduce_Brock2023_simulation.R` repeats the simulation
+of Tables 1 (common events) and 3 (rare events) for the heterogeneity
+levels None and High (1000 trials per setting), and
+`inst/reproduce/reproduce_Brock2023.R` compares the mean of the
+posterior probability: 55 PASS, 0 EXPLAINED and 41 FAIL of 96 settings.
 
 ## References
 
