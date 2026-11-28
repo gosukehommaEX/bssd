@@ -120,6 +120,8 @@ expbern_post <- function(y, t, k = 1, lambda_hp, pt_hp, df = 1,
                                       n_p = 49L, check = TRUE, eps = 1e-8,
                                       max_iter = 12L))
 
+  # subjects with the same (y, t) enter the likelihood once, with weights
+  pat <- group_patterns(dat$y, dat$t)
   alpha <- lambda_hp * pt_hp / df
   beta <- pt_hp / df
   a <- p_prior[[1L]]
@@ -162,7 +164,7 @@ expbern_post <- function(y, t, k = 1, lambda_hp, pt_hp, df = 1,
     R <- P / (k * pmax(Q, 1e-300))
     out <- matrix(0, nrow(R), ncol(R))
     for (i in seq_len(nrow(R))) {
-      out[i, ] <- expbern_loglik_cpp(dat$t, dat$y, wp, lam[i], R[i, ])
+      out[i, ] <- expbern_loglik_cpp(pat$t, pat$y, pat$w, wp, lam[i], R[i, ])
     }
     out
   }
@@ -174,8 +176,14 @@ expbern_post <- function(y, t, k = 1, lambda_hp, pt_hp, df = 1,
   lo_u <- log(max(qgamma(1e-10, alpha, beta), .Machine$double.xmin))
   hi_u <- log(qgamma(1 - 1e-10, alpha, beta))
   box <- refine_box(function(nodes) {
-    logpost_z(nodes[[1L]], matrix(nodes[[2L]], length(nodes[[1L]]),
-                                  length(nodes[[2L]]), byrow = TRUE))
+    n1 <- length(nodes[[1L]])
+    n2 <- length(nodes[[2L]])
+    # logpost_z() of the matrix of z; z is the same in every row, so p and
+    # 1 - p are computed once per column
+    pq <- pq_of_z(nodes[[2L]])
+    loglik(exp(nodes[[1L]]), matrix(pq$p, n1, n2, byrow = TRUE),
+           matrix(pq$q, n1, n2, byrow = TRUE)) + lw_lambda(nodes[[1L]]) +
+      dnorm(matrix(nodes[[2L]], n1, n2, byrow = TRUE), log = TRUE)
   }, c(lo_u, -8), c(hi_u, 8), ctrl$n_coarse, ctrl$eps, ctrl$max_iter,
   lim_lo = c(-Inf, -Inf), lim_hi = c(Inf, Inf))
 

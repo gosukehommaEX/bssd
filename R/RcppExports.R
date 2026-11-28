@@ -5,12 +5,12 @@ bernmix_loglik_cpp <- function(t, y, w, wc, hc, hd) {
     .Call(`_bssd_bernmix_loglik_cpp`, t, y, w, wc, hc, hd)
 }
 
-expbern_loglik_cpp <- function(t, y, wp, lambda, r) {
-    .Call(`_bssd_expbern_loglik_cpp`, t, y, wp, lambda, r)
+expbern_loglik_cpp <- function(t, y, w, wp, lambda, r) {
+    .Call(`_bssd_expbern_loglik_cpp`, t, y, w, wp, lambda, r)
 }
 
-llbern_loglik_cpp <- function(t, y, wp, mu_p, sigma_p, mu_d, sigma_d) {
-    .Call(`_bssd_llbern_loglik_cpp`, t, y, wp, mu_p, sigma_p, mu_d, sigma_d)
+llbern_loglik_cpp <- function(t, y, w, wp, mu_p, sigma_p, mu_d, sigma_d) {
+    .Call(`_bssd_llbern_loglik_cpp`, t, y, w, wp, mu_p, sigma_p, mu_d, sigma_d)
 }
 
 mixpois_loglik_cpp <- function(t, y, w, wc, lc, ld) {

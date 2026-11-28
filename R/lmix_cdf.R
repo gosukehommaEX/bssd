@@ -50,7 +50,8 @@ lmix_cdf <- function(x, mix, lower = TRUE) {
   L[far] <- A[far] * plogis(sx[far], log.p = TRUE) +
     B[far] * plogis(-sx[far], log.p = TRUE) - log(A[far]) - LB[far]
   L <- L + matrix(log(mix$w), nx, k, byrow = TRUE)
-  m <- apply(L, 1L, max)
+  # row maxima (max.col() with ties.method = "first" compares exactly)
+  m <- L[cbind(seq_len(nx), max.col(L, ties.method = "first"))]
   out <- m + log(rowSums(exp(L - m)))
   out[!is.finite(m)] <- m[!is.finite(m)]
   out

@@ -15,9 +15,11 @@ cheb_antideriv <- function(A) {
   Ap <- rbind(A, matrix(0, 2L, m))
   B <- matrix(0, n + 1L, m)
   B[2L, ] <- Ap[1L, ] - Ap[3L, ] / 2
-  for (j in 2L:n) {
-    B[j + 1L, ] <- (Ap[j, ] - Ap[j + 2L, ]) / (2 * j)
-  }
+  # rows 3 to n + 1 at once (each element as in the recurrence
+  # B[j + 1, ] = (Ap[j, ] - Ap[j + 2, ]) / (2 j))
+  j <- 2L:n
+  B[j + 1L, ] <- (Ap[j, , drop = FALSE] - Ap[j + 2L, , drop = FALSE]) /
+    (2 * j)
   sgn <- (-1)^(0:n)
   list(B = B, base = colSums(B * sgn))
 }

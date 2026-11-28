@@ -151,6 +151,8 @@ llbern_post <- function(y, t, k = 1, mu_hp, sigma_hp, pt_hp, df_p = 1,
                                       n_inner = 121L, check = TRUE,
                                       eps = 1e-8, max_iter = 12L))
 
+  # subjects with the same (y, t) enter the likelihood once, with weights
+  pat <- group_patterns(dat$y, dat$t)
   wp <- 1 / (k + 1)
   shape <- c(pt_hp * mu_hp / df_p, pt_hp * sigma_hp / df_p,
              mu_d_prior[1L], sigma_d_prior[1L])
@@ -169,7 +171,8 @@ llbern_post <- function(y, t, k = 1, mu_hp, sigma_hp, pt_hp, df_p = 1,
     n <- lengths(nodes)
     pp <- expand.grid(mp = exp(nodes[[1L]]), sp = exp(nodes[[2L]]))
     dd <- expand.grid(md = exp(nodes[[3L]]), sd = sd_of(nodes[[4L]]))
-    ll <- llbern_loglik_cpp(dat$t, dat$y, wp, pp$mp, pp$sp, dd$md, dd$sd)
+    ll <- llbern_loglik_cpp(pat$t, pat$y, pat$w, wp, pp$mp, pp$sp, dd$md,
+                            dd$sd)
     lp <- outer(outer(lw_log(nodes[[1L]], 1L), lw_log(nodes[[2L]], 2L), "+"),
                 lw_log(nodes[[3L]], 3L), "+")
     lp <- outer(lp, numeric(n[4L]), "+")
@@ -228,8 +231,12 @@ llbern_post <- function(y, t, k = 1, mu_hp, sigma_hp, pt_hp, df_p = 1,
     n_tr <- nrow(tr)
     wq <- Wm * ccw / norm
     md <- exp(u3)
-    fd <- plogis((lt_star - matrix(md, n_inner, n_tr)) /
-                   matrix(tr$sd, n_inner, n_tr, byrow = TRUE))
+    # fd depends only on mu_d and sigma_d: it is computed for the values of
+    # sigma_d and repeated for the pairs (mu_p, sigma_p) of tr
+    sd4 <- sd_of(d4$x)
+    fd <- plogis((lt_star - matrix(md, n_inner, length(sd4))) /
+                   matrix(sd4, n_inner, length(sd4), byrow = TRUE))
+    fd <- fd[, rep(seq_along(sd4), each = n_tr / length(sd4)), drop = FALSE]
     fp <- matrix(fp_star, n_inner, n_tr, byrow = TRUE)
     rr_g <- fd / pmax(fp, 1e-300)
     est <- c(mu_p = sum(wq * matrix(tr$mp, n_inner, n_tr, byrow = TRUE)),

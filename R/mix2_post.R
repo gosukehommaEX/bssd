@@ -76,8 +76,14 @@ mix2_post <- function(loglik, c_of, u_of, lprior_u, pfun, qfun, lo_u, hi_u,
     loglik(c_of(u), d_of_z(Z)) + lprior_u(u) + dnorm(Z, log = TRUE)
   }
   box <- refine_box(function(nodes) {
-    logpost_z(nodes[[1L]], matrix(nodes[[2L]], length(nodes[[1L]]),
-                                  length(nodes[[2L]]), byrow = TRUE))
+    n1 <- length(nodes[[1L]])
+    n2 <- length(nodes[[2L]])
+    # logpost_z() of the matrix of z; z is the same in every row, so the
+    # study drug parameter is computed once per column
+    loglik(c_of(nodes[[1L]]),
+           matrix(d_of_z(nodes[[2L]]), n1, n2, byrow = TRUE)) +
+      lprior_u(nodes[[1L]]) +
+      dnorm(matrix(nodes[[2L]], n1, n2, byrow = TRUE), log = TRUE)
   }, c(lo_u, -8), c(hi_u, 8), ctrl$n_coarse, ctrl$eps, ctrl$max_iter,
   lim_lo = c(-Inf, -Inf), lim_hi = c(Inf, Inf))
   probs <- c((1 - level) / 2, 0.5, (1 + level) / 2)

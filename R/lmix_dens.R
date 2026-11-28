@@ -18,7 +18,8 @@ lmix_dens <- function(x, mix) {
   l0 <- plogis(-x, log.p = TRUE)
   L <- outer(l1, mix$shape1) + outer(l0, mix$shape2) +
     rep(log(mix$w) - lbeta(mix$shape1, mix$shape2), each = length(x))
-  m <- apply(L, 1L, max)
+  # row maxima (max.col() with ties.method = "first" compares exactly)
+  m <- L[cbind(seq_len(nrow(L)), max.col(L, ties.method = "first"))]
   out <- m + log(rowSums(exp(L - m)))
   out[!is.finite(m)] <- m[!is.finite(m)]
   out

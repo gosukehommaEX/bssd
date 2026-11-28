@@ -56,6 +56,17 @@
 * The documentation of `llbern_post()` says that `control$n_outer` limits
   the accuracy when there are many events, and that the error estimate
   refers to `prob`.
+* Faster computation with the same results up to rounding errors: the
+  likelihoods of `expbern_post()` and `llbern_post()` are computed once for
+  each group of subjects with the same event indicator and follow-up time
+  (as in `exptime_post()` and `mapbern_post()`), and the C++ code of
+  `llbern_post()` accumulates the product over the subjects in four parts.
+  The coarse grid that locates the integration region of `expbern_post()`,
+  `exptime_post()`, `binbeta_post()` and `mapbern_post()` computes the
+  second coordinate once per column, the summaries of `llbern_post()`
+  compute the cumulative incidence of the study drug once for each pair of
+  its parameters, and the normal quantile coordinate of `mapbern_post()` and
+  `binbeta_post()` needs fewer Newton steps.
 * `print()` shows the tested quantity of the new models and, for
   `exptime_post()`, `binbeta_post()` and `mapbern_post()`, the posterior of
   the study drug rate or proportion. Summaries that are not available, such

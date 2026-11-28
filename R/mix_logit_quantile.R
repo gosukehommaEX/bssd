@@ -8,8 +8,11 @@
 #' \eqn{x = \mathrm{sign}(t) (e^{|t|} - 1)}{x = sign(t) * (exp(|t|) - 1)},
 #' \eqn{t = -60, -59.75, \dots, 60}{t = -60, -59.75, ..., 60}, is computed
 #' once and brackets each root (rounding errors that make the table
-#' decrease locally are removed with a cumulative maximum); Newton steps that
-#' leave the bracket are replaced by bisection.
+#' decrease locally are removed with a cumulative maximum); the iteration
+#' starts from the linear interpolation of the table in the bracket, Newton
+#' steps that leave the bracket are replaced by bisection, and each root is
+#' iterated until its step is at most
+#' \eqn{10^{-12} (1 + |x|)}{1e-12 * (1 + |x|)}.
 #'
 #' @param mix Data frame with columns \code{w}, \code{shape1} and
 #'   \code{shape2}.
@@ -47,10 +50,15 @@ mix_logit_quantile <- function(mix, max_iter = 100L) {
     }
     a <- xg[j[act]]
     b <- xg[j[act] + 1L]
-    xa <- (a + b) / 2
     lo <- low[act]
     ta <- target[act]
-    f_of <- function(x) {
+    # start from the linear interpolation of the table in the bracket
+    fa <- ifelse(lo, f_lo[j[act]], f_up[j[act]])
+    fb <- ifelse(lo, f_lo[j[act] + 1L], f_up[j[act] + 1L])
+    xa <- a + (ta - fa) / (fb - fa) * (b - a)
+    mid <- !is.finite(xa) | xa <= a | xa >= b
+    xa[mid] <- (a[mid] + b[mid]) / 2
+    f_of <- function(x, lo) {
       out <- numeric(length(x))
       if (any(lo)) {
         out[lo] <- lmix_cdf(x[lo], mix, lower = TRUE)
@@ -60,19 +68,26 @@ mix_logit_quantile <- function(mix, max_iter = 100L) {
       }
       out
     }
+    # only the roots not yet found are iterated
+    todo <- seq_along(xa)
     for (iter in seq_len(max_iter)) {
-      fx <- f_of(xa)
-      f <- fx - ta
-      a <- ifelse(f < 0, xa, a)
-      b <- ifelse(f < 0, b, xa)
+      x0 <- xa[todo]
+      l0 <- lo[todo]
+      fx <- f_of(x0, l0)
+      f <- fx - ta[todo]
+      a0 <- ifelse(f < 0, x0, a[todo])
+      b0 <- ifelse(f < 0, b[todo], x0)
       # derivative of f: density over the tail probability
-      d <- exp(lmix_dens(xa, mix) - ifelse(lo, fx, -fx))
-      xn <- xa - f / d
-      bad <- !is.finite(xn) | xn <= a | xn >= b
-      xn[bad] <- (a[bad] + b[bad]) / 2
-      done <- abs(xn - xa) <= 1e-12 * (1 + abs(xa))
-      xa <- xn
-      if (all(done)) {
+      d <- exp(lmix_dens(x0, mix) - ifelse(l0, fx, -fx))
+      xn <- x0 - f / d
+      bad <- !is.finite(xn) | xn <= a0 | xn >= b0
+      xn[bad] <- (a0[bad] + b0[bad]) / 2
+      done <- abs(xn - x0) <= 1e-12 * (1 + abs(x0))
+      xa[todo] <- xn
+      a[todo] <- a0
+      b[todo] <- b0
+      todo <- todo[!done]
+      if (length(todo) == 0L) {
         break
       }
     }

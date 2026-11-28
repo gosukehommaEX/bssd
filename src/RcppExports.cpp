@@ -27,34 +27,36 @@ BEGIN_RCPP
 END_RCPP
 }
 // expbern_loglik_cpp
-Rcpp::NumericMatrix expbern_loglik_cpp(const Rcpp::NumericVector& t, const Rcpp::IntegerVector& y, const double wp, const Rcpp::NumericVector& lambda, const Rcpp::NumericVector& r);
-RcppExport SEXP _bssd_expbern_loglik_cpp(SEXP tSEXP, SEXP ySEXP, SEXP wpSEXP, SEXP lambdaSEXP, SEXP rSEXP) {
+Rcpp::NumericMatrix expbern_loglik_cpp(const Rcpp::NumericVector& t, const Rcpp::NumericVector& y, const Rcpp::NumericVector& w, const double wp, const Rcpp::NumericVector& lambda, const Rcpp::NumericVector& r);
+RcppExport SEXP _bssd_expbern_loglik_cpp(SEXP tSEXP, SEXP ySEXP, SEXP wSEXP, SEXP wpSEXP, SEXP lambdaSEXP, SEXP rSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type t(tSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type w(wSEXP);
     Rcpp::traits::input_parameter< const double >::type wp(wpSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type lambda(lambdaSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type r(rSEXP);
-    rcpp_result_gen = Rcpp::wrap(expbern_loglik_cpp(t, y, wp, lambda, r));
+    rcpp_result_gen = Rcpp::wrap(expbern_loglik_cpp(t, y, w, wp, lambda, r));
     return rcpp_result_gen;
 END_RCPP
 }
 // llbern_loglik_cpp
-Rcpp::NumericMatrix llbern_loglik_cpp(const Rcpp::NumericVector& t, const Rcpp::IntegerVector& y, const double wp, const Rcpp::NumericVector& mu_p, const Rcpp::NumericVector& sigma_p, const Rcpp::NumericVector& mu_d, const Rcpp::NumericVector& sigma_d);
-RcppExport SEXP _bssd_llbern_loglik_cpp(SEXP tSEXP, SEXP ySEXP, SEXP wpSEXP, SEXP mu_pSEXP, SEXP sigma_pSEXP, SEXP mu_dSEXP, SEXP sigma_dSEXP) {
+Rcpp::NumericMatrix llbern_loglik_cpp(const Rcpp::NumericVector& t, const Rcpp::NumericVector& y, const Rcpp::NumericVector& w, const double wp, const Rcpp::NumericVector& mu_p, const Rcpp::NumericVector& sigma_p, const Rcpp::NumericVector& mu_d, const Rcpp::NumericVector& sigma_d);
+RcppExport SEXP _bssd_llbern_loglik_cpp(SEXP tSEXP, SEXP ySEXP, SEXP wSEXP, SEXP wpSEXP, SEXP mu_pSEXP, SEXP sigma_pSEXP, SEXP mu_dSEXP, SEXP sigma_dSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type t(tSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type y(ySEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type w(wSEXP);
     Rcpp::traits::input_parameter< const double >::type wp(wpSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type mu_p(mu_pSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type sigma_p(sigma_pSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type mu_d(mu_dSEXP);
     Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type sigma_d(sigma_dSEXP);
-    rcpp_result_gen = Rcpp::wrap(llbern_loglik_cpp(t, y, wp, mu_p, sigma_p, mu_d, sigma_d));
+    rcpp_result_gen = Rcpp::wrap(llbern_loglik_cpp(t, y, w, wp, mu_p, sigma_p, mu_d, sigma_d));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -77,8 +79,8 @@ END_RCPP
 
 static const R_CallMethodDef CallEntries[] = {
     {"_bssd_bernmix_loglik_cpp", (DL_FUNC) &_bssd_bernmix_loglik_cpp, 6},
-    {"_bssd_expbern_loglik_cpp", (DL_FUNC) &_bssd_expbern_loglik_cpp, 5},
-    {"_bssd_llbern_loglik_cpp", (DL_FUNC) &_bssd_llbern_loglik_cpp, 7},
+    {"_bssd_expbern_loglik_cpp", (DL_FUNC) &_bssd_expbern_loglik_cpp, 6},
+    {"_bssd_llbern_loglik_cpp", (DL_FUNC) &_bssd_llbern_loglik_cpp, 8},
     {"_bssd_mixpois_loglik_cpp", (DL_FUNC) &_bssd_mixpois_loglik_cpp, 6},
     {NULL, NULL, 0}
 };
